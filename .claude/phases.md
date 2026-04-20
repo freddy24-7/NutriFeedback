@@ -12,8 +12,8 @@
 | ----- | -------------------- | -------------------------------------------------------------------- |
 | 1     | Foundation           | ✅ Complete (unit gate ✓ — integration/e2e/manual pending env setup) |
 | 2     | AI Integration       | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)          |
-| 3     | Barcode + Product DB | 🔨 In Progress                                                       |
-| 4     | Payments + Credits   | ⏳ Pending                                                           |
+| 3     | Barcode + Product DB | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)          |
+| 4     | Payments + Credits   | 🔨 In Progress                                                       |
 | 5     | Chatbot + FAQ        | ⏳ Pending                                                           |
 | 6     | SEO + A11y + Polish  | ⏳ Pending                                                           |
 

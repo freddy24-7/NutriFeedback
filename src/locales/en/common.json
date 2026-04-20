@@ -1,0 +1,221 @@
+{
+  "app": {
+    "name": "NutriApp",
+    "tagline": "Flexible nutrition tracking"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "required": "Required",
+    "optional": "Optional",
+    "or": "or"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "theme": {
+    "toggleLight": "Switch to light mode",
+    "toggleDark": "Switch to dark mode"
+  },
+  "language": {
+    "toggle": "Switch language",
+    "en": "English",
+    "nl": "Dutch"
+  },
+  "auth": {
+    "signUp": {
+      "title": "Create your account",
+      "subtitle": "Start tracking your nutrition today — 50 free credits included",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "submit": "Create account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "confirmEmailTitle": "Check your email",
+      "confirmEmailMessage": "We sent a confirmation link to {{email}}. Click it to activate your account.",
+      "terms": "By creating an account you agree to our",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy"
+    },
+    "signIn": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue tracking",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send reset link",
+      "back": "Back to sign in",
+      "success": "Reset link sent!",
+      "successSubtitle": "If an account exists for {{email}}, you'll receive a reset link shortly."
+    },
+    "confirm": {
+      "loading": "Confirming your email...",
+      "success": "Email confirmed! Taking you to your dashboard...",
+      "error": "Confirmation failed. The link may have expired.",
+      "tryAgain": "Try signing in again"
+    },
+    "error": {
+      "invalidCredentials": "Invalid email or password",
+      "emailTaken": "An account with this email already exists",
+      "weakPassword": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
+      "generic": "Something went wrong. Please try again.",
+      "networkError": "Network error. Please check your connection."
+    },
+    "signOut": "Sign out"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "today": "Today",
+    "todayLog": "Today's food log",
+    "noEntries": "No entries yet today",
+    "noEntriesSubtitle": "Add your first meal to get started",
+    "addEntry": "Add food entry",
+    "viewDate": "View another date"
+  },
+  "foodLog": {
+    "addEntry": "Add food entry",
+    "editEntry": "Edit entry",
+    "deleteEntry": "Delete entry",
+    "confirmDelete": "Delete this entry?",
+    "description": {
+      "label": "What did you eat?",
+      "placeholder": "e.g. bowl of oatmeal with banana and honey"
+    },
+    "mealType": {
+      "label": "Meal type",
+      "placeholder": "Select meal type",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack",
+      "drink": "Drink"
+    },
+    "date": {
+      "label": "Date"
+    },
+    "submit": "Save entry",
+    "success": "Entry saved",
+    "error": "Could not save entry. Please try again.",
+    "deleteSuccess": "Entry deleted",
+    "deleteError": "Could not delete entry",
+    "source": {
+      "manual": "Manual",
+      "barcode": "Barcode",
+      "ai_parsed": "AI parsed",
+      "imported": "Imported"
+    }
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Have a question or feedback? We'd love to hear from you.",
+    "name": {
+      "label": "Your name",
+      "placeholder": "Jane Smith"
+    },
+    "email": {
+      "label": "Email address",
+      "placeholder": "you@example.com"
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Tell us what's on your mind..."
+    },
+    "submit": "Send message",
+    "submitting": "Sending...",
+    "success": "Message sent!",
+    "successSubtitle": "We typically respond within 1–2 business days.",
+    "error": "Could not send your message. Please try again.",
+    "rateLimited": "Too many messages sent. Please try again in an hour.",
+    "responseTime": "We typically respond within 1–2 business days."
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: {{date}}",
+    "reviewNotice": "These terms are pending legal review before public launch.",
+    "placeholder": "Full terms of service will be published before public launch. These terms govern your use of NutriApp, including account creation, subscription billing, acceptable use, and data handling. Please check back before the public release."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: {{date}}",
+    "reviewNotice": "This policy is pending legal review before public launch.",
+    "dataStorage": "Your data is stored in the EU (Frankfurt region).",
+    "dataExport": "You can export or delete all your data at any time from account settings.",
+    "noSell": "We never sell your personal data.",
+    "placeholder": "Full privacy policy will be published before public launch. This policy describes how NutriApp collects, uses, and protects your personal data in accordance with GDPR."
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "notFoundSubtitle": "The page you're looking for doesn't exist.",
+    "goHome": "Go home",
+    "unauthorized": "Please sign in to continue",
+    "networkError": "Connection error — please check your internet",
+    "serverError": "Server error — please try again"
+  },
+  "credits": {
+    "remaining_one": "{{count}} credit remaining",
+    "remaining_other": "{{count}} credits remaining",
+    "low": "Low credits",
+    "exhausted": "No credits remaining",
+    "upgrade": "Upgrade for more"
+  },
+  "home": {
+    "hero": {
+      "title": "Nutrition tracking that works your way",
+      "subtitle": "Log what you eat, get AI-powered tips, and track your nutrition over time — as accurately or loosely as you like.",
+      "cta": "Get started free",
+      "signIn": "Already have an account? Sign in"
+    },
+    "features": {
+      "title": "Everything you need",
+      "flexible": {
+        "title": "Flexible logging",
+        "description": "Type 'eggs and toast' or scan a barcode. More detail means better feedback — but loose entries still count."
+      },
+      "ai": {
+        "title": "AI-powered tips",
+        "description": "Get practical nutrition insights based on your actual eating patterns, not generic advice."
+      },
+      "bilingual": {
+        "title": "English & Dutch",
+        "description": "Full support for English and Dutch — including AI tips and chatbot responses."
+      }
+    },
+    "freeCredits": "Start with 50 free credits — no card required"
+  }
+}

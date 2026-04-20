@@ -8,14 +8,14 @@
 
 ## Phase Status Overview
 
-| Phase | Name | Status |
-|-------|------|--------|
-| 1 | Foundation | 🔄 In Progress |
-| 2 | AI Integration | ⏳ Pending |
-| 3 | Barcode + Product DB | ⏳ Pending |
-| 4 | Payments + Credits | ⏳ Pending |
-| 5 | Chatbot + FAQ | ⏳ Pending |
-| 6 | SEO + A11y + Polish | ⏳ Pending |
+| Phase | Name                 | Status                                                               |
+| ----- | -------------------- | -------------------------------------------------------------------- |
+| 1     | Foundation           | ✅ Complete (unit gate ✓ — integration/e2e/manual pending env setup) |
+| 2     | AI Integration       | ⏳ Pending                                                           |
+| 3     | Barcode + Product DB | ⏳ Pending                                                           |
+| 4     | Payments + Credits   | ⏳ Pending                                                           |
+| 5     | Chatbot + FAQ        | ⏳ Pending                                                           |
+| 6     | SEO + A11y + Polish  | ⏳ Pending                                                           |
 
 ---
 
@@ -52,6 +52,7 @@ i18n, theme switching, contact form. No AI yet. No payments yet.
 - [ ] Write contact page with form
 
 ### Cursor Tasks [CURSOR] — mark READY only after Claude Code finishes layout shell
+
 - [ ] Navigation bar + bottom tab bar (mobile/desktop)
 - [ ] Food log entry card component
 - [ ] Daily summary view layout
@@ -91,6 +92,7 @@ i18n, theme switching, contact form. No AI yet. No payments yet.
 All of the following must pass before Phase 2 begins.
 
 **Vitest — unit:**
+
 - [ ] `sanitiseText` strips HTML and truncates to 2000 chars
 - [ ] `sanitiseForPrompt` wraps input in `<user_input>` delimiters
 - [ ] Discount code validation: valid / expired / zero-uses logic
@@ -99,6 +101,7 @@ All of the following must pass before Phase 2 begins.
 - [ ] `store/uiStore`: theme and language persist across mock reloads
 
 **Vitest — integration (dev Neon branch):**
+
 - [ ] POST `/api/auth/on-signup` creates `user_profiles` row
 - [ ] POST `/api/auth/on-signup` creates `user_credits` row (50 credits)
 - [ ] POST `/api/auth/on-signup` is idempotent (safe to call twice)
@@ -108,6 +111,7 @@ All of the following must pass before Phase 2 begins.
 - [ ] Rate limiter returns 429 after threshold (use Upstash mock)
 
 **Playwright — e2e:**
+
 - [ ] User signs up → on-signup endpoint fires → lands on dashboard
 - [ ] User adds a food log entry (text) → appears in daily view
 - [ ] Language toggle switches all visible UI strings to NL
@@ -116,6 +120,7 @@ All of the following must pass before Phase 2 begins.
 - [ ] Contact form submits and shows success state
 
 **Manual checks:**
+
 - [ ] PWA installs on mobile (iOS Safari + Android Chrome)
 - [ ] App loads from cache after first visit (service worker active)
 - [ ] All interactive elements keyboard-reachable (Tab key navigation)
@@ -152,6 +157,7 @@ AI client abstraction (Gemini dev / Claude prod).
 - [ ] Write weekly tip email template (Resend)
 
 ### Cursor Tasks [CURSOR]
+
 - [ ] Tip card component (with dismiss animation)
 - [ ] Confidence indicator badge component
 - [ ] AI parsing loading state animation
@@ -167,6 +173,7 @@ Add GEMINI_API_KEY to .env.local
 ### Phase 2 Test Gate
 
 **Vitest — unit:**
+
 - [ ] AI client routes to Gemini in `NODE_ENV=development`
 - [ ] AI client routes to Anthropic in `NODE_ENV=production` (mocked)
 - [ ] Prompt builder includes language instruction as first line
@@ -176,6 +183,7 @@ Add GEMINI_API_KEY to .env.local
 - [ ] Concurrent credit deduction does not overdraft (transaction lock test)
 
 **Vitest — integration:**
+
 - [ ] `POST /api/ai/parse-food` returns valid nutrients JSON shape
 - [ ] `POST /api/ai/parse-food` rejects prompt injection attempt
 - [ ] `POST /api/ai/parse-food` returns 429 at rate limit
@@ -183,6 +191,7 @@ Add GEMINI_API_KEY to .env.local
 - [ ] Tips stored with both `tip_text_en` and `tip_text_nl` populated
 
 **Playwright — e2e:**
+
 - [ ] User logs "eggs and toast for breakfast" → parsed nutrients shown
 - [ ] Confidence badge visible on parsed entry
 - [ ] After 3+ days of seeded entries: tip appears on dashboard
@@ -209,6 +218,7 @@ local product registry, AI fallback for unknown products.
 - [ ] Link scanned product to food log entry via `productId` FK
 
 ### Cursor Tasks [CURSOR]
+
 - [ ] Barcode scanner UI overlay (camera + scan line animation)
 - [ ] Product card component (name, brand, nutrients, source badge)
 - [ ] Processing level indicator (4-step colour scale)
@@ -217,6 +227,7 @@ local product registry, AI fallback for unknown products.
 ### Phase 3 Test Gate
 
 **Vitest — unit:**
+
 - [ ] Barcode lookup: Open Food Facts hit → returns product
 - [ ] Barcode lookup: cache hit → skips external API call
 - [ ] Barcode lookup: unknown barcode → AI estimate with confidence < 0.5
@@ -224,11 +235,13 @@ local product registry, AI fallback for unknown products.
 - [ ] Processing level logic returns correct integer for known inputs
 
 **Vitest — integration:**
+
 - [ ] `GET /api/products/barcode/:barcode` returns 429 at rate limit
 - [ ] `POST /api/products` creates row with `createdBy = userId`
 - [ ] User B can read a product created by User A (public read)
 
 **Playwright — e2e:**
+
 - [ ] Scanner modal opens + closes correctly
 - [ ] Mock barcode returns product card
 - [ ] User confirms product → entry added to food log
@@ -253,6 +266,7 @@ subscription management.
 - [ ] Write pricing page data route (returns current Stripe price)
 
 ### Cursor Tasks [CURSOR]
+
 - [ ] Pricing page layout
 - [ ] Credit counter component (nav)
 - [ ] Paywall modal (soft wall)
@@ -279,6 +293,7 @@ subscription management.
 ### Phase 4 Test Gate
 
 **Vitest — unit:**
+
 - [ ] Valid beta code grants `comped` subscription, skips Stripe
 - [ ] Expired code rejected with correct error message
 - [ ] Zero-uses code rejected
@@ -287,12 +302,14 @@ subscription management.
 - [ ] Paywall check: expired trial → blocked
 
 **Vitest — integration:**
+
 - [ ] `POST /api/discount/validate`: valid code creates subscription row
 - [ ] `POST /api/discount/validate`: invalid code returns 400
 - [ ] `POST /api/stripe/webhook`: payment event grants active subscription
 - [ ] Expired credits block AI operations (402 returned)
 
 **Playwright — e2e:**
+
 - [ ] New user has 50 credits after signup
 - [ ] After credits exhausted: paywall modal appears
 - [ ] Valid discount code → access granted, Stripe bypassed
@@ -321,6 +338,7 @@ anonymous session management.
 - [ ] Write "How to Use" content in both locale files
 
 ### Cursor Tasks [CURSOR]
+
 - [ ] Chatbot sliding drawer (mobile-first)
 - [ ] Chat message bubbles (user vs bot)
 - [ ] Streaming text animation
@@ -331,6 +349,7 @@ anonymous session management.
 ### Phase 5 Test Gate
 
 **Vitest — unit:**
+
 - [ ] Fuse.js matcher: known question → returns correct FAQ answer
 - [ ] Fuse.js matcher: unrelated question → null (triggers AI fallback)
 - [ ] 6th chatbot message from same IP hash → 429
@@ -338,6 +357,7 @@ anonymous session management.
 - [ ] Unanswered question logged to DB
 
 **Playwright — e2e:**
+
 - [ ] Chatbot opens → shows greeting + FAQ chips
 - [ ] Known FAQ question answered without AI call (verify via response speed/log)
 - [ ] Unknown question gets Gemini response
@@ -365,6 +385,7 @@ passed, Lighthouse ≥ 90 across the board.
 - [ ] Lighthouse CI configuration (target ≥ 90 perf, 100 a11y, 100 SEO)
 
 ### Cursor Tasks [CURSOR]
+
 - [ ] Skeleton loader components (per card type)
 - [ ] Error boundary fallback UI
 - [ ] Empty state SVG illustrations
@@ -374,11 +395,13 @@ passed, Lighthouse ≥ 90 across the board.
 ### Phase 6 Test Gate
 
 **Automated:**
+
 - [ ] Lighthouse CI: Performance ≥ 90, Accessibility = 100, SEO = 100 (all public pages)
 - [ ] axe-core: zero violations across all pages
 - [ ] All Playwright e2e tests still passing
 
 **Manual:**
+
 - [ ] Screen reader (NVDA or VoiceOver) through full signup → log food flow
 - [ ] Keyboard-only navigation through full user journey
 - [ ] PWA install tested on iOS Safari + Android Chrome
@@ -386,6 +409,7 @@ passed, Lighthouse ≥ 90 across the board.
 - [ ] T&C and Privacy reviewed by a lawyer before public launch
 
 **Production deploy checklist:**
+
 - [ ] All env vars set in Vercel production environment
 - [ ] Neon `main` branch connection string in Vercel as `DATABASE_URL_PROD`
 - [ ] Supabase EU region confirmed (Frankfurt)

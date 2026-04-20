@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #fafaf8;
+    --color-surface: #f4f4f0;
+    --color-border: #e8e8e2;
+    --color-text-primary: #1a1a14;
+    --color-text-secondary: #5a5a52;
+    --color-text-muted: #a8a89e;
+    --color-brand: #339e68;
+    --color-brand-light: #f0faf4;
+    --color-brand-dark: #1c6642;
+    --color-accent: #fbbf24;
+    --color-accent-light: #fffbeb;
+    --color-success: #339e68;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #3b82f6;
+    --color-breakfast: #f59e0b;
+    --color-lunch: #339e68;
+    --color-dinner: #3b82f6;
+    --color-snack: #8b5cf6;
+    --color-drink: #06b6d4;
+  }
+
+  .dark {
+    --color-bg: #1a1a14;
+    --color-surface: #28281f;
+    --color-border: #3e3e38;
+    --color-text-primary: #fafaf8;
+    --color-text-secondary: #d4d4cc;
+    --color-text-muted: #78786e;
+    --color-brand: #57ba86;
+    --color-brand-light: #0a2519;
+    --color-brand-dark: #8dd5ae;
+    --color-accent: #fcd34d;
+    --color-accent-light: #1a1200;
+  }
+
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Focus ring — visible for keyboard navigation, hidden for mouse */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Never remove focus outline without a visible alternative */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+@layer utilities {
+  /* Nutrient numbers, credit counts, confidence scores */
+  .font-data {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}

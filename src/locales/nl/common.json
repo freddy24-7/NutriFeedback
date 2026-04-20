@@ -1,0 +1,221 @@
+{
+  "app": {
+    "name": "NutriApp",
+    "tagline": "Flexibele voedingstracking"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Er is iets misgegaan",
+    "retry": "Opnieuw proberen",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "back": "Terug",
+    "submit": "Verzenden",
+    "submitting": "Verzenden...",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "confirm": "Bevestigen",
+    "required": "Verplicht",
+    "optional": "Optioneel",
+    "or": "of"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "contact": "Contact",
+    "signIn": "Inloggen",
+    "signUp": "Registreren",
+    "signOut": "Uitloggen",
+    "terms": "Voorwaarden",
+    "privacy": "Privacy",
+    "openMenu": "Menu openen",
+    "closeMenu": "Menu sluiten"
+  },
+  "theme": {
+    "toggleLight": "Overschakelen naar lichte modus",
+    "toggleDark": "Overschakelen naar donkere modus"
+  },
+  "language": {
+    "toggle": "Taal wisselen",
+    "en": "Engels",
+    "nl": "Nederlands"
+  },
+  "auth": {
+    "signUp": {
+      "title": "Account aanmaken",
+      "subtitle": "Begin vandaag met het bijhouden van je voeding — 50 gratis credits inbegrepen",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "jij@voorbeeld.nl",
+      "passwordLabel": "Wachtwoord",
+      "passwordPlaceholder": "Minimaal 8 tekens",
+      "confirmPasswordLabel": "Wachtwoord bevestigen",
+      "submit": "Account aanmaken",
+      "alreadyHaveAccount": "Heb je al een account?",
+      "signIn": "Inloggen",
+      "confirmEmailTitle": "Controleer je e-mail",
+      "confirmEmailMessage": "We hebben een bevestigingslink gestuurd naar {{email}}. Klik erop om je account te activeren.",
+      "terms": "Door een account aan te maken ga je akkoord met onze",
+      "termsLink": "Servicevoorwaarden",
+      "and": "en",
+      "privacyLink": "Privacybeleid"
+    },
+    "signIn": {
+      "title": "Welkom terug",
+      "subtitle": "Log in om verder te gaan met tracken",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "jij@voorbeeld.nl",
+      "passwordLabel": "Wachtwoord",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "submit": "Inloggen",
+      "noAccount": "Nog geen account?",
+      "signUp": "Registreren"
+    },
+    "forgotPassword": {
+      "title": "Wachtwoord opnieuw instellen",
+      "subtitle": "Voer je e-mailadres in en we sturen je een resetlink",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "jij@voorbeeld.nl",
+      "submit": "Resetlink versturen",
+      "back": "Terug naar inloggen",
+      "success": "Resetlink verstuurd!",
+      "successSubtitle": "Als er een account bestaat voor {{email}}, ontvang je binnenkort een resetlink."
+    },
+    "confirm": {
+      "loading": "E-mail bevestigen...",
+      "success": "E-mail bevestigd! Je wordt doorgestuurd naar je dashboard...",
+      "error": "Bevestiging mislukt. De link is mogelijk verlopen.",
+      "tryAgain": "Probeer opnieuw in te loggen"
+    },
+    "error": {
+      "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
+      "emailTaken": "Er bestaat al een account met dit e-mailadres",
+      "weakPassword": "Wachtwoord moet minimaal 8 tekens bevatten",
+      "passwordMismatch": "Wachtwoorden komen niet overeen",
+      "generic": "Er is iets misgegaan. Probeer het opnieuw.",
+      "networkError": "Netwerkfout. Controleer je verbinding."
+    },
+    "signOut": "Uitloggen"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welkom terug",
+    "today": "Vandaag",
+    "todayLog": "Voedingslog van vandaag",
+    "noEntries": "Nog geen invoer voor vandaag",
+    "noEntriesSubtitle": "Voeg je eerste maaltijd toe om te beginnen",
+    "addEntry": "Voedingsinvoer toevoegen",
+    "viewDate": "Andere datum bekijken"
+  },
+  "foodLog": {
+    "addEntry": "Voedingsinvoer toevoegen",
+    "editEntry": "Invoer bewerken",
+    "deleteEntry": "Invoer verwijderen",
+    "confirmDelete": "Deze invoer verwijderen?",
+    "description": {
+      "label": "Wat heb je gegeten?",
+      "placeholder": "bijv. kom havermout met banaan en honing"
+    },
+    "mealType": {
+      "label": "Maaltijdtype",
+      "placeholder": "Selecteer maaltijdtype",
+      "breakfast": "Ontbijt",
+      "lunch": "Lunch",
+      "dinner": "Diner",
+      "snack": "Snack",
+      "drink": "Drank"
+    },
+    "date": {
+      "label": "Datum"
+    },
+    "submit": "Invoer opslaan",
+    "success": "Invoer opgeslagen",
+    "error": "Kon invoer niet opslaan. Probeer het opnieuw.",
+    "deleteSuccess": "Invoer verwijderd",
+    "deleteError": "Kon invoer niet verwijderen",
+    "source": {
+      "manual": "Handmatig",
+      "barcode": "Barcode",
+      "ai_parsed": "AI verwerkt",
+      "imported": "Geïmporteerd"
+    }
+  },
+  "contact": {
+    "title": "Neem contact op",
+    "subtitle": "Heb je een vraag of feedback? We horen het graag.",
+    "name": {
+      "label": "Jouw naam",
+      "placeholder": "Jan de Vries"
+    },
+    "email": {
+      "label": "E-mailadres",
+      "placeholder": "jij@voorbeeld.nl"
+    },
+    "message": {
+      "label": "Bericht",
+      "placeholder": "Vertel ons wat je bezighoudt..."
+    },
+    "submit": "Bericht versturen",
+    "submitting": "Versturen...",
+    "success": "Bericht verstuurd!",
+    "successSubtitle": "We reageren doorgaans binnen 1–2 werkdagen.",
+    "error": "Kon je bericht niet versturen. Probeer het opnieuw.",
+    "rateLimited": "Te veel berichten verstuurd. Probeer het over een uur opnieuw.",
+    "responseTime": "We reageren doorgaans binnen 1–2 werkdagen."
+  },
+  "terms": {
+    "title": "Servicevoorwaarden",
+    "lastUpdated": "Laatst bijgewerkt: {{date}}",
+    "reviewNotice": "Deze voorwaarden worden juridisch beoordeeld vóór de publieke lancering.",
+    "placeholder": "De volledige servicevoorwaarden worden gepubliceerd vóór de publieke lancering. Deze voorwaarden regelen je gebruik van NutriApp, inclusief accountaanmaken, abonnementsfacturering, acceptabel gebruik en gegevensverwerking."
+  },
+  "privacy": {
+    "title": "Privacybeleid",
+    "lastUpdated": "Laatst bijgewerkt: {{date}}",
+    "reviewNotice": "Dit beleid wordt juridisch beoordeeld vóór de publieke lancering.",
+    "dataStorage": "Je gegevens worden opgeslagen in de EU (regio Frankfurt).",
+    "dataExport": "Je kunt al je gegevens op elk moment exporteren of verwijderen via de accountinstellingen.",
+    "noSell": "We verkopen je persoonlijke gegevens nooit.",
+    "placeholder": "Het volledige privacybeleid wordt gepubliceerd vóór de publieke lancering. Dit beleid beschrijft hoe NutriApp je persoonsgegevens verzamelt, gebruikt en beschermt in overeenstemming met de AVG."
+  },
+  "errors": {
+    "notFound": "Pagina niet gevonden",
+    "notFoundSubtitle": "De pagina die je zoekt bestaat niet.",
+    "goHome": "Naar home",
+    "unauthorized": "Log in om verder te gaan",
+    "networkError": "Verbindingsfout — controleer je internet",
+    "serverError": "Serverfout — probeer het opnieuw"
+  },
+  "credits": {
+    "remaining_one": "{{count}} credit resterend",
+    "remaining_other": "{{count}} credits resterend",
+    "low": "Weinig credits",
+    "exhausted": "Geen credits meer",
+    "upgrade": "Upgraden voor meer"
+  },
+  "home": {
+    "hero": {
+      "title": "Voedingstracking die werkt zoals jij wilt",
+      "subtitle": "Log wat je eet, ontvang AI-tips en volg je voeding in de loop van de tijd — zo nauwkeurig of losjes als jij wilt.",
+      "cta": "Gratis beginnen",
+      "signIn": "Heb je al een account? Inloggen"
+    },
+    "features": {
+      "title": "Alles wat je nodig hebt",
+      "flexible": {
+        "title": "Flexibel loggen",
+        "description": "Typ 'eieren en toast' of scan een barcode. Meer detail betekent betere feedback — maar losse invoer telt ook."
+      },
+      "ai": {
+        "title": "AI-aangedreven tips",
+        "description": "Ontvang praktische voedingsinzichten op basis van je daadwerkelijke eetgewoonten, geen generiek advies."
+      },
+      "bilingual": {
+        "title": "Engels & Nederlands",
+        "description": "Volledige ondersteuning voor Engels en Nederlands — inclusief AI-tips en chatbotreacties."
+      }
+    },
+    "freeCredits": "Begin met 50 gratis credits — geen creditcard vereist"
+  }
+}

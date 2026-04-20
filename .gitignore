@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Drizzle migrations (generated — commit these after review)
+# drizzle/migrations/  ← uncomment to gitignore migrations
+
+# Test output
+playwright-report/
+test-results/
+coverage/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vite
+*.local
+
+# PWA generated
+public/sw.js
+public/workbox-*.js
+public/sw.js.map
+public/workbox-*.js.map

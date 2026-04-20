@@ -22,12 +22,14 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 ## Tech Stack
 
 ### Frontend
+
 - React 18 + Vite + TypeScript (strict mode — no `any`)
 - Tailwind CSS (utility classes only)
 - Workbox (PWA / service worker / offline)
 - i18next + react-i18next (EN + NL — full coverage including AI responses)
 - TanStack Query v5 (React Query) — all server state, no raw useEffect
-- Zustand — global UI state only (theme, language, auth session)
+- Zustand — global UI state only (theme, language)
+- **@stackframe/stack** — Neon Auth (Stack Auth) client: `useUser()`, `useStackApp()`
 - react-hook-form + zod — all forms, always paired
 - Fuse.js — FAQ fuzzy matching for chatbot
 - @zxing/browser — barcode scanning via device camera
@@ -35,6 +37,7 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - React Helmet Async — per-route SEO meta tags
 
 ### Database
+
 - **Neon** (serverless Postgres) — primary database
 - **Drizzle ORM** — type-safe queries, schema, migrations
 - **Drizzle Kit** — migration CLI (`generate`, `migrate`, `studio`)
@@ -44,14 +47,18 @@ More input = more accurate feedback. Less input = still useful, never punishing.
   for all TypeScript DB types — never hand-write DB types
 
 ### Backend / API
+
 - **Hono** — lightweight API framework on Vercel Edge Functions
 - All API routes under `src/api/` (file-based, Hono router)
 - Zod validation on every request body and response
-- **Auth:** Supabase Auth (auth service only — no Supabase DB or storage)
-  - JWT validation middleware on all protected routes
+- **Auth:** Neon Auth (powered by Stack Auth — same Neon project as the DB)
+  - `@stackframe/stack` on the frontend: `StackProvider`, `useUser()`, `useStackApp()`
+  - JWT validation on Hono middleware via `jose` + Stack Auth JWKS endpoint
+  - Token passed as `x-stack-access-token` header (via `user.getAuthHeaders()`)
 - **Upstash Redis** — rate limiting (sliding window) + response caching
 
 ### AI
+
 - **Development:** Google Gemini 1.5 Flash (free tier)
 - **Production:** Anthropic Claude API
 - **Chatbot (always, both environments):** Gemini 1.5 Flash only
@@ -59,6 +66,7 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - Never import Gemini or Anthropic SDK outside of that file
 
 ### External Services
+
 - Open Food Facts API — barcode product lookup (3M+ products)
 - USDA FoodData Central API — raw ingredient nutrition data
 - Stripe Checkout (hosted page) — payments, EU SCA compliant
@@ -66,11 +74,13 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - Upstash Redis — rate limiting buckets + 7-day product cache
 
 ### Testing
+
 - Vitest — unit tests + integration tests
 - Playwright — end-to-end tests
 - Neon DB branching — isolated database per test environment
 
 ### Tooling
+
 - ESLint + jsx-a11y + @typescript-eslint + Prettier
 - Husky + lint-staged (pre-commit enforcement)
 - GitHub Actions — CI/CD pipeline
@@ -251,6 +261,7 @@ Claude Code handles backend, infrastructure, and pattern-setting.
 Cursor (using Opus model) handles complex UI component work.
 
 ### Claude Code owns:
+
 - All `src/api/` route handlers
 - Database schema + Drizzle migrations
 - AI client abstraction (`src/lib/ai/`)
@@ -262,11 +273,13 @@ Cursor (using Opus model) handles complex UI component work.
 - Keeping `.cursor/cursor-tasks.md` up to date
 
 ### Cursor (Opus) owns:
+
 - All components in `.cursor/cursor-tasks.md` with status `[READY]`
 - Complex animations, transitions, responsive layouts
 - Visual polish on existing component shells
 
 ### Handover steps (Claude Code → Cursor):
+
 1. Complete all backend prerequisites for the UI task
 2. Write the React Query hook the component will consume
 3. Define TypeScript props interface for the component
@@ -277,6 +290,7 @@ Cursor (using Opus model) handles complex UI component work.
 6. Do NOT build the UI component — leave it for Cursor
 
 ### After Cursor returns a component:
+
 1. Run: `npm run lint && npm run typecheck && npm run test:unit`
 2. Fix any integration issues
 3. Mark task `[DONE]` in `.cursor/cursor-tasks.md`

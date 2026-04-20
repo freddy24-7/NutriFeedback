@@ -1,7 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { authClient } from '@/lib/auth/client';
 import type { FoodLogEntry } from '@/lib/db/schema';
-import type { NewFoodEntryInput } from '@/types/api';
+import type { NewFoodEntryInput, NewFoodEntryWithProductSchema } from '@/types/api';
+import type { z } from 'zod';
+
+type NewFoodEntryWithProduct = z.infer<typeof NewFoodEntryWithProductSchema>;
 import { todayISO } from '@/utils/date';
 
 // Better Auth uses cookies for sessions — credentials: 'include' sends them automatically.
@@ -39,7 +42,7 @@ export function useAddFoodEntry() {
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
 
-  return useMutation<FoodLogEntry, Error, NewFoodEntryInput>({
+  return useMutation<FoodLogEntry, Error, NewFoodEntryInput | NewFoodEntryWithProduct>({
     mutationFn: (entry) =>
       apiFetch<FoodLogEntry>('/api/food-log', {
         method: 'POST',

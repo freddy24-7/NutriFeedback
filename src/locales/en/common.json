@@ -218,6 +218,23 @@
       }
     }
   },
+  "barcode": {
+    "scan": "Scan barcode",
+    "scanning": "Scanning…",
+    "pointCamera": "Point camera at barcode",
+    "permissionDenied": "Camera access denied",
+    "notSupported": "Barcode scanning not supported on this device",
+    "close": "Close scanner",
+    "confirmAdd": "Add to food log",
+    "dismiss": "Not this product",
+    "processingLevel": "Processing level",
+    "source": {
+      "open_food_facts": "Open Food Facts",
+      "usda": "USDA",
+      "ai_estimated": "AI estimate",
+      "user": "User registered"
+    }
+  },
   "nutrients": {
     "calories": "Calories",
     "protein": "Protein",

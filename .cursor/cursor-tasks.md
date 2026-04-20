@@ -382,11 +382,135 @@ Fade-out on dismiss: `transition-opacity duration-300 opacity-50` when `isDismis
 
 ---
 
-## Upcoming Phases (not yet ready)
+## Phase 3 — Barcode + Product Database
+
+---
 
 ### P3-CUR-01 — BarcodeScanner
 
-**Status:** 🔒 PENDING (Phase 3 — Barcode not started)
+**Status:** ✅ DONE
+**File to create:** `src/components/Barcode/BarcodeScanner/index.tsx`
+**Reference component:** `src/components/FoodLog/FoodEntryForm/index.tsx`
+
+**Props** (add to `src/types/components.ts`):
+
+```ts
+type BarcodeScannerProps = {
+  onScan: (barcode: string) => void;
+  onClose: () => void;
+};
+```
+
+**Data hook:** none — uses `@zxing/browser` directly inside the component
+
+**Design brief:**
+Full-screen overlay modal. Dark semi-transparent background (`bg-black/80`).
+Camera viewfinder: centred square with rounded corners, `border-2 border-brand-400`.
+Animated scan line: thin horizontal line (`h-0.5 bg-brand-400 opacity-75`) moving top→bottom with CSS keyframe animation (`animate-scan-line`).
+Close button: top-right corner × icon, `text-white hover:text-warm-200`.
+Status text below viewfinder: "Point camera at barcode" / "Scanning..." / error message.
+Add custom keyframe to `tailwind.config.ts`:
+
+```js
+keyframes: { scanLine: { '0%,100%': { top: '10%' }, '50%': { top: '85%' } } },
+animation: { 'scan-line': 'scanLine 2s ease-in-out infinite' }
+```
+
+**States to implement:**
+
+- Initialising: spinner while camera permission requested
+- Scanning: viewfinder + animated scan line
+- Error: camera permission denied or device not supported — show inline message, keep close button
+
+**ZXing usage pattern:**
+
+```ts
+import { BrowserMultiFormatReader } from '@zxing/browser';
+const reader = new BrowserMultiFormatReader();
+// In useEffect, call reader.decodeFromConstraints(constraints, videoElement, callback)
+// Clean up with BrowserMultiFormatReader.releaseAllStreams() in effect cleanup
+```
+
+**Translation keys** (add to both locale files before Cursor starts):
+
+- `barcode.scanning` — "Scanning…" / "Scannen…"
+- `barcode.pointCamera` — "Point camera at barcode" / "Richt camera op barcode"
+- `barcode.permissionDenied` — "Camera access denied" / "Cameratoegang geweigerd"
+- `barcode.notSupported` — "Barcode scanning not supported on this device" / "Barcodescannen niet ondersteund op dit apparaat"
+- `barcode.close` — "Close scanner" / "Scanner sluiten"
+
+**Accessibility requirements:**
+
+- `role="dialog"` + `aria-modal="true"` + `aria-label={t('barcode.scanning')}` on overlay
+- Close button: `aria-label={t('barcode.close')}`
+- Trap focus inside modal while open
+
+**Cursor must not:**
+
+- Install a different barcode library — use `@zxing/browser` which is already in `package.json`
+- Add new npm dependencies
+- Call any API — `onScan(barcode)` returns the raw barcode string to the parent
+
+---
+
+### P3-CUR-02 — ProductCard
+
+**Status:** ✅ DONE
+**File to create:** `src/components/Barcode/ProductCard/index.tsx`
+**Reference component:** `src/components/FoodLog/FoodEntryCard/index.tsx`
+
+**Props** (add to `src/types/components.ts`):
+
+```ts
+type ProductCardProps = {
+  product: ProductResponse; // from '@/types/api'
+  onConfirm: (product: ProductResponse) => void;
+  onDismiss: () => void;
+};
+```
+
+**Data hook:** none — presentational, receives product via props
+
+**Design brief:**
+Card with product details and a confirm button to add to food log.
+Surface: `bg-warm-50 dark:bg-warm-800 rounded-card shadow-card p-4`.
+Product name: `font-sans font-semibold text-warm-900 dark:text-warm-100`.
+Brand: `text-sm text-warm-500` below name.
+Source badge: small pill — `open_food_facts` → `bg-brand-100 text-brand-800`, `usda` → `bg-amber-100 text-amber-800`, `ai_estimated` → `bg-warm-200 text-warm-600`, `user` → `bg-brand-200 text-brand-900`.
+Processing level indicator: 4 coloured squares (`w-3 h-3 rounded-sm`):
+
+- Level 1: all green (`bg-brand-500`)
+- Level 2: 2 green, 2 grey
+- Level 3: 3 amber, 1 grey
+- Level 4: all red (`bg-red-500`)
+  Show `NutrientMiniChart` if nutrients are present.
+  Confirm button: `bg-brand-500 text-white rounded-pill px-4 py-2`.
+  Dismiss link: `text-sm text-warm-400 hover:text-warm-700 underline`.
+
+**Translation keys:**
+
+- `barcode.confirmAdd` — "Add to food log" / "Toevoegen aan logboek"
+- `barcode.dismiss` — "Not this product" / "Niet dit product"
+- `barcode.source.open_food_facts` — "Open Food Facts" / "Open Food Facts"
+- `barcode.source.usda` — "USDA" / "USDA"
+- `barcode.source.ai_estimated` — "AI estimate" / "AI-schatting"
+- `barcode.source.user` — "User registered" / "Door gebruiker toegevoegd"
+- `barcode.processingLevel` — "Processing level" / "Bewerkingsniveau"
+
+**Accessibility requirements:**
+
+- `role="article"` on card root
+- Confirm button: `aria-label={t('barcode.confirmAdd')}`
+- Processing level: `aria-label={t('barcode.processingLevel') + ': ' + level}`
+
+**Cursor must not:**
+
+- Call any API or hooks — parent handles all data fetching
+- Change the props interface
+
+---
+
+## Upcoming Phases (not yet ready)
 
 ### P4-CUR-01 — ChatbotDrawer
 

@@ -218,6 +218,23 @@
       }
     }
   },
+  "barcode": {
+    "scan": "Barcode scannen",
+    "scanning": "Scannen…",
+    "pointCamera": "Richt camera op barcode",
+    "permissionDenied": "Cameratoegang geweigerd",
+    "notSupported": "Barcodescannen niet ondersteund op dit apparaat",
+    "close": "Scanner sluiten",
+    "confirmAdd": "Toevoegen aan logboek",
+    "dismiss": "Niet dit product",
+    "processingLevel": "Bewerkingsniveau",
+    "source": {
+      "open_food_facts": "Open Food Facts",
+      "usda": "USDA",
+      "ai_estimated": "AI-schatting",
+      "user": "Door gebruiker toegevoegd"
+    }
+  },
   "nutrients": {
     "calories": "Calorieën",
     "protein": "Eiwitten",

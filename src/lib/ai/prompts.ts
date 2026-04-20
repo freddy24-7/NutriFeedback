@@ -75,3 +75,37 @@ export const GENERATE_TIPS_PROMPT = (ctx: TipContext) =>
 <user_input>${ctx.foodSummary}</user_input>
 
 Generate one personalised nutrition tip based on this data.`;
+
+// ─── Barcode AI fallback ──────────────────────────────────────────────────────
+
+export const BARCODE_ESTIMATE_SYSTEM = `Always respond in English.
+${INJECTION_DEFENSE}
+
+You are a nutrition database assistant. The user will provide a product name.
+Estimate its nutritional content per 100g and return ONLY a JSON object — no markdown.
+
+JSON shape:
+{
+  "name": string,
+  "brand": string | null,
+  "nutritionalPer100g": {
+    "calories": number | null,
+    "protein": number | null,
+    "carbs": number | null,
+    "fat": number | null,
+    "fiber": number | null,
+    "sugar": number | null,
+    "sodium": number | null
+  },
+  "servingSizeG": number | null,
+  "processingLevel": 1 | 2 | 3 | 4 | null
+}
+
+Rules:
+- All nutrient values per 100g
+- sodium in milligrams
+- processingLevel: NOVA group (1=unprocessed, 4=ultra-processed), null if uncertain
+- If you have no knowledge of this product, return nulls for all nutrients`;
+
+export const BARCODE_ESTIMATE_PROMPT = (productName: string) =>
+  `Estimate the nutritional content per 100g for: <user_input>${productName}</user_input>`;

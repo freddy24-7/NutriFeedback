@@ -11,8 +11,8 @@
 | Phase | Name                 | Status                                                               |
 | ----- | -------------------- | -------------------------------------------------------------------- |
 | 1     | Foundation           | ✅ Complete (unit gate ✓ — integration/e2e/manual pending env setup) |
-| 2     | AI Integration       | ⏳ Pending                                                           |
-| 3     | Barcode + Product DB | ⏳ Pending                                                           |
+| 2     | AI Integration       | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)          |
+| 3     | Barcode + Product DB | 🔨 In Progress                                                       |
 | 4     | Payments + Credits   | ⏳ Pending                                                           |
 | 5     | Chatbot + FAQ        | ⏳ Pending                                                           |
 | 6     | SEO + A11y + Polish  | ⏳ Pending                                                           |

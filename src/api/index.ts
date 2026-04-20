@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth/server';
 import { authMiddleware } from './middleware/auth';
 import { foodLogRoutes } from './routes/foodLog';
 import { aiRoutes } from './routes/ai';
+import { barcodeRoutes } from './routes/barcode';
 import { contactRoutes } from './routes/contact';
 
 export const runtime = 'edge';
@@ -27,5 +28,8 @@ app.route('/food-log', foodLogRoutes);
 
 app.use('/ai/*', authMiddleware);
 app.route('/ai', aiRoutes);
+
+app.use('/barcode/*', authMiddleware);
+app.route('/barcode', barcodeRoutes);
 
 export default handle(app);

@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { foodLogEntries } from '@/lib/db/schema';
-import { NewFoodEntrySchema, GetFoodLogQuerySchema } from '@/types/api';
+import { NewFoodEntryWithProductSchema, GetFoodLogQuerySchema } from '@/types/api';
 import { sanitiseTextServer } from '../middleware/sanitise';
 import { type AuthVariables } from '../middleware/auth';
 import { todayISO } from '@/utils/date';
@@ -27,7 +27,7 @@ foodLogRoutes.get('/', zValidator('query', GetFoodLogQuerySchema), async (c) => 
 });
 
 // POST /api/food-log
-foodLogRoutes.post('/', zValidator('json', NewFoodEntrySchema), async (c) => {
+foodLogRoutes.post('/', zValidator('json', NewFoodEntryWithProductSchema), async (c) => {
   const user = c.get('user');
   const body = c.req.valid('json');
 
@@ -38,7 +38,8 @@ foodLogRoutes.post('/', zValidator('json', NewFoodEntrySchema), async (c) => {
       description: sanitiseTextServer(body.description),
       mealType: body.mealType,
       date: body.date,
-      source: 'manual',
+      productId: body.productId ?? null,
+      source: body.productId != null ? 'barcode' : 'manual',
     })
     .returning();
 

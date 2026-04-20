@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { NewFoodEntrySchema, type NewFoodEntryInput } from '@/types/api';
+import { NewFoodEntrySchema, type NewFoodEntryInput, type ProductResponse } from '@/types/api';
 import { useAddFoodEntry } from '@/hooks/useFoodLog';
 import { useParseFood } from '@/hooks/useParseFood';
+import { useProduct } from '@/hooks/useBarcode';
 import { useUIStore } from '@/store/uiStore';
 import { sanitiseText } from '@/utils/sanitise';
 import { todayISO } from '@/utils/date';
 import { cn } from '@/utils/cn';
+import { BarcodeScanner } from '@/components/Barcode/BarcodeScanner';
+import { ProductCard } from '@/components/Barcode/ProductCard';
 import type { FoodEntryFormProps } from '@/types/components';
 
 type SubmitMode = 'manual' | 'ai';
@@ -18,9 +21,16 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   const language = useUIStore((s) => s.language);
   const [submitMode, setSubmitMode] = useState<SubmitMode>('manual');
   const [aiError, setAiError] = useState<string | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   const { mutate: addEntry, isPending: isAdding, error: addError } = useAddFoodEntry();
   const { mutate: parseFood, isPending: isParsing } = useParseFood();
+  const {
+    data: scannedProduct,
+    isLoading: isLookingUp,
+    error: lookupError,
+  } = useProduct(scannedBarcode);
 
   const isPending = isAdding || isParsing;
 
@@ -28,11 +38,36 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<NewFoodEntryInput>({
     resolver: zodResolver(NewFoodEntrySchema),
     defaultValues: { date: defaultDate ?? todayISO() },
   });
+
+  const handleScan = (barcode: string) => {
+    setShowScanner(false);
+    setScannedBarcode(barcode);
+  };
+
+  const handleProductConfirm = (product: ProductResponse) => {
+    const { date, mealType } = getValues();
+    const description = [product.name, product.brand].filter(Boolean).join(' — ');
+    addEntry(
+      { description, mealType, date, productId: product.id },
+      {
+        onSuccess: () => {
+          setScannedBarcode(null);
+          reset({ date });
+          onSuccess?.();
+        },
+      },
+    );
+  };
+
+  const handleProductDismiss = () => {
+    setScannedBarcode(null);
+  };
 
   const onSubmit = (data: NewFoodEntryInput) => {
     setAiError(null);
@@ -79,6 +114,50 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   });
 
   const errorMessage = aiError ?? (addError !== null ? t('foodLog.error') : null);
+
+  // ── Barcode scan flow ──────────────────────────────────────────────────────
+  if (showScanner) {
+    return <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />;
+  }
+
+  if (scannedBarcode !== null) {
+    return (
+      <div className="space-y-3">
+        {isLookingUp && (
+          <p
+            role="status"
+            aria-live="polite"
+            className="py-4 text-center text-sm"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            {t('common.loading')}
+          </p>
+        )}
+        {lookupError !== null && (
+          <div className="space-y-2">
+            <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
+              {t('errors.notFound')}
+            </p>
+            <button
+              type="button"
+              onClick={handleProductDismiss}
+              className="text-sm underline"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {t('barcode.dismiss')}
+            </button>
+          </div>
+        )}
+        {scannedProduct !== undefined && (
+          <ProductCard
+            product={scannedProduct}
+            onConfirm={handleProductConfirm}
+            onDismiss={handleProductDismiss}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <form
@@ -193,6 +272,33 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
       )}
 
       <div className="flex items-center justify-end gap-2">
+        {/* Barcode scan button */}
+        <button
+          type="button"
+          onClick={() => setShowScanner(true)}
+          disabled={isPending}
+          aria-label={t('barcode.scan')}
+          className={cn(
+            'rounded-pill px-3 py-2 text-sm font-medium transition-colors duration-150',
+            'border border-warm-300 text-warm-600 hover:bg-warm-100 dark:border-warm-600 dark:text-warm-300 dark:hover:bg-warm-800',
+            'disabled:opacity-60',
+          )}
+        >
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 5v4M3 5h4M21 5v4M21 5h-4M3 19v-4M3 19h4M21 19v-4M21 19h-4" />
+            <rect x="7" y="7" width="10" height="10" rx="1" />
+          </svg>
+        </button>
+
         {/* AI parse button — secondary action */}
         <button
           type="submit"

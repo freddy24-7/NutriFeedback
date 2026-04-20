@@ -11,6 +11,7 @@
 import { Hono } from 'hono';
 import { aiRoutes } from '@/api/routes/ai';
 import { foodLogRoutes } from '@/api/routes/foodLog';
+import { barcodeRoutes } from '@/api/routes/barcode';
 import { authMiddleware, type AuthVariables } from '@/api/middleware/auth';
 
 export function createTestApp(userId: string) {
@@ -24,6 +25,7 @@ export function createTestApp(userId: string) {
 
   app.route('/ai', aiRoutes);
   app.route('/food-log', foodLogRoutes);
+  app.route('/barcode', barcodeRoutes);
 
   return app;
 }
@@ -37,6 +39,9 @@ export function createUnauthApp() {
 
   app.use('/food-log/*', authMiddleware);
   app.route('/food-log', foodLogRoutes);
+
+  app.use('/barcode/*', authMiddleware);
+  app.route('/barcode', barcodeRoutes);
 
   return app;
 }

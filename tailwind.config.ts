@@ -62,6 +62,15 @@ const config: Config = {
         'card-hover': '0 4px 12px 0 rgb(0 0 0 / 0.08), 0 2px 4px -1px rgb(0 0 0 / 0.04)',
         'card-dark': '0 1px 3px 0 rgb(0 0 0 / 0.3)',
       },
+      keyframes: {
+        scanLine: {
+          '0%, 100%': { top: '10%' },
+          '50%': { top: '85%' },
+        },
+      },
+      animation: {
+        'scan-line': 'scanLine 2s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

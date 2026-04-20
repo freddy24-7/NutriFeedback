@@ -94,6 +94,48 @@ export const AiTipResponseSchema = z.object({
 });
 export type AiTipResponse = z.infer<typeof AiTipResponseSchema>;
 
+// ─── Barcode / Products ───────────────────────────────────────────────────────
+
+export const NutritionalPer100gSchema = z.object({
+  calories: z.number().nullable(),
+  protein: z.number().nullable(),
+  carbs: z.number().nullable(),
+  fat: z.number().nullable(),
+  fiber: z.number().nullable(),
+  sugar: z.number().nullable(),
+  sodium: z.number().nullable(),
+});
+
+export const ProductResponseSchema = z.object({
+  id: z.string().uuid().optional(),
+  barcode: z.string().nullable(),
+  name: z.string(),
+  brand: z.string().nullable(),
+  nutritionalPer100g: NutritionalPer100gSchema,
+  servingSizeG: z.number().nullable(),
+  processingLevel: z.number().int().min(1).max(4).nullable(),
+  source: z.enum(['open_food_facts', 'usda', 'ai_estimated', 'user']),
+  confidence: z.number().min(0).max(1).optional(),
+});
+export type ProductResponse = z.infer<typeof ProductResponseSchema>;
+
+export const RegisterProductSchema = z.object({
+  barcode: z.string().optional(),
+  name: z.string().min(1).max(200),
+  brand: z.string().max(100).optional(),
+  nutritionalPer100g: NutritionalPer100gSchema,
+  servingSizeG: z.number().positive().optional(),
+});
+
+// ─── Food log (updated to allow product linking) ──────────────────────────────
+
+export const NewFoodEntryWithProductSchema = z.object({
+  description: z.string().min(1, 'Required').max(500, 'Too long'),
+  mealType: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'drink']).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date — use YYYY-MM-DD'),
+  productId: z.string().uuid().optional(),
+});
+
 // ─── API response shape ───────────────────────────────────────────────────────
 
 export type ApiError = { error: string };

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useUIStore } from '@/store/uiStore';
 import { act } from '@testing-library/react';

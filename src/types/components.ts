@@ -36,7 +36,7 @@ export type ProtectedRouteProps = {
 
 // ─── Phase 2 — AI components ──────────────────────────────────────────────────
 
-import type { ParsedNutrients, AiTipResponse } from './api';
+import type { ParsedNutrients, AiTipResponse, ProductResponse } from './api';
 
 export type ConfidenceBadgeProps = {
   confidence: number;
@@ -51,4 +51,17 @@ export type AiTipCardProps = {
   language: 'en' | 'nl';
   onDismiss: (id: string) => void;
   isDismissing?: boolean;
+};
+
+// ─── Phase 3 — Barcode components ─────────────────────────────────────────────
+
+export type BarcodeScannerProps = {
+  onScan: (barcode: string) => void;
+  onClose: () => void;
+};
+
+export type ProductCardProps = {
+  product: ProductResponse;
+  onConfirm: (product: ProductResponse) => void;
+  onDismiss: () => void;
 };

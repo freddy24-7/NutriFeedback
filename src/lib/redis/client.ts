@@ -55,6 +55,11 @@ export const rateLimits = {
     limiter: Ratelimit.slidingWindow(10, '1 h'),
     prefix: 'rl:payments:discount',
   }),
+  tipEmail: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(1, '1 d'),
+    prefix: 'rl:tip:email',
+  }),
 };
 
 // ─── Cache key helpers ────────────────────────────────────────────────────────

@@ -31,7 +31,9 @@
     "terms": "Voorwaarden",
     "privacy": "Privacy",
     "openMenu": "Menu openen",
-    "closeMenu": "Menu sluiten"
+    "closeMenu": "Menu sluiten",
+    "toggleTheme": "Thema wisselen",
+    "language": "Taal"
   },
   "theme": {
     "toggleLight": "Overschakelen naar lichte modus",
@@ -193,6 +195,49 @@
     "low": "Weinig credits",
     "exhausted": "Geen credits meer",
     "upgrade": "Upgraden voor meer"
+  },
+  "ai": {
+    "parseFood": {
+      "button": "Analyseer met AI",
+      "loading": "Aan het analyseren...",
+      "success": "Voedingswaarden gevonden",
+      "error": "Kon niet analyseren — invoer opgeslagen als tekst",
+      "insufficientCredits": "Niet genoeg credits",
+      "rateLimited": "Te veel verzoeken — probeer over een minuut opnieuw"
+    },
+    "tip": {
+      "generate": "Tip genereren",
+      "generating": "Bezig...",
+      "dismiss": "Tip sluiten",
+      "notEnoughData": "Log eten voor 3 of meer dagen voor persoonlijke tips",
+      "insufficientCredits": "Niet genoeg credits voor een tip",
+      "severity": {
+        "info": "Info",
+        "suggestion": "Suggestie",
+        "important": "Belangrijk"
+      }
+    }
+  },
+  "nutrients": {
+    "calories": "Calorieën",
+    "protein": "Eiwitten",
+    "carbs": "Koolhydraten",
+    "fat": "Vetten",
+    "fiber": "Vezels",
+    "sugar": "Suiker",
+    "sodium": "Natrium",
+    "serving": "Portie",
+    "confidence": {
+      "high": "Hoge betrouwbaarheid",
+      "medium": "Gemiddelde betrouwbaarheid",
+      "low": "Lage betrouwbaarheid (schatting)",
+      "label": "Betrouwbaarheid"
+    },
+    "unit": {
+      "kcal": "kcal",
+      "g": "g",
+      "mg": "mg"
+    }
   },
   "home": {
     "hero": {

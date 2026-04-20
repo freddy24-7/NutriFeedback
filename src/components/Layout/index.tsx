@@ -1,26 +1,14 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUIStore } from '@/store/uiStore';
 import { authClient } from '@/lib/auth/client';
+import { ThemeToggle } from '@/components/Layout/ThemeToggle';
+import { LanguageToggle } from '@/components/Layout/LanguageToggle';
 import { cn } from '@/utils/cn';
 
 export function AppLayout() {
-  const { t, i18n } = useTranslation();
-  const theme = useUIStore((s) => s.theme);
-  const setTheme = useUIStore((s) => s.setTheme);
-  const setLanguage = useUIStore((s) => s.setLanguage);
+  const { t } = useTranslation();
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
-
-  const handleLanguageToggle = () => {
-    const next = i18n.language === 'nl' ? 'en' : 'nl';
-    void i18n.changeLanguage(next);
-    setLanguage(next as 'en' | 'nl');
-  };
-
-  const handleThemeToggle = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -84,23 +72,8 @@ export function AppLayout() {
               </>
             )}
 
-            <button
-              onClick={handleLanguageToggle}
-              className="rounded-pill border px-2 py-1 text-xs font-medium transition-colors"
-              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
-              aria-label={t('language.toggle')}
-            >
-              {i18n.language === 'nl' ? 'EN' : 'NL'}
-            </button>
-
-            <button
-              onClick={handleThemeToggle}
-              className="rounded-pill border p-1.5 transition-colors"
-              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
-              aria-label={theme === 'dark' ? t('theme.toggleLight') : t('theme.toggleDark')}
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
+            <LanguageToggle />
+            <ThemeToggle />
           </div>
         </nav>
       </header>

@@ -31,25 +31,25 @@ import { chatRoutes } from './routes/chat';
 import { contactRoutes } from './routes/contact';
 import { authRoutes } from './routes/auth';
 
-export const runtime = 'edge';  // ← tells Vercel this is an Edge Function
+export const runtime = 'edge'; // ← tells Vercel this is an Edge Function
 
 const app = new Hono().basePath('/api');
 
 // Global middleware — runs on every request in this order:
 app.use('*', cors({ origin: process.env.VITE_APP_URL! }));
-app.use('*', rateLimitMiddleware);   // Upstash global rate limit
+app.use('*', rateLimitMiddleware); // Upstash global rate limit
 // Auth middleware applied per-route-group, not globally
 // (contact form and chatbot are partially unauthenticated)
 
 // Route groups
-app.route('/auth',     authRoutes);      // POST /api/auth/on-signup
+app.route('/auth', authRoutes); // POST /api/auth/on-signup
 app.route('/food-log', authMiddleware, foodLogRoutes);
-app.route('/ai',       authMiddleware, aiRoutes);
+app.route('/ai', authMiddleware, aiRoutes);
 app.route('/products', authMiddleware, productsRoutes);
-app.route('/stripe',   stripeRoutes);    // webhook is unauthenticated (Stripe sig)
+app.route('/stripe', stripeRoutes); // webhook is unauthenticated (Stripe sig)
 app.route('/discount', authMiddleware, discountRoutes);
-app.route('/chat',     chatRoutes);      // partially unauthenticated
-app.route('/contact',  contactRoutes);   // unauthenticated
+app.route('/chat', chatRoutes); // partially unauthenticated
+app.route('/contact', contactRoutes); // unauthenticated
 
 export default handle(app);
 ```
@@ -63,9 +63,7 @@ export default handle(app);
       "runtime": "@vercel/edge"
     }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/src/api/index.ts" }
-  ]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/src/api/index.ts" }]
 }
 ```
 
@@ -110,132 +108,74 @@ export { foodLogRoutes };
 ```ts
 // src/api/middleware/auth.ts
 import { createMiddleware } from 'hono/factory';
-import { createClient } from '@supabase/supabase-js';
+import { auth } from '@/lib/auth/server';
 
 export const authMiddleware = createMiddleware(async (c, next) => {
-  const token = c.req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  if (!session) return c.json({ error: 'Unauthorized' }, 401);
 
-  const supabase = createClient(
-    process.env.VITE_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) return c.json({ error: 'Unauthorized' }, 401);
-
-  c.set('user', user);  // available as c.get('user') in all downstream handlers
+  c.set('user', { id: session.user.id }); // available as c.get('user') downstream
   await next();
 });
 ```
 
 ### Summary
 
-| Question | Answer |
-|----------|--------|
-| One file or many? | One `src/api/index.ts` entry point |
-| Router | Hono, `basePath('/api')` |
-| Vercel runtime | `export const runtime = 'edge'` |
-| Auth | `hono/factory` middleware, sets `c.get('user')` |
+| Question           | Answer                                                      |
+| ------------------ | ----------------------------------------------------------- |
+| One file or many?  | One `src/api/index.ts` entry point                          |
+| Router             | Hono, `basePath('/api')`                                    |
+| Vercel runtime     | `export const runtime = 'edge'`                             |
+| Auth               | `hono/factory` middleware, sets `c.get('user')`             |
 | Per-feature routes | Separate files in `src/api/routes/`, composed in `index.ts` |
 
 ---
 
 ## Gap 2 — Signup Flow: Who Creates `user_profiles` and Grants Credits?
 
-### Decision: A dedicated Hono endpoint, called client-side after Supabase Auth signup.
+### Decision: Better Auth `databaseHooks.user.create.after` — runs server-side, no endpoint needed.
 
-Neon has no database triggers. The signup flow works as follows:
-
-### Step 1 — Supabase Auth signup (client)
-
-```ts
-// src/lib/auth/signup.ts
-import { supabase } from './client';
-
-export async function signUp(email: string, password: string) {
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) throw error;
-  return data;
-}
-```
-
-### Step 2 — Supabase fires `onAuthStateChange` after email confirmation
+Better Auth fires this hook atomically when a new user row is created in Neon.
+No `/api/auth/on-signup` endpoint, no client-side callback, no ngrok required.
 
 ```ts
-// src/lib/auth/client.ts
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session?.user) {
-    // Call on-signup endpoint to provision Neon rows
-    // This is idempotent — safe to call on every sign-in
-    await fetch('/api/auth/on-signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
+// src/lib/auth/server.ts
+export const auth = betterAuth({
+  // ...
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await db
+            .insert(userProfiles)
+            .values({ id: user.id, language: 'en', theme: 'light' })
+            .onConflictDoNothing();
+          await db
+            .insert(userCredits)
+            .values({
+              userId: user.id,
+              creditsRemaining: 50,
+              creditsUsed: 0,
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            })
+            .onConflictDoNothing();
+        },
       },
-    });
-  }
+    },
+  },
 });
 ```
-
-### Step 3 — Hono endpoint provisions Neon rows (idempotent)
-
-```ts
-// src/api/routes/auth.ts
-import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth';
-import { db } from '@/lib/db/client';
-import { userProfiles, userCredits } from '@/lib/db/schema';
-
-const authRoutes = new Hono();
-
-authRoutes.post('/on-signup', authMiddleware, async (c) => {
-  const user = c.get('user');
-
-  // INSERT ... ON CONFLICT DO NOTHING — fully idempotent
-  await db.insert(userProfiles)
-    .values({
-      id:       user.id,
-      language: 'en',
-      theme:    'light',
-    })
-    .onConflictDoNothing();
-
-  await db.insert(userCredits)
-    .values({
-      userId:           user.id,
-      creditsRemaining: 50,
-      creditsUsed:      0,
-      expiresAt:        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    })
-    .onConflictDoNothing();
-
-  return c.json({ ok: true });
-});
-
-export { authRoutes };
-```
-
-### Why `onAuthStateChange` and not a webhook?
-
-Supabase Auth webhooks require a publicly reachable URL, which is unavailable
-in local development without a tunnel (ngrok). `onAuthStateChange` works
-locally with zero config and behaves identically in production.
-
-The `onConflictDoNothing()` makes the endpoint safe to call on every login —
-existing users simply get no rows inserted.
 
 ### Data flow summary:
 
 ```
 User submits signup form
-→ supabase.auth.signUp()           [Supabase Auth — creates auth.users row]
-→ User confirms email
-→ onAuthStateChange('SIGNED_IN')   [client — fires on confirmed login]
-→ POST /api/auth/on-signup         [Hono route — authenticated]
+→ authClient.signUp.email()        [Better Auth client — POST /auth/sign-up/email]
+→ Better Auth creates user row     [Neon — auth `user` table]
+→ databaseHooks.user.create.after  [server-side — same process, no HTTP round-trip]
 → INSERT user_profiles             [Neon — idempotent]
 → INSERT user_credits (50 credits) [Neon — idempotent]
-→ Redirect to dashboard
+→ User confirms email → sign in → redirect to dashboard
 ```
 
 ---
@@ -276,18 +216,19 @@ User submits signup form
 // src/api/routes/stripe.ts
 stripeRoutes.post('/checkout', authMiddleware, async (c) => {
   const user = c.get('user');
-  const priceId = process.env.NODE_ENV === 'production'
-    ? process.env.STRIPE_PRICE_ID!
-    : process.env.STRIPE_PRICE_ID_TEST!;
+  const priceId =
+    process.env.NODE_ENV === 'production'
+      ? process.env.STRIPE_PRICE_ID!
+      : process.env.STRIPE_PRICE_ID_TEST!;
 
   const session = await stripe.checkout.sessions.create({
-    mode:               'subscription',
+    mode: 'subscription',
     payment_method_types: ['card'],
-    line_items:         [{ price: priceId, quantity: 1 }],
-    success_url:        `${process.env.VITE_APP_URL}/dashboard?upgraded=true`,
-    cancel_url:         `${process.env.VITE_APP_URL}/pricing`,
-    customer_email:     user.email,
-    metadata:           { userId: user.id },
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${process.env.VITE_APP_URL}/dashboard?upgraded=true`,
+    cancel_url: `${process.env.VITE_APP_URL}/pricing`,
+    customer_email: user.email,
+    metadata: { userId: user.id },
     // EU SCA-compliant — Stripe handles 3DS automatically
   });
 
@@ -314,23 +255,25 @@ stripeRoutes.post('/webhook', async (c) => {
       const session = event.data.object as Stripe.CheckoutSession;
       const userId = session.metadata?.userId;
       if (!userId) break;
-      await db.insert(subscriptions)
+      await db
+        .insert(subscriptions)
         .values({
           userId,
-          status:               'active',
-          stripeCustomerId:     session.customer as string,
+          status: 'active',
+          stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,
-          currentPeriodEnd:     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         })
         .onConflictDoUpdate({
           target: subscriptions.userId,
-          set:    { status: 'active', stripeCustomerId: session.customer as string },
+          set: { status: 'active', stripeCustomerId: session.customer as string },
         });
       break;
     }
     case 'customer.subscription.deleted': {
       const sub = event.data.object as Stripe.Subscription;
-      await db.update(subscriptions)
+      await db
+        .update(subscriptions)
         .set({ status: 'cancelled', currentPeriodEnd: new Date(sub.current_period_end * 1000) })
         .where(eq(subscriptions.stripeSubscriptionId, sub.id));
       break;
@@ -377,10 +320,10 @@ STRIPE_PRICE_ID_TEST=price_test_xxx     # test mode (dev)
 
 ## Summary of Decisions
 
-| Gap | Decision |
-|-----|----------|
-| Hono wiring | Single `src/api/index.ts` + `vercel.json` rewrite, Hono handles routing internally |
-| Signup provisioning | `onAuthStateChange` → `POST /api/auth/on-signup` → idempotent Neon inserts |
-| Stripe plan | €7.99/mo "NutriApp Pro", `STRIPE_PRICE_ID` in env, human must create in dashboard |
-| Directory name | `src/store/` (singular) — CLAUDE.md had a typo |
-| env.example | Add `STRIPE_PRICE_ID` + `STRIPE_PRICE_ID_TEST` |
+| Gap                 | Decision                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Hono wiring         | Single `src/api/index.ts` + `vercel.json` rewrite, Hono handles routing internally |
+| Signup provisioning | Better Auth `databaseHooks.user.create.after` → idempotent Neon inserts            |
+| Stripe plan         | €7.99/mo "NutriApp Pro", `STRIPE_PRICE_ID` in env, human must create in dashboard  |
+| Directory name      | `src/store/` (singular) — CLAUDE.md had a typo                                     |
+| env.example         | Add `STRIPE_PRICE_ID` + `STRIPE_PRICE_ID_TEST`                                     |

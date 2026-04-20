@@ -53,6 +53,47 @@ export const ForgotPasswordFormSchema = z.object({
 });
 export type ForgotPasswordFormInput = z.infer<typeof ForgotPasswordFormSchema>;
 
+// ─── AI ───────────────────────────────────────────────────────────────────────
+
+export const ParsedNutrientsSchema = z.object({
+  calories: z.number().nullable(),
+  protein: z.number().nullable(),
+  carbs: z.number().nullable(),
+  fat: z.number().nullable(),
+  fiber: z.number().nullable(),
+  sugar: z.number().nullable(),
+  sodium: z.number().nullable(),
+  servingDescription: z.string().nullable(),
+  confidence: z.number().min(0).max(1),
+});
+export type ParsedNutrients = z.infer<typeof ParsedNutrientsSchema>;
+
+export const ParseFoodRequestSchema = z.object({
+  description: z.string().min(1).max(500),
+  mealType: MealTypeSchema.optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  language: z.enum(['en', 'nl']).default('en'),
+});
+export type ParseFoodRequest = z.infer<typeof ParseFoodRequestSchema>;
+
+export const ParseFoodResponseSchema = z.object({
+  entryId: z.string().uuid(),
+  nutrients: ParsedNutrientsSchema,
+  confidence: z.number().min(0).max(1),
+});
+export type ParseFoodResponse = z.infer<typeof ParseFoodResponseSchema>;
+
+export const AiTipResponseSchema = z.object({
+  id: z.string().uuid(),
+  tipTextEn: z.string(),
+  tipTextNl: z.string(),
+  nutrientsFlagged: z.array(z.string()).nullable(),
+  severity: z.enum(['info', 'suggestion', 'important']),
+  generatedAt: z.string(),
+  dismissedAt: z.string().nullable(),
+});
+export type AiTipResponse = z.infer<typeof AiTipResponseSchema>;
+
 // ─── API response shape ───────────────────────────────────────────────────────
 
 export type ApiError = { error: string };

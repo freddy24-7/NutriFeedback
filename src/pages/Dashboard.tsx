@@ -2,15 +2,38 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { authClient } from '@/lib/auth/client';
+import { useUIStore } from '@/store/uiStore';
 import { todayISO, formatDate } from '@/utils/date';
 import { DailyView } from '@/components/FoodLog/DailyView';
 import { FoodEntryForm } from '@/components/FoodLog/FoodEntryForm';
+import { AiTipCard } from '@/components/AI/AiTipCard';
+import { useAiTips, useDismissTip, useGenerateTip } from '@/hooks/useAiTips';
+import { cn } from '@/utils/cn';
 
 export function DashboardPage() {
   const { t, i18n } = useTranslation();
   const { data: session } = authClient.useSession();
+  const language = useUIStore((s) => s.language);
   const [date, setDate] = useState(todayISO());
   const [showForm, setShowForm] = useState(false);
+  const [dismissingId, setDismissingId] = useState<string | null>(null);
+
+  const { data: tips } = useAiTips();
+  const { mutate: dismissTip } = useDismissTip();
+  const { mutate: generateTip, isPending: isGenerating, error: tipError } = useGenerateTip();
+
+  const handleDismiss = (id: string) => {
+    setDismissingId(id);
+    dismissTip(id, { onSettled: () => setDismissingId(null) });
+  };
+
+  const tipErrorMessage = (() => {
+    if (!tipError) return null;
+    const msg = tipError instanceof Error ? tipError.message : '';
+    if (msg === 'insufficient_credits') return t('ai.tip.insufficientCredits');
+    if (msg === 'not_enough_data') return t('ai.tip.notEnoughData');
+    return t('common.error');
+  })();
 
   const displayDate = formatDate(date, i18n.language);
 
@@ -65,7 +88,44 @@ export function DashboardPage() {
 
         {showForm && <FoodEntryForm defaultDate={date} onSuccess={() => setShowForm(false)} />}
 
-        <DailyView userId={session.user.id} date={date} onAddEntry={() => setShowForm(true)} />
+        {/* AI tips */}
+        {tips !== undefined && tips.length > 0 && (
+          <section aria-label={t('ai.tip.generate')} className="space-y-3">
+            {tips.map((tip) => (
+              <AiTipCard
+                key={tip.id}
+                tip={tip}
+                language={language}
+                onDismiss={handleDismiss}
+                isDismissing={dismissingId === tip.id}
+              />
+            ))}
+          </section>
+        )}
+
+        {/* Generate tip button — shown when no active tips */}
+        {tips !== undefined && tips.length === 0 && (
+          <div className="flex flex-col items-start gap-2">
+            <button
+              onClick={() => generateTip()}
+              disabled={isGenerating}
+              className={cn(
+                'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
+                'border border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950',
+                'disabled:opacity-60',
+              )}
+            >
+              {isGenerating ? t('ai.tip.generating') : t('ai.tip.generate')}
+            </button>
+            {tipErrorMessage !== null && (
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                {tipErrorMessage}
+              </p>
+            )}
+          </div>
+        )}
+
+        <DailyView date={date} onAddEntry={() => setShowForm(true)} />
       </div>
     </>
   );

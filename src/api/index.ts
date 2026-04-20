@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { auth } from '@/lib/auth/server';
 import { authMiddleware } from './middleware/auth';
 import { foodLogRoutes } from './routes/foodLog';
+import { aiRoutes } from './routes/ai';
 import { contactRoutes } from './routes/contact';
 
 export const runtime = 'edge';
@@ -23,5 +24,8 @@ app.route('/contact', contactRoutes);
 // Protected routes
 app.use('/food-log/*', authMiddleware);
 app.route('/food-log', foodLogRoutes);
+
+app.use('/ai/*', authMiddleware);
+app.route('/ai', aiRoutes);
 
 export default handle(app);

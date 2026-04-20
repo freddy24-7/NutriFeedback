@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import en from '../../public/locales/en/common.json';
-import nl from '../../public/locales/nl/common.json';
+import en from '../../src/locales/en/common.json';
+import nl from '../../src/locales/nl/common.json';
 
 type JsonObject = { [key: string]: JsonValue };
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];

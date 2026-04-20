@@ -36,10 +36,9 @@ i18n, theme switching, contact form. No AI yet. No payments yet.
 - [ ] Write Drizzle schema (`src/lib/db/schema.ts`) — all tables
 - [ ] Run `drizzle-kit generate` + `drizzle-kit migrate` on dev Neon branch
 - [ ] Write Neon DB client (`src/lib/db/client.ts`)
-- [ ] Configure Supabase Auth client (`src/lib/auth/client.ts`)
+- [ ] Configure Better Auth server + client (`src/lib/auth/server.ts`, `src/lib/auth/client.ts`)
 - [ ] Write Hono app root (`src/api/index.ts`) with middleware stack
-- [ ] Write `POST /api/auth/on-signup` endpoint (see gap-analysis.md)
-- [ ] Write Supabase Auth webhook or client-side post-signup hook
+- [ ] Mount Better Auth handler (`/auth/**`) in Hono; user provisioning via `databaseHooks`
 - [ ] Set up i18next with EN + NL locales scaffold
 - [ ] Write Zustand stores: `src/store/uiStore.ts`, `src/store/authStore.ts`
 - [ ] Write base layout shell (nav placeholder, outlet, theme provider)
@@ -65,11 +64,11 @@ i18n, theme switching, contact form. No AI yet. No payments yet.
 1. Create Neon project at https://neon.tech
    → EU Frankfurt region
    → Create branches: main / staging / dev
-   → Add DATABASE_URL (dev branch) to .env.local
+   → Add DATABASE_URL + DATABASE_URL_UNPOOLED to .env.local
 
-2. Create Supabase project at https://supabase.com
-   → EU Frankfurt region
-   → Add VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY + SUPABASE_SERVICE_ROLE_KEY
+2. Generate Better Auth secret:
+   Run: openssl rand -hex 32
+   Add to .env.local as BETTER_AUTH_SECRET
 
 3. Create Resend account at https://resend.com
    → Verify sending domain
@@ -412,7 +411,7 @@ passed, Lighthouse ≥ 90 across the board.
 
 - [ ] All env vars set in Vercel production environment
 - [ ] Neon `main` branch connection string in Vercel as `DATABASE_URL_PROD`
-- [ ] Supabase EU region confirmed (Frankfurt)
+- [ ] Neon EU region confirmed (Frankfurt) for `DATABASE_URL_PROD`
 - [ ] `ANTHROPIC_API_KEY` added (prod AI active)
 - [ ] Stripe webhook updated to production URL
 - [ ] Stripe keys switched from test to live

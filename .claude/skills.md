@@ -29,6 +29,7 @@ const userId = session!.user!.id;
 ## React — Component Conventions
 
 ### File structure:
+
 ```
 ComponentName/
 ├── index.tsx              ← component (named export)
@@ -37,6 +38,7 @@ ComponentName/
 ```
 
 ### Named exports only, except route-level pages:
+
 ```tsx
 // ✅
 export function FoodLogCard({ entry, onDismiss }: FoodLogCardProps) { ... }
@@ -61,7 +63,9 @@ The answer is almost always yes.
 ```tsx
 // ❌ Race conditions, no caching, leaks on unmount
 useEffect(() => {
-  fetch('/api/food-log').then(r => r.json()).then(setData);
+  fetch('/api/food-log')
+    .then((r) => r.json())
+    .then(setData);
 }, [userId]);
 
 // ✅ React Query handles caching, deduplication, background refresh,
@@ -88,10 +92,7 @@ useEffect(() => {
 const total = entries.reduce((sum, e) => sum + e.calories, 0);
 
 // ✅ useMemo only if the computation genuinely takes >1ms
-const total = useMemo(
-  () => expensiveNutrientCalculation(entries),
-  [entries]
-);
+const total = useMemo(() => expensiveNutrientCalculation(entries), [entries]);
 ```
 
 ---
@@ -118,7 +119,9 @@ const handleSubmit = (data: FormData) => {
 ```tsx
 // ❌ Creates stale state bugs
 const [value, setValue] = useState(props.value);
-useEffect(() => { setValue(props.value); }, [props.value]);
+useEffect(() => {
+  setValue(props.value);
+}, [props.value]);
 
 // ✅ Use the prop directly, or lift state up
 ```
@@ -129,7 +132,9 @@ useEffect(() => { setValue(props.value); }, [props.value]);
 
 ```tsx
 // ❌
-useEffect(() => { store.setUser(props.user); }, [props.user]);
+useEffect(() => {
+  store.setUser(props.user);
+}, [props.user]);
 
 // ✅ Pass the value directly or use a derived selector
 const user = useAuthStore((s) => s.user);
@@ -147,14 +152,13 @@ useEffect(() => {
   return () => scanner.reset();
 }, []);
 
-// ✅ Supabase Realtime subscriptions (always with cleanup)
+// ✅ External subscriptions (always with cleanup)
 useEffect(() => {
-  const channel = supabase
-    .channel('food_updates')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public' }, handler)
-    .subscribe();
-  return () => { supabase.removeChannel(channel); };
-}, [userId]);
+  const interval = setInterval(() => {
+    void refetch();
+  }, 5000);
+  return () => clearInterval(interval);
+}, [refetch]);
 // Better: encapsulate in a custom hook in src/hooks/
 
 // ✅ Focus management after a conditional render
@@ -214,18 +218,14 @@ Never use string interpolation to build queries.
 const entries = await db
   .select()
   .from(foodLogEntries)
-  .where(
-    and(
-      eq(foodLogEntries.userId, userId),
-      eq(foodLogEntries.date, date)
-    )
-  );
+  .where(and(eq(foodLogEntries.userId, userId), eq(foodLogEntries.date, date)));
 
 // ❌ — SQL injection risk, loses type safety
 const entries = await sql(`SELECT * FROM food_log_entries WHERE user_id = '${userId}'`);
 ```
 
 All schema changes:
+
 1. Edit `src/lib/db/schema.ts`
 2. `npx drizzle-kit generate` — review the generated SQL
 3. `npx drizzle-kit migrate` — apply to dev Neon branch
@@ -252,9 +252,10 @@ app.post('/api/food-log', authMiddleware, async (c) => {
 ```
 
 Middleware execution order (enforced in `src/api/index.ts`):
+
 1. CORS
 2. Rate limit (Upstash)
-3. Auth (Supabase JWT)
+3. Auth (Better Auth session cookie)
 4. Credit check (if AI route)
 5. Request handler
 
@@ -265,14 +266,18 @@ Middleware execution order (enforced in `src/api/index.ts`):
 ```tsx
 const FoodEntrySchema = z.object({
   description: z.string().min(1, 'Required').max(500),
-  mealType:    z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'drink']),
-  date:        z.string(),
+  mealType: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'drink']),
+  date: z.string(),
 });
 
 type FoodEntryForm = z.infer<typeof FoodEntrySchema>;
 
 export function FoodEntryForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FoodEntryForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FoodEntryForm>({
     resolver: zodResolver(FoodEntrySchema),
   });
   const { mutate, isPending } = useAddFoodEntry();
@@ -285,7 +290,9 @@ export function FoodEntryForm() {
         aria-describedby={errors.description ? 'desc-error' : undefined}
       />
       {errors.description && (
-        <span id="desc-error" role="alert">{errors.description.message}</span>
+        <span id="desc-error" role="alert">
+          {errors.description.message}
+        </span>
       )}
       <button type="submit" disabled={isPending}>
         {isPending ? t('common.saving') : t('foodLog.addEntry')}
@@ -304,22 +311,22 @@ Zustand for global UI state only. Server data is React Query.
 ```ts
 // src/store/uiStore.ts  ← note: singular "store" not "stores"
 type UIStore = {
-  theme:       'light' | 'dark';
-  language:    'en' | 'nl';
-  setTheme:    (t: 'light' | 'dark') => void;
+  theme: 'light' | 'dark';
+  language: 'en' | 'nl';
+  setTheme: (t: 'light' | 'dark') => void;
   setLanguage: (l: 'en' | 'nl') => void;
 };
 
 export const useUIStore = create<UIStore>()(
   persist(
     (set) => ({
-      theme:       'light',
-      language:    'en',
-      setTheme:    (theme) => set({ theme }),
+      theme: 'light',
+      language: 'en',
+      setTheme: (theme) => set({ theme }),
       setLanguage: (language) => set({ language }),
     }),
-    { name: 'ui-preferences' }
-  )
+    { name: 'ui-preferences' },
+  ),
 );
 ```
 
@@ -331,16 +338,15 @@ All AI calls via `src/lib/ai/client.ts`. Never import Gemini/Anthropic elsewhere
 
 ```ts
 type AIRequest = {
-  prompt:       string;
+  prompt: string;
   systemPrompt?: string;
-  language:     'en' | 'nl';
+  language: 'en' | 'nl';
   forceGemini?: boolean;
 };
 
 export async function generateAIResponse(req: AIRequest) {
-  const langLine = req.language === 'nl'
-    ? 'Antwoord altijd in het Nederlands.'
-    : 'Always respond in English.';
+  const langLine =
+    req.language === 'nl' ? 'Antwoord altijd in het Nederlands.' : 'Always respond in English.';
 
   const system = [
     langLine,
@@ -374,7 +380,11 @@ export const sanitiseForPrompt = (input: string): string =>
 // Server-side equivalent in src/api/middleware/sanitise.ts (no DOMPurify):
 export const sanitiseTextServer = (input: unknown): string => {
   if (typeof input !== 'string') throw new Error('Expected string');
-  return input.replace(/<[^>]*>/g, '').replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 2000);
+  return input
+    .replace(/<[^>]*>/g, '')
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .trim()
+    .slice(0, 2000);
 };
 ```
 
@@ -424,19 +434,20 @@ if they are present in a push to `main`.
 
 ## Naming Conventions
 
-| Thing | Convention | Example |
-|-------|-----------|---------|
-| Components | PascalCase | `FoodLogCard` |
-| Hooks | camelCase + `use` prefix | `useFoodLog` |
-| Stores | camelCase + `Store` suffix | `useUIStore` |
-| API routes | kebab-case | `/api/ai/parse-food` |
-| DB columns | snake_case (Drizzle maps to camelCase) | `user_id` → `userId` |
-| Env vars | SCREAMING_SNAKE_CASE | `DATABASE_URL` |
-| i18n keys | dot-separated camelCase | `foodLog.addEntry` |
-| Files | kebab-case | `food-log-card.test.tsx` |
-| Directories | singular | `src/store/`, `src/hook/` — wait, see below |
+| Thing       | Convention                             | Example                                     |
+| ----------- | -------------------------------------- | ------------------------------------------- |
+| Components  | PascalCase                             | `FoodLogCard`                               |
+| Hooks       | camelCase + `use` prefix               | `useFoodLog`                                |
+| Stores      | camelCase + `Store` suffix             | `useUIStore`                                |
+| API routes  | kebab-case                             | `/api/ai/parse-food`                        |
+| DB columns  | snake_case (Drizzle maps to camelCase) | `user_id` → `userId`                        |
+| Env vars    | SCREAMING_SNAKE_CASE                   | `DATABASE_URL`                              |
+| i18n keys   | dot-separated camelCase                | `foodLog.addEntry`                          |
+| Files       | kebab-case                             | `food-log-card.test.tsx`                    |
+| Directories | singular                               | `src/store/`, `src/hook/` — wait, see below |
 
 ### Directory naming — definitive list:
+
 ```
 src/store/        ← Zustand stores (singular)
 src/hooks/        ← React Query hooks (plural)

@@ -13,7 +13,7 @@
 
 ### P1-CUR-01 — FoodEntryCard
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/FoodLog/FoodEntryCard/index.tsx`
 **Reference component:** `src/components/FoodLog/DailyView/index.tsx`
 
@@ -73,7 +73,7 @@ Left border accent `border-l-4` coloured by meal type using CSS custom propertie
 
 ### P1-CUR-02 — MealTypeBadge
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/FoodLog/MealTypeBadge/index.tsx`
 **Reference component:** `src/components/FoodLog/DailyView/index.tsx`
 
@@ -118,7 +118,7 @@ Background/text colours per meal type:
 
 ### P1-CUR-03 — ThemeToggle
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Layout/ThemeToggle/index.tsx`
 **Reference component:** `src/components/Layout/index.tsx` (contains inline toggle; extract + enhance)
 
@@ -164,7 +164,7 @@ No text label — icon only in nav, but include `aria-label`.
 
 ### P1-CUR-04 — LanguageToggle
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Layout/LanguageToggle/index.tsx`
 **Reference component:** `src/components/Layout/index.tsx` (contains inline toggle; extract + enhance)
 
@@ -207,11 +207,182 @@ Show both as a segmented control: `[EN] [NL]` side by side.
 
 ---
 
+---
+
+## Phase 2 — AI Integration UI
+
+---
+
+### P2-CUR-01 — ConfidenceBadge
+
+**Status:** ✅ DONE
+**File to create:** `src/components/AI/ConfidenceBadge/index.tsx`
+**Reference component:** `src/components/FoodLog/MealTypeBadge/index.tsx` _(build P1-CUR-02 first)_
+
+**Props** (already in `src/types/components.ts`):
+
+```ts
+type ConfidenceBadgeProps = {
+  confidence: number; // 0.0–1.0
+};
+```
+
+**Data hook:** none — presentational only
+
+**Design brief:**
+Pill badge with coloured dot indicator. Three tiers:
+
+- `confidence >= 0.7` → green: `bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200` + green dot
+- `confidence >= 0.4` → amber: `bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200` + amber dot
+- `confidence < 0.4` → grey: `bg-warm-200 text-warm-600 dark:bg-warm-700 dark:text-warm-300` + grey dot
+
+Dot: `w-1.5 h-1.5 rounded-full` inline before the label text.
+Shape: `inline-flex items-center gap-1 px-2 py-0.5 rounded-pill text-xs font-medium`.
+
+**States to implement:**
+
+- High (≥0.7): green badge — "High confidence"
+- Medium (0.4–0.69): amber badge — "Medium confidence"
+- Low (<0.4): grey badge — "Low confidence (estimate)"
+
+**Translation keys** (already in both locale files):
+
+- `nutrients.confidence.high` — "High confidence" / "Hoge betrouwbaarheid"
+- `nutrients.confidence.medium` — "Medium confidence" / "Gemiddelde betrouwbaarheid"
+- `nutrients.confidence.low` — "Low confidence (estimate)" / "Lage betrouwbaarheid (schatting)"
+- `nutrients.confidence.label` — "Confidence" / "Betrouwbaarheid"
+
+**Accessibility requirements:**
+
+- `aria-label={t('nutrients.confidence.label') + ': ' + labelText}`
+- `title={labelText}` for tooltip on hover
+
+**Cursor must not:**
+
+- Add new npm dependencies
+- Hardcode label strings — use `useTranslation()`
+- Change the props interface
+
+---
+
+### P2-CUR-02 — NutrientMiniChart
+
+**Status:** ✅ DONE
+**File to create:** `src/components/AI/NutrientMiniChart/index.tsx`
+**Reference component:** `src/components/AI/ConfidenceBadge/index.tsx` _(build P2-CUR-01 first)_
+
+**Props** (already in `src/types/components.ts`):
+
+```ts
+type NutrientMiniChartProps = {
+  nutrients: ParsedNutrients; // imported from '@/types/api'
+};
+```
+
+**Data hook:** none — presentational only
+
+**Design brief:**
+Compact horizontal bar chart — pure CSS, no chart library.
+Show: calories (kcal), protein (g), carbs (g), fat (g). Omit null values.
+Each row: label left-aligned in `font-mono text-xs text-warm-500`, bar in middle, value right-aligned in `font-mono text-xs`.
+
+Bar container: `flex-1 mx-2 h-1.5 rounded-full bg-warm-200 dark:bg-warm-700`.
+Bar fill: `h-full rounded-full transition-all duration-500`.
+Bar colours:
+
+- calories → `bg-amber-400`
+- protein → `bg-brand-500`
+- carbs → `bg-brand-300`
+- fat → `bg-warm-400`
+
+Max bar width is relative to the highest value in the set (percentage of max).
+Wrap in `rounded-card p-3 bg-warm-50 dark:bg-warm-800 border border-warm-200 dark:border-warm-700`.
+
+**States to implement:**
+
+- All values present: full chart
+- Some values null: skip those rows (no empty bars)
+- All values null: return `null` (render nothing)
+
+**Translation keys** (already in both locale files):
+
+- `nutrients.calories`, `nutrients.protein`, `nutrients.carbs`, `nutrients.fat`
+- `nutrients.unit.kcal`, `nutrients.unit.g`
+
+**Accessibility requirements:**
+
+- `role="img"` on the chart container
+- `aria-label` describing the nutrient summary (e.g. "Nutrient summary: 320 kcal, 12g protein")
+
+**Cursor must not:**
+
+- Install a chart library — pure CSS bars only
+- Show bars for null values
+- Change the props interface
+
+---
+
+### P2-CUR-03 — AiTipCard
+
+**Status:** ✅ DONE
+**File to create:** `src/components/AI/AiTipCard/index.tsx`
+**Reference component:** `src/components/FoodLog/FoodEntryCard/index.tsx` _(build P1-CUR-01 first)_
+
+**Props** (already in `src/types/components.ts`):
+
+```ts
+type AiTipCardProps = {
+  tip: AiTipResponse; // imported from '@/types/api'
+  language: 'en' | 'nl';
+  onDismiss: (id: string) => void;
+  isDismissing?: boolean;
+};
+```
+
+**Data hooks:**
+
+- `useAiTips()` — from `src/hooks/useAiTips.ts` — returns `{ data, isLoading }`
+- `useDismissTip()` — from `src/hooks/useAiTips.ts` — returns `{ mutate, isPending }`
+
+**Design brief:**
+Card with left accent border coloured by severity:
+
+- `info` → `border-l-4 border-brand-400`
+- `suggestion` → `border-l-4 border-amber-400`
+- `important` → `border-l-4 border-red-400`
+
+Card surface: `bg-warm-50 dark:bg-warm-800 rounded-card shadow-card p-4`.
+Severity badge (top-right): small pill using `ai.tip.severity.*` translation.
+Tip text: `text-sm text-warm-800 dark:text-warm-100 leading-relaxed`.
+Dismiss button: icon-only × button, `text-warm-400 hover:text-warm-700`, top-right corner.
+Fade-out on dismiss: `transition-opacity duration-300 opacity-50` when `isDismissing`.
+
+**States to implement:**
+
+- Default: tip text + severity badge + dismiss button
+- Dismissing: opacity 50%, button shows spinner
+- Language: `tip.tipTextEn` when `language === 'en'`, `tip.tipTextNl` when `language === 'nl'`
+
+**Translation keys** (already in both locale files):
+
+- `ai.tip.dismiss` — "Dismiss tip" / "Tip sluiten"
+- `ai.tip.severity.info`, `ai.tip.severity.suggestion`, `ai.tip.severity.important`
+
+**Accessibility requirements:**
+
+- `role="article"` on card root
+- Dismiss button: `aria-label={t('ai.tip.dismiss')}`
+- Severity badge: `aria-label={severityLabel}`
+
+**Cursor must not:**
+
+- Use `useAiTips()` or `useDismissTip()` inside the card — the parent passes tip data and onDismiss as props
+- Hardcode tip text — always use `tip.tipTextEn` or `tip.tipTextNl` based on `language` prop
+- Change the props interface
+
+---
+
 ## Upcoming Phases (not yet ready)
-
-### P2-CUR-01 — AITipCard
-
-**Status:** 🔒 PENDING (Phase 2 — AI Parsing not started)
 
 ### P3-CUR-01 — BarcodeScanner
 
@@ -219,8 +390,8 @@ Show both as a segmented control: `[EN] [NL]` side by side.
 
 ### P4-CUR-01 — ChatbotDrawer
 
-**Status:** 🔒 PENDING (Phase 4 — Chatbot not started)
+**Status:** 🔒 PENDING (Phase 5 — Chatbot not started)
 
 ### P5-CUR-01 — SubscriptionCard
 
-**Status:** 🔒 PENDING (Phase 5 — Payments not started)
+**Status:** 🔒 PENDING (Phase 4 — Payments not started)

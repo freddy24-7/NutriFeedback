@@ -31,7 +31,9 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "toggleTheme": "Toggle theme",
+    "language": "Language"
   },
   "theme": {
     "toggleLight": "Switch to light mode",
@@ -193,6 +195,49 @@
     "low": "Low credits",
     "exhausted": "No credits remaining",
     "upgrade": "Upgrade for more"
+  },
+  "ai": {
+    "parseFood": {
+      "button": "Parse with AI",
+      "loading": "Analysing...",
+      "success": "Nutrients detected",
+      "error": "Could not parse — entry saved as text",
+      "insufficientCredits": "Not enough credits",
+      "rateLimited": "Too many requests — try again in a minute"
+    },
+    "tip": {
+      "generate": "Generate tip",
+      "generating": "Generating...",
+      "dismiss": "Dismiss tip",
+      "notEnoughData": "Log food for 3 or more days to get personalised tips",
+      "insufficientCredits": "Not enough credits to generate a tip",
+      "severity": {
+        "info": "Info",
+        "suggestion": "Suggestion",
+        "important": "Important"
+      }
+    }
+  },
+  "nutrients": {
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "sugar": "Sugar",
+    "sodium": "Sodium",
+    "serving": "Serving",
+    "confidence": {
+      "high": "High confidence",
+      "medium": "Medium confidence",
+      "low": "Low confidence (estimate)",
+      "label": "Confidence"
+    },
+    "unit": {
+      "kcal": "kcal",
+      "g": "g",
+      "mg": "mg"
+    }
   },
   "home": {
     "hero": {

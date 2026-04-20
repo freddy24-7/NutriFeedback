@@ -29,7 +29,7 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - i18next + react-i18next (EN + NL — full coverage including AI responses)
 - TanStack Query v5 (React Query) — all server state, no raw useEffect
 - Zustand — global UI state only (theme, language)
-- **@stackframe/stack** — Neon Auth (Stack Auth) client: `useUser()`, `useStackApp()`
+- **better-auth** — Neon Auth client: `createAuthClient()`, `authClient.useSession()`
 - react-hook-form + zod — all forms, always paired
 - Fuse.js — FAQ fuzzy matching for chatbot
 - @zxing/browser — barcode scanning via device camera
@@ -51,10 +51,10 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - **Hono** — lightweight API framework on Vercel Edge Functions
 - All API routes under `src/api/` (file-based, Hono router)
 - Zod validation on every request body and response
-- **Auth:** Neon Auth (powered by Stack Auth — same Neon project as the DB)
-  - `@stackframe/stack` on the frontend: `StackProvider`, `useUser()`, `useStackApp()`
-  - JWT validation on Hono middleware via `jose` + Stack Auth JWKS endpoint
-  - Token passed as `x-stack-access-token` header (via `user.getAuthHeaders()`)
+- **Auth:** Better Auth (Neon-native — sessions stored in Neon Postgres)
+  - `better-auth/react` on the frontend: `createAuthClient()`, `authClient.useSession()`
+  - Session cookie validation on Hono middleware via `auth.api.getSession()`
+  - All fetches use `credentials: 'include'` — no Authorization header
 - **Upstash Redis** — rate limiting (sliding window) + response caching
 
 ### AI
@@ -169,11 +169,10 @@ DATABASE_URL=            # pooled connection (runtime)
 DATABASE_URL_DEV=        # dev branch pooled connection
 DATABASE_URL_UNPOOLED=   # direct connection (migrations only)
 
-# AUTH — Supabase Auth only (no Supabase DB)
-# Create project: https://supabase.com → Settings → API
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-SUPABASE_JWT_SECRET=     # Settings → API → JWT Secret
+# BETTER AUTH (Neon Auth — self-hosted, sessions stored in Neon DB)
+# Generate: openssl rand -hex 32
+BETTER_AUTH_SECRET=      # random 32-byte hex secret (server only)
+BETTER_AUTH_URL=http://localhost:5173  # app base URL (used for redirects)
 
 # AI — DEV (free)
 # Get key: https://aistudio.google.com/app/apikey

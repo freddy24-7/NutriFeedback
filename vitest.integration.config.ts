@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
         STRIPE_SECRET_KEY: env['STRIPE_SECRET_KEY'] ?? 'sk_test_placeholder',
         STRIPE_WEBHOOK_SECRET: env['STRIPE_WEBHOOK_SECRET'] ?? 'whsec_placeholder',
         STRIPE_PRICE_ID: env['STRIPE_PRICE_ID'] ?? 'price_placeholder',
+        IP_HASH_SECRET: env['IP_HASH_SECRET'] ?? 'test-ip-hash-secret-32-bytes-xx',
         NODE_ENV: 'test',
       },
     },

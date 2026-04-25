@@ -167,6 +167,21 @@ export const SubscriptionResponseSchema = z.object({
 });
 export type SubscriptionResponse = z.infer<typeof SubscriptionResponseSchema>;
 
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+
+export const ChatRequestSchema = z.object({
+  message: z.string().min(1).max(500),
+  language: z.enum(['en', 'nl']).default('en'),
+});
+export type ChatRequest = z.infer<typeof ChatRequestSchema>;
+
+export const ChatResponseSchema = z.object({
+  answer: z.string(),
+  source: z.enum(['faq', 'ai']),
+  faqId: z.string().optional(),
+});
+export type ChatResponse = z.infer<typeof ChatResponseSchema>;
+
 // ─── API response shape ───────────────────────────────────────────────────────
 
 export type ApiError = { error: string };

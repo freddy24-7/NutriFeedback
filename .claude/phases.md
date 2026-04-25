@@ -8,14 +8,14 @@
 
 ## Phase Status Overview
 
-| Phase | Name                 | Status                                                                     |
-| ----- | -------------------- | -------------------------------------------------------------------------- |
-| 1     | Foundation           | ✅ Complete (unit gate ✓ — integration/e2e/manual pending env setup)       |
-| 2     | AI Integration       | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)                |
-| 3     | Barcode + Product DB | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)                |
-| 4     | Payments + Credits   | ✅ Complete (unit gate ✓, integration gate ✓, e2e gate ✓ — manual pending) |
-| 5     | Chatbot + FAQ        | ⏳ Pending                                                                 |
-| 6     | SEO + A11y + Polish  | ⏳ Pending                                                                 |
+| Phase | Name                 | Status                                                                          |
+| ----- | -------------------- | ------------------------------------------------------------------------------- |
+| 1     | Foundation           | ✅ Complete (unit gate ✓ — integration/e2e/manual pending env setup)            |
+| 2     | AI Integration       | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)                     |
+| 3     | Barcode + Product DB | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)                     |
+| 4     | Payments + Credits   | ✅ Complete (unit gate ✓, integration gate ✓, e2e gate ✓ — manual pending)      |
+| 5     | Chatbot + FAQ        | 🔨 In Progress (backend ✓, unit gate ✓, integration gate ✓ — UI pending Cursor) |
+| 6     | SEO + A11y + Polish  | ⏳ Pending                                                                      |
 
 ---
 

@@ -1,5 +1,9 @@
 {
   "permissions": {
-    "allow": ["Bash(python3 -c ' *)", "Bash(npx playwright *)"]
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(npx playwright *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")"
+    ]
   }
 }

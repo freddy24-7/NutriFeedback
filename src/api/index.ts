@@ -2,12 +2,13 @@ import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
 import { cors } from 'hono/cors';
 import { auth } from '@/lib/auth/server';
-import { authMiddleware } from './middleware/auth';
+import { authMiddleware, optionalAuthMiddleware } from './middleware/auth';
 import { foodLogRoutes } from './routes/foodLog';
 import { aiRoutes } from './routes/ai';
 import { barcodeRoutes } from './routes/barcode';
 import { contactRoutes } from './routes/contact';
 import { paymentsRoutes } from './routes/payments';
+import { chatRoutes } from './routes/chat';
 
 export const runtime = 'edge';
 
@@ -39,5 +40,9 @@ app.use('/payments/checkout', authMiddleware);
 app.use('/payments/discount', authMiddleware);
 app.use('/payments/status', authMiddleware);
 app.route('/payments', paymentsRoutes);
+
+// Chat is semi-public — optional auth injected by middleware, rate limited per IP for anon
+app.use('/chat', optionalAuthMiddleware);
+app.route('/chat', chatRoutes);
 
 export default handle(app);

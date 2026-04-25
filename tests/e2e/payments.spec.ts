@@ -60,14 +60,22 @@ async function mockSubscription(
 
 // ─── /pricing page ────────────────────────────────────────────────────────────
 
+// Navigate and wait for both the session fetch and subscription fetch to settle.
+// useSubscription is gated on session being non-null, so two async hops must
+// complete before the PricingCard renders — WebKit is slower and needs this.
+async function gotoPricingLoaded(page: Page) {
+  await page.goto('/pricing');
+  await page.waitForLoadState('networkidle');
+}
+
 test.describe('/pricing page', () => {
   test('renders pricing card for trial user', async ({ page }) => {
     await mockSession(page);
     await mockSubscription(page, { status: 'trial', creditsRemaining: 47 });
 
-    await page.goto('/pricing');
+    await gotoPricingLoaded(page);
 
-    await expect(page.getByRole('heading', { name: 'NutriApp Pro' })).toBeVisible();
+    await expect(page.locator('h2', { hasText: 'NutriApp Pro' })).toBeVisible();
     await expect(page.getByText('Unlimited food tracking')).toBeVisible();
     await expect(page.getByText('Personalised AI nutrition tips')).toBeVisible();
     await expect(page.getByText('Barcode scanner with 3M+ products')).toBeVisible();
@@ -82,7 +90,7 @@ test.describe('/pricing page', () => {
       creditsExpiresAt: null,
     });
 
-    await page.goto('/pricing');
+    await gotoPricingLoaded(page);
 
     await expect(page.getByText("You're all set")).toBeVisible();
     await expect(page.getByRole('button', { name: /upgrade to pro/i })).not.toBeVisible();
@@ -92,7 +100,7 @@ test.describe('/pricing page', () => {
     await mockSession(page);
     await mockSubscription(page);
 
-    await page.goto('/pricing');
+    await gotoPricingLoaded(page);
 
     await expect(page.getByPlaceholder(/discount code/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /apply/i })).toBeVisible();

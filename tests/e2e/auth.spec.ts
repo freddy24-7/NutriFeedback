@@ -1,21 +1,21 @@
 import { test } from '@playwright/test';
 
 test.describe('Auth flows', () => {
-  test.todo('sign-up page renders and submits form');
+  test.fixme('sign-up page renders and submits form', async () => {});
 
-  test.todo('successful sign-up redirects to dashboard');
+  test.fixme('successful sign-up redirects to dashboard', async () => {});
 
-  test.todo('sign-in with valid credentials reaches dashboard');
+  test.fixme('sign-in with valid credentials reaches dashboard', async () => {});
 
-  test.todo('sign-in with wrong password shows error message');
+  test.fixme('sign-in with wrong password shows error message', async () => {});
 
-  test.todo('forgot password form submits and shows confirmation');
+  test.fixme('forgot password form submits and shows confirmation', async () => {});
 
-  test.todo('protected route /dashboard redirects unauthenticated user to /signin');
+  test.fixme('protected route /dashboard redirects unauthenticated user to /signin', async () => {});
 });
 
 test.describe('Theme + language toggles', () => {
-  test.todo('language toggle switches from EN to NL and persists after reload');
+  test.fixme('language toggle switches from EN to NL and persists after reload', async () => {});
 
-  test.todo('theme toggle switches to dark and persists after reload');
+  test.fixme('theme toggle switches to dark and persists after reload', async () => {});
 });

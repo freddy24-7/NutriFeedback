@@ -94,3 +94,16 @@ export type PricingCardProps = {
   priceId: string;
   priceDisplay: string;
 };
+
+// ─── Phase 5 — Chatbot + HowToUse ────────────────────────────────────────────
+
+export type ChatbotDrawerProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  language: 'en' | 'nl';
+};
+
+export type HowToUseModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};

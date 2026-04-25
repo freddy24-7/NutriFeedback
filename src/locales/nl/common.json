@@ -322,5 +322,51 @@
       }
     },
     "freeCredits": "Begin met 50 gratis credits — geen creditcard vereist"
+  },
+  "chatbot": {
+    "title": "Hulp nodig?",
+    "placeholder": "Stel een vraag...",
+    "send": "Verzenden",
+    "sending": "Bezig...",
+    "rateLimit": "Je hebt de dagelijkse berichtlimiet bereikt. Kom morgen terug!",
+    "error": "Er is iets misgegaan. Probeer het opnieuw.",
+    "source": {
+      "faq": "Uit FAQ",
+      "ai": "AI-antwoord"
+    },
+    "greeting": "Hoi! Ik help je graag met vragen over NutriApp. Wat wil je weten?",
+    "open": "Chat openen",
+    "close": "Chat sluiten",
+    "typing": "Typt…",
+    "suggestionsLabel": "Populaire vragen",
+    "suggestions": {
+      "whatIsApp": "Wat is NutriApp?",
+      "isItFree": "Is het gratis?",
+      "barcodeScanning": "Hoe werkt barcode scannen?",
+      "aiTips": "Wanneer krijg ik AI-tips?",
+      "dataSafety": "Zijn mijn gegevens veilig?"
+    }
+  },
+  "howToUse": {
+    "title": "Hoe gebruik je NutriApp",
+    "open": "Hoe te gebruiken",
+    "close": "Sluiten",
+    "stepLabel": "Stap {{number}}",
+    "step1": {
+      "title": "Log je maaltijden",
+      "description": "Typ wat je hebt gegeten in gewone taal — 'pasta gegeten voor de lunch' werkt prima. De AI vult de voedingsinformatie in."
+    },
+    "step2": {
+      "title": "Scan barcodes",
+      "description": "Tik voor verpakt voedsel op de barcodeknop en richt je camera. We zoeken het op in een database van meer dan 3 miljoen producten."
+    },
+    "step3": {
+      "title": "Ontvang AI-tips",
+      "description": "Na 3 dagen loggen herkent de AI patronen en geeft je één persoonlijke tip tegelijk."
+    },
+    "step4": {
+      "title": "Volg in de loop van de tijd",
+      "description": "Gebruik de datumkiezer om eerdere dagen te bekijken. Hoe meer je logt, hoe beter de inzichten."
+    }
   }
 }

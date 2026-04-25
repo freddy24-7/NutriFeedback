@@ -6,13 +6,13 @@ test.describe('Food log — daily view', () => {
     await page.goto('/dashboard');
   });
 
-  test.todo('empty state is shown when no entries exist for today');
+  test.fixme('empty state is shown when no entries exist for today', async () => {});
 
-  test.todo('adding an entry via the form makes it appear in the daily view');
+  test.fixme('adding an entry via the form makes it appear in the daily view', async () => {});
 
-  test.todo('deleting an entry removes it from the list');
+  test.fixme('deleting an entry removes it from the list', async () => {});
 
-  test.todo('meal-type badge is displayed with correct label');
+  test.fixme('meal-type badge is displayed with correct label', async () => {});
 
-  test.todo('form validation prevents submission with empty description');
+  test.fixme('form validation prevents submission with empty description', async () => {});
 });

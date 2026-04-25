@@ -773,8 +773,89 @@ Structure:
 
 ---
 
-## Upcoming Phases (not yet ready)
+## Phase 5 — Chatbot + FAQ
+
+---
 
 ### P5-CUR-01 — ChatbotDrawer
 
-**Status:** 🔒 PENDING (Phase 5 — Chatbot not started)
+**Status:** ✅ DONE
+**File to create:** `src/components/Chatbot/ChatbotDrawer/index.tsx`
+**Reference component:** `src/components/Paywall/PaywallModal/index.tsx`
+
+**Props:**
+
+```ts
+type ChatbotDrawerProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  language: 'en' | 'nl';
+};
+```
+
+**Data hook:** `useSendChatMessage()` from `src/hooks/useChat.ts`
+Returns: `{ mutate, isPending, error }`
+
+**Message type:**
+
+```ts
+type ChatMessage = {
+  role: 'user' | 'bot';
+  text: string;
+  source?: 'faq' | 'ai';
+};
+```
+
+**Behaviour:**
+
+- Slides in from the bottom on mobile, right-side panel on desktop (md+)
+- On open: show greeting from `t('chatbot.greeting')`
+- Show 3–5 FAQ chip suggestions beneath the greeting (hardcoded popular questions from `public/faq/faq.json`: "What is NutriApp?", "Is it free?", "How does barcode scanning work?", "When do I get AI tips?", "Is my data safe?")
+- Clicking a chip fires `mutate({ message: chip, language })`
+- Input field at bottom (placeholder: `t('chatbot.placeholder')`) with Send button
+- On submit: append user bubble, call `mutate`, show typing indicator, append bot bubble
+- On `error.message === 'rate_limit_exceeded'`: show `t('chatbot.rateLimit')` as bot bubble, disable input
+- On other error: show `t('chatbot.error')` as bot bubble, keep input enabled
+- Close button at top-right; drawer closes on Escape key
+- `role="dialog"` on the drawer panel, `aria-label={t('chatbot.title')}`
+- Messages scrollable; always scroll to latest message after new bubble
+
+**i18n keys available** (already in `src/locales/en/common.json` + `nl/common.json`):
+`chatbot.title`, `chatbot.placeholder`, `chatbot.send`, `chatbot.sending`,
+`chatbot.rateLimit`, `chatbot.error`, `chatbot.greeting`, `chatbot.open`, `chatbot.close`,
+`chatbot.source.faq`, `chatbot.source.ai`
+
+**Open/close wiring:** The Layout wraps this drawer. Add a floating "?" button in the bottom-right corner (outside the main content area) that opens it. The `isOpen` / `onClose` state lives in `src/components/Layout/index.tsx`.
+
+---
+
+### P5-CUR-02 — HowToUseModal
+
+**Status:** ✅ DONE
+**File to create:** `src/components/HowToUse/HowToUseModal/index.tsx`
+
+**Props:**
+
+```ts
+type HowToUseModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+```
+
+**Behaviour:**
+
+- Full-screen modal on mobile, centred card (max-w-lg) on desktop
+- 4 steps in sequence, each with a step number circle, title, and description
+- Steps from i18n: `howToUse.step1`, `howToUse.step2`, `howToUse.step3`, `howToUse.step4`
+- No illustration images required — use a simple icon or emoji placeholder (the step number circle is sufficient)
+- Close button + Escape key dismiss
+- `role="dialog"`, `aria-label={t('howToUse.title')}`
+
+**Wiring:** Add a "How to use" link in the footer or nav (authenticated users only). State lives where it's placed.
+
+**i18n keys:** `howToUse.title`, `howToUse.step1.title`, `howToUse.step1.description` (× 4 steps)
+
+---
+
+## Upcoming Phases (not yet ready)

@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authClient } from '@/lib/auth/client';
 import { ThemeToggle } from '@/components/Layout/ThemeToggle';
 import { LanguageToggle } from '@/components/Layout/LanguageToggle';
 import { CreditCounter } from '@/components/Payments/CreditCounter';
+import { ChatbotDrawer } from '@/components/Chatbot/ChatbotDrawer';
+import { HowToUseModal } from '@/components/HowToUse/HowToUseModal';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/utils/cn';
 
 export function AppLayout() {
@@ -12,6 +16,12 @@ export function AppLayout() {
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
   const { data: sub } = useSubscription();
+  const language = useUIStore((s) => s.language);
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isHowToOpen, setIsHowToOpen] = useState(false);
+
+  const isAuthenticated = session !== null && session !== undefined;
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -37,7 +47,7 @@ export function AppLayout() {
           </Link>
 
           <div className="flex items-center gap-3">
-            {session !== null && session !== undefined ? (
+            {isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
@@ -103,13 +113,60 @@ export function AppLayout() {
         className="mt-16 border-t py-6 text-center text-sm"
         style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
       >
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
           <Link to="/terms">{t('nav.terms')}</Link>
           <Link to="/privacy">{t('nav.privacy')}</Link>
           <Link to="/contact">{t('nav.contact')}</Link>
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => setIsHowToOpen(true)}
+              className="underline-offset-2 hover:underline"
+            >
+              {t('howToUse.open')}
+            </button>
+          )}
         </div>
         <p className="mt-2">© {new Date().getFullYear()} NutriApp</p>
       </footer>
+
+      {isAuthenticated && (
+        <>
+          <button
+            type="button"
+            onClick={() => setIsChatOpen(true)}
+            aria-label={t('chatbot.open')}
+            className={cn(
+              'fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg transition-all',
+              'hover:bg-brand-600 hover:shadow-xl',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
+            )}
+          >
+            <svg
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </button>
+
+          <ChatbotDrawer
+            isOpen={isChatOpen}
+            onClose={() => setIsChatOpen(false)}
+            language={language}
+          />
+
+          <HowToUseModal isOpen={isHowToOpen} onClose={() => setIsHowToOpen(false)} />
+        </>
+      )}
     </div>
   );
 }

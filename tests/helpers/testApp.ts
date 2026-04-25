@@ -13,7 +13,8 @@ import { aiRoutes } from '@/api/routes/ai';
 import { foodLogRoutes } from '@/api/routes/foodLog';
 import { barcodeRoutes } from '@/api/routes/barcode';
 import { paymentsRoutes } from '@/api/routes/payments';
-import { authMiddleware, type AuthVariables } from '@/api/middleware/auth';
+import { chatRoutes } from '@/api/routes/chat';
+import { authMiddleware, optionalAuthMiddleware, type AuthVariables } from '@/api/middleware/auth';
 
 export function createTestApp(userId: string) {
   const app = new Hono<{ Variables: AuthVariables }>().basePath('/api');
@@ -28,7 +29,22 @@ export function createTestApp(userId: string) {
   app.route('/food-log', foodLogRoutes);
   app.route('/barcode', barcodeRoutes);
   app.route('/payments', paymentsRoutes);
+  app.use('/chat', optionalAuthMiddleware);
+  app.route('/chat', chatRoutes);
 
+  return app;
+}
+
+// Chat-specific test app: optionally inject a userId (simulates auth), or leave undefined (anon)
+export function createChatApp(userId?: string) {
+  const app = new Hono<{ Variables: AuthVariables }>().basePath('/api');
+
+  app.use('*', async (c, next) => {
+    c.set('user', userId ? { id: userId } : undefined);
+    await next();
+  });
+
+  app.route('/chat', chatRoutes);
   return app;
 }
 
@@ -49,6 +65,9 @@ export function createUnauthApp() {
   app.use('/payments/discount', authMiddleware);
   app.use('/payments/status', authMiddleware);
   app.route('/payments', paymentsRoutes);
+
+  app.use('/chat', optionalAuthMiddleware);
+  app.route('/chat', chatRoutes);
 
   return app;
 }

@@ -322,5 +322,51 @@
       }
     },
     "freeCredits": "Start with 50 free credits — no card required"
+  },
+  "chatbot": {
+    "title": "Need help?",
+    "placeholder": "Ask a question...",
+    "send": "Send",
+    "sending": "Sending...",
+    "rateLimit": "You've reached the daily message limit. Come back tomorrow!",
+    "error": "Something went wrong. Please try again.",
+    "source": {
+      "faq": "From FAQ",
+      "ai": "AI response"
+    },
+    "greeting": "Hi! I'm here to help with questions about NutriApp. What would you like to know?",
+    "open": "Open chat",
+    "close": "Close chat",
+    "typing": "Typing…",
+    "suggestionsLabel": "Popular questions",
+    "suggestions": {
+      "whatIsApp": "What is NutriApp?",
+      "isItFree": "Is it free?",
+      "barcodeScanning": "How does barcode scanning work?",
+      "aiTips": "When do I get AI tips?",
+      "dataSafety": "Is my data safe?"
+    }
+  },
+  "howToUse": {
+    "title": "How to use NutriApp",
+    "open": "How to use",
+    "close": "Close",
+    "stepLabel": "Step {{number}}",
+    "step1": {
+      "title": "Log your meals",
+      "description": "Type what you ate in plain language — 'had pasta for lunch' works fine. The AI fills in the nutrition details."
+    },
+    "step2": {
+      "title": "Scan barcodes",
+      "description": "For packaged food, tap the barcode button and point your camera. We look it up in a database of 3 million+ products."
+    },
+    "step3": {
+      "title": "Get AI tips",
+      "description": "After 3 days of logging, the AI spots patterns and gives you one personalised tip at a time."
+    },
+    "step4": {
+      "title": "Track over time",
+      "description": "Use the date picker to review past days. The more you log, the better the insights."
+    }
   }
 }

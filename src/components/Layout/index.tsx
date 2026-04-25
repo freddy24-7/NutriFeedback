@@ -91,7 +91,7 @@ export function AppLayout() {
                   to="/signup"
                   className={cn(
                     'rounded-pill px-4 py-1.5 text-sm font-medium text-white transition-colors duration-150',
-                    'bg-brand-500 hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-300',
+                    'bg-brand-700 hover:bg-brand-800 dark:bg-brand-400 dark:hover:bg-brand-300',
                   )}
                 >
                   {t('nav.signUp')}
@@ -137,8 +137,8 @@ export function AppLayout() {
             onClick={() => setIsChatOpen(true)}
             aria-label={t('chatbot.open')}
             className={cn(
-              'fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg transition-all',
-              'hover:bg-brand-600 hover:shadow-xl',
+              'fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-brand-700 text-white shadow-lg transition-all',
+              'hover:bg-brand-800 hover:shadow-xl',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
             )}
           >

@@ -21,6 +21,9 @@
     "optional": "Optioneel",
     "or": "of"
   },
+  "errorBoundary": {
+    "hint": "Vernieuw de pagina of ga terug naar het dashboard."
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -231,6 +234,7 @@
   },
   "pricing": {
     "planName": "NutriApp Pro",
+    "description": "Begin met 50 gratis credits — geen creditcard vereist. Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en AI-voedingstips.",
     "feature": {
       "unlimited": "Onbeperkt voedsel bijhouden",
       "aiTips": "Persoonlijke AI-voedingstips",
@@ -352,6 +356,9 @@
     "open": "Hoe te gebruiken",
     "close": "Sluiten",
     "stepLabel": "Stap {{number}}",
+    "progress": "Stap {{current}} van {{total}}",
+    "next": "Volgende",
+    "gotIt": "Begrepen",
     "step1": {
       "title": "Log je maaltijden",
       "description": "Typ wat je hebt gegeten in gewone taal — 'pasta gegeten voor de lunch' werkt prima. De AI vult de voedingsinformatie in."

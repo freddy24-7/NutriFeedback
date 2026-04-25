@@ -1,20 +1,34 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useUIStore } from './store/uiStore';
 import { AppLayout } from './components/Layout';
 import { AuthLayout } from './components/Layout/AuthLayout';
 import { ProtectedRoute } from './components/Layout/ProtectedRoute';
-import { HomePage } from './pages/Home';
-import { DashboardPage } from './pages/Dashboard';
-import { SignUpPage } from './pages/SignUp';
-import { SignInPage } from './pages/SignIn';
-import { ForgotPasswordPage } from './pages/ForgotPassword';
-import { AuthConfirmPage } from './pages/AuthConfirm';
-import { TermsPage } from './pages/Terms';
-import { PrivacyPage } from './pages/Privacy';
-import { ContactPage } from './pages/Contact';
-import { PricingPage } from './pages/Pricing';
-import { NotFoundPage } from './pages/NotFound';
+import { PWAInstallPrompt } from './components/UI/PWAInstallPrompt';
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+};
+
+const HomePage = lazy(() => import('./pages/Home').then((m) => ({ default: m.HomePage })));
+const DashboardPage = lazy(() =>
+  import('./pages/Dashboard').then((m) => ({ default: m.DashboardPage })),
+);
+const SignUpPage = lazy(() => import('./pages/SignUp').then((m) => ({ default: m.SignUpPage })));
+const SignInPage = lazy(() => import('./pages/SignIn').then((m) => ({ default: m.SignInPage })));
+const ForgotPasswordPage = lazy(() =>
+  import('./pages/ForgotPassword').then((m) => ({ default: m.ForgotPasswordPage })),
+);
+const AuthConfirmPage = lazy(() =>
+  import('./pages/AuthConfirm').then((m) => ({ default: m.AuthConfirmPage })),
+);
+const TermsPage = lazy(() => import('./pages/Terms').then((m) => ({ default: m.TermsPage })));
+const PrivacyPage = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.PrivacyPage })));
+const ContactPage = lazy(() => import('./pages/Contact').then((m) => ({ default: m.ContactPage })));
+const PricingPage = lazy(() => import('./pages/Pricing').then((m) => ({ default: m.PricingPage })));
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFound').then((m) => ({ default: m.NotFoundPage })),
+);
 
 const router = createBrowserRouter([
   {
@@ -45,11 +59,45 @@ const router = createBrowserRouter([
 
 export function App() {
   const theme = useUIStore((s) => s.theme);
+  const deferredInstallRef = useRef<BeforeInstallPromptEvent | null>(null);
+  const [installPromptVisible, setInstallPromptVisible] = useState(false);
 
-  // Sync dark class to <html> whenever theme changes (imperative DOM update)
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
-  return <RouterProvider router={router} />;
+  useEffect(() => {
+    const onBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredInstallRef.current = e as BeforeInstallPromptEvent;
+      setInstallPromptVisible(true);
+    };
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+  }, []);
+
+  return (
+    <>
+      <Suspense>
+        <RouterProvider router={router} />
+      </Suspense>
+      <PWAInstallPrompt
+        isVisible={installPromptVisible}
+        onAccept={() => {
+          void (async () => {
+            const ev = deferredInstallRef.current;
+            deferredInstallRef.current = null;
+            if (ev !== null && typeof ev.prompt === 'function') {
+              await ev.prompt();
+            }
+            setInstallPromptVisible(false);
+          })();
+        }}
+        onDismiss={() => {
+          deferredInstallRef.current = null;
+          setInstallPromptVisible(false);
+        }}
+      />
+    </>
+  );
 }

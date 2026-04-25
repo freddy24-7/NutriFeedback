@@ -122,8 +122,8 @@ export function PaywallModal({ isOpen, onClose, reason = 'no_credits' }: Paywall
           onClick={handleUpgrade}
           disabled={isPending}
           className={cn(
-            'flex w-full items-center justify-center rounded-pill bg-brand-500 px-6 py-3 text-center font-medium text-white transition-colors',
-            'hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60',
+            'flex w-full items-center justify-center rounded-pill bg-brand-700 px-6 py-3 text-center font-medium text-white transition-colors',
+            'hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
           )}
         >

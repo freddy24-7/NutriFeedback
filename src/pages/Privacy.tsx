@@ -15,6 +15,8 @@ export function PrivacyPage() {
         <title>
           {t('privacy.title')} — {t('app.name')}
         </title>
+        <meta name="robots" content="noindex,nofollow" />
+        <link rel="canonical" href={`${import.meta.env['VITE_APP_URL'] ?? ''}/privacy`} />
       </Helmet>
 
       <article className="max-w-3xl" aria-label={t('privacy.title')}>

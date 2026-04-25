@@ -9,7 +9,7 @@ import { type AuthVariables } from './auth';
 // Place after authMiddleware on routes that require a paid/trial account.
 
 export const paywallMiddleware = createMiddleware<{ Variables: AuthVariables }>(async (c, next) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const [[sub], [credits]] = await Promise.all([
     db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)),

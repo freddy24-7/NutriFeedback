@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { FoodLogEntry } from '@/lib/db/schema';
 import type { MealType } from './api';
 
@@ -106,4 +107,41 @@ export type ChatbotDrawerProps = {
 export type HowToUseModalProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+// ─── Phase 6 — SEO + A11y + Polish ───────────────────────────────────────────
+
+export type SkeletonLoaderProps = {
+  variant: 'card' | 'text' | 'avatar' | 'row';
+  lines?: number;
+  className?: string;
+};
+
+export type ErrorBoundaryProps = {
+  children: ReactNode;
+  fallback?: ReactNode;
+};
+
+export type EmptyStateProps = {
+  icon?: ReactNode;
+  title: string;
+  subtitle?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+};
+
+export type OnboardingTooltipProps = {
+  step: 1 | 2 | 3 | 4;
+  anchor: 'top' | 'bottom' | 'left' | 'right';
+  isVisible: boolean;
+  onDismiss: () => void;
+  onNext?: () => void;
+};
+
+export type PWAInstallPromptProps = {
+  isVisible: boolean;
+  onAccept: () => void;
+  onDismiss: () => void;
 };

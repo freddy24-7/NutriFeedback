@@ -47,4 +47,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // Warn when individual chunks exceed 500 kB
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        // Split vendor chunks for better long-term caching
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          query: ['@tanstack/react-query'],
+          i18n: ['react-i18next', 'i18next'],
+        },
+      },
+    },
+  },
 });

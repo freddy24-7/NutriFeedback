@@ -9,7 +9,7 @@ const authRoutes = new Hono<{ Variables: AuthVariables }>();
 // Called client-side after every SIGNED_IN event. Fully idempotent —
 // uses ON CONFLICT DO NOTHING so existing users are unaffected.
 authRoutes.post('/on-signup', authMiddleware, async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   await db
     .insert(userProfiles)

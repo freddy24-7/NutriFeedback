@@ -15,6 +15,8 @@ export function TermsPage() {
         <title>
           {t('terms.title')} — {t('app.name')}
         </title>
+        <meta name="robots" content="noindex,nofollow" />
+        <link rel="canonical" href={`${import.meta.env['VITE_APP_URL'] ?? ''}/terms`} />
       </Helmet>
 
       <article className="prose max-w-3xl" aria-label={t('terms.title')}>

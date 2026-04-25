@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useFoodLog } from '@/hooks/useFoodLog';
 import { FoodEntryCard } from '@/components/FoodLog/FoodEntryCard';
+import { EmptyState } from '@/components/UI/EmptyState';
 import type { DailyViewProps } from '@/types/components';
 
 export function DailyView({ date, onAddEntry }: DailyViewProps) {
@@ -34,20 +35,15 @@ export function DailyView({ date, onAddEntry }: DailyViewProps) {
 
   if (entries === undefined || entries.length === 0) {
     return (
-      <div className="py-12 text-center">
-        <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
-          {t('dashboard.noEntries')}
-        </p>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {t('dashboard.noEntriesSubtitle')}
-        </p>
-        <button
-          onClick={onAddEntry}
-          className="mt-4 rounded-pill bg-brand-500 px-5 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
-        >
-          {t('dashboard.addEntry')}
-        </button>
-      </div>
+      <EmptyState
+        title={t('dashboard.noEntries')}
+        subtitle={t('dashboard.noEntriesSubtitle')}
+        action={
+          onAddEntry !== undefined
+            ? { label: t('dashboard.addEntry'), onClick: onAddEntry }
+            : undefined
+        }
+      />
     );
   }
 

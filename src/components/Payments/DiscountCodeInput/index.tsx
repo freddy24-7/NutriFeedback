@@ -68,8 +68,8 @@ export function DiscountCodeInput({ onSuccess }: DiscountCodeInputProps) {
           type="submit"
           disabled={isPending || isSuccess}
           className={cn(
-            'shrink-0 rounded-pill bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors',
-            'hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60',
+            'shrink-0 rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white transition-colors',
+            'hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
           )}
         >
@@ -105,7 +105,7 @@ export function DiscountCodeInput({ onSuccess }: DiscountCodeInputProps) {
       {isSuccess && (
         <p
           role="status"
-          className="flex items-center gap-1 text-sm text-brand-600 dark:text-brand-400"
+          className="flex items-center gap-1 text-sm text-brand-700 dark:text-brand-400"
         >
           <svg
             className="h-4 w-4"

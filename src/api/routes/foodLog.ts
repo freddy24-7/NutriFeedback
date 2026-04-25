@@ -13,7 +13,7 @@ const foodLogRoutes = new Hono<{ Variables: AuthVariables }>();
 // GET /api/food-log?date=YYYY-MM-DD
 // Returns the authenticated user's entries for the given date (defaults to today).
 foodLogRoutes.get('/', zValidator('query', GetFoodLogQuerySchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const { date } = c.req.valid('query');
   const targetDate = date ?? todayISO();
 
@@ -28,7 +28,7 @@ foodLogRoutes.get('/', zValidator('query', GetFoodLogQuerySchema), async (c) => 
 
 // POST /api/food-log
 foodLogRoutes.post('/', zValidator('json', NewFoodEntryWithProductSchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const body = c.req.valid('json');
 
   const [entry] = await db
@@ -52,7 +52,7 @@ foodLogRoutes.post('/', zValidator('json', NewFoodEntryWithProductSchema), async
 
 // DELETE /api/food-log/:id
 foodLogRoutes.delete('/:id', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const id = c.req.param('id');
 
   // Scope delete to the authenticated user — prevents horizontal privilege escalation

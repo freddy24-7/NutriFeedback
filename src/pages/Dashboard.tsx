@@ -8,9 +8,21 @@ import { DailyView } from '@/components/FoodLog/DailyView';
 import { FoodEntryForm } from '@/components/FoodLog/FoodEntryForm';
 import { AiTipCard } from '@/components/AI/AiTipCard';
 import { PaywallModal } from '@/components/Payments/PaywallModal';
+import { OnboardingTooltip } from '@/components/UI/OnboardingTooltip';
 import { useAiTips, useDismissTip, useGenerateTip } from '@/hooks/useAiTips';
 import { useSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/utils/cn';
+
+const ONBOARDING_DONE_KEY = 'nutriapp_hasCompletedOnboarding';
+
+function readOnboardingInitialStep(): 1 | 2 | 3 | 4 | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(ONBOARDING_DONE_KEY) === 'true' ? null : 1;
+  } catch {
+    return null;
+  }
+}
 
 export function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -22,6 +34,9 @@ export function DashboardPage() {
 
   const { data: sub } = useSubscription();
   const [paywallDismissed, setPaywallDismissed] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState<1 | 2 | 3 | 4 | null>(
+    readOnboardingInitialStep,
+  );
 
   const paywallReason = sub?.status === 'expired' ? 'expired' : 'no_credits';
 
@@ -50,6 +65,24 @@ export function DashboardPage() {
 
   const displayDate = formatDate(date, i18n.language);
 
+  const completeOnboarding = () => {
+    setOnboardingStep(null);
+    try {
+      localStorage.setItem(ONBOARDING_DONE_KEY, 'true');
+    } catch {
+      /* ignore quota / private mode */
+    }
+  };
+
+  const goToNextOnboardingStep = () => {
+    setOnboardingStep((s) => {
+      if (s === 1) return 2;
+      if (s === 2) return 3;
+      if (s === 3) return 4;
+      return s;
+    });
+  };
+
   if (!session?.user) return null;
 
   return (
@@ -64,10 +97,11 @@ export function DashboardPage() {
         <title>
           {t('dashboard.title')} — {t('app.name')}
         </title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-between">
           <div>
             <h1
               className="font-display text-display-md font-bold"
@@ -98,11 +132,21 @@ export function DashboardPage() {
             />
             <button
               onClick={() => setShowForm((v) => !v)}
-              className="rounded-pill bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
+              className="rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800 transition-colors"
             >
               {showForm ? t('common.cancel') : t('dashboard.addEntry')}
             </button>
           </div>
+
+          {onboardingStep !== null && (
+            <OnboardingTooltip
+              step={onboardingStep}
+              anchor="bottom"
+              isVisible
+              onDismiss={completeOnboarding}
+              onNext={onboardingStep < 4 ? goToNextOnboardingStep : undefined}
+            />
+          )}
         </div>
 
         {showForm && <FoodEntryForm defaultDate={date} onSuccess={() => setShowForm(false)} />}
@@ -130,7 +174,7 @@ export function DashboardPage() {
               disabled={isGenerating}
               className={cn(
                 'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
-                'border border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950',
+                'border border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
                 'disabled:opacity-60',
               )}
             >

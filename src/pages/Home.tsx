@@ -13,6 +13,38 @@ export function HomePage() {
           {t('app.name')} — {t('app.tagline')}
         </title>
         <meta name="description" content={t('home.hero.subtitle')} />
+        <link rel="canonical" href={`${import.meta.env['VITE_APP_URL'] ?? ''}/`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${t('app.name')} — ${t('app.tagline')}`} />
+        <meta property="og:description" content={t('home.hero.subtitle')} />
+        <meta property="og:url" content={`${import.meta.env['VITE_APP_URL'] ?? ''}/`} />
+        <meta
+          property="og:image"
+          content={`${import.meta.env['VITE_APP_URL'] ?? ''}/og-image.png`}
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${t('app.name')} — ${t('app.tagline')}`} />
+        <meta name="twitter:description" content={t('home.hero.subtitle')} />
+        <meta
+          name="twitter:image"
+          content={`${import.meta.env['VITE_APP_URL'] ?? ''}/og-image.png`}
+        />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'NutriApp',
+            applicationCategory: 'HealthApplication',
+            operatingSystem: 'Web',
+            offers: {
+              '@type': 'Offer',
+              price: '4.99',
+              priceCurrency: 'EUR',
+            },
+            description: t('home.hero.subtitle'),
+            url: import.meta.env['VITE_APP_URL'] ?? '',
+          })}
+        </script>
       </Helmet>
 
       {/* Hero */}
@@ -37,7 +69,7 @@ export function HomePage() {
             to="/signup"
             className={cn(
               'rounded-pill px-8 py-3 font-display font-semibold text-white transition-colors duration-150',
-              'bg-brand-500 hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-300',
+              'bg-brand-700 hover:bg-brand-800 dark:bg-brand-400 dark:hover:bg-brand-300',
             )}
           >
             {t('home.hero.cta')}

@@ -8,6 +8,7 @@ export function NotFoundPage() {
     <>
       <Helmet>
         <title>404 — {t('app.name')}</title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
         <p className="font-data text-6xl font-medium" style={{ color: 'var(--color-brand)' }}>
@@ -24,7 +25,7 @@ export function NotFoundPage() {
         </p>
         <Link
           to="/"
-          className="mt-6 rounded-pill px-6 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 transition-colors"
+          className="mt-6 rounded-pill px-6 py-2 text-sm font-medium text-white bg-brand-700 hover:bg-brand-800 transition-colors"
         >
           {t('errors.goHome')}
         </Link>

@@ -9,7 +9,7 @@ import { CheckoutRequestSchema, DiscountValidateSchema } from '@/types/api';
 import { type AuthVariables } from '../middleware/auth';
 
 const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] ?? '', {
-  apiVersion: '2024-11-20.acacia',
+  apiVersion: '2025-02-24.acacia',
 });
 
 const paymentsRoutes = new Hono<{ Variables: AuthVariables }>();
@@ -18,7 +18,7 @@ const paymentsRoutes = new Hono<{ Variables: AuthVariables }>();
 // Creates a Stripe Checkout session and returns the hosted page URL.
 
 paymentsRoutes.post('/checkout', zValidator('json', CheckoutRequestSchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const { success: withinLimit } = await rateLimits.paymentsCheckout.limit(user.id);
   if (!withinLimit) {
@@ -162,7 +162,7 @@ paymentsRoutes.post('/webhook', async (c) => {
 // Validates a discount code and grants access atomically.
 
 paymentsRoutes.post('/discount', zValidator('json', DiscountValidateSchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const { success: withinLimit } = await rateLimits.paymentsDiscount.limit(user.id);
   if (!withinLimit) {
@@ -247,7 +247,7 @@ paymentsRoutes.post('/discount', zValidator('json', DiscountValidateSchema), asy
 // Returns the user's current subscription status + credit info.
 
 paymentsRoutes.get('/status', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const [[sub], [credits]] = await Promise.all([
     db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)),

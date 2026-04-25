@@ -126,7 +126,7 @@ export function ProductCard({ product, onConfirm, onDismiss }: ProductCardProps)
           onClick={() => onConfirm(product)}
           aria-label={t('barcode.confirmAdd')}
           className={cn(
-            'rounded-pill bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600',
+            'rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-800',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
           )}
         >

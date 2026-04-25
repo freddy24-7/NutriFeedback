@@ -16,7 +16,7 @@ export function CreditCounter({ creditsRemaining, creditsExpiresAt }: CreditCoun
       <span
         aria-label={t('credits.unlimited')}
         title={t('credits.unlimited')}
-        className="inline-flex items-center text-brand-500"
+        className="inline-flex items-center text-brand-700"
       >
         <svg
           className="h-5 w-5"

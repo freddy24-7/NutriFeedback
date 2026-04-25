@@ -175,7 +175,7 @@ export function ChatbotDrawer({ isOpen, onClose, language }: ChatbotDrawerProps)
 
           {showSuggestions && (
             <div className="space-y-2 pt-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-warm-400">
+              <p className="text-xs font-medium uppercase tracking-wide text-warm-600 dark:text-warm-400">
                 {t('chatbot.suggestionsLabel')}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -243,8 +243,8 @@ export function ChatbotDrawer({ isOpen, onClose, language }: ChatbotDrawerProps)
             disabled={sendDisabled}
             aria-label={t('chatbot.send')}
             className={cn(
-              'rounded-pill bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors',
-              'hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60',
+              'rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white transition-colors',
+              'hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
             )}
           >
@@ -264,7 +264,7 @@ function MessageBubble({ message, sourceLabel }: { message: ChatMessage; sourceL
         className={cn(
           'max-w-[85%] rounded-card px-3 py-2 text-sm leading-relaxed',
           isUser
-            ? 'bg-brand-500 text-white'
+            ? 'bg-brand-700 text-white'
             : 'bg-warm-100 text-warm-800 dark:bg-warm-800 dark:text-warm-100',
         )}
       >

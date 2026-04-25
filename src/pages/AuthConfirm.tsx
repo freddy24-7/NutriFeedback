@@ -58,6 +58,7 @@ export function AuthConfirmPage() {
     <>
       <Helmet>
         <title>{t('app.name')}</title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <div className="text-center">
         {status === 'loading' && (

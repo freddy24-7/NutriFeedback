@@ -57,6 +57,7 @@ export function SignUpPage() {
         <title>
           {t('auth.signUp.title')} — {t('app.name')}
         </title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
       <h1 className="font-display text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
@@ -195,7 +196,7 @@ export function SignUpPage() {
           disabled={isSubmitting}
           className={cn(
             'w-full rounded-pill py-2.5 font-display font-semibold text-white transition-colors duration-150',
-            'bg-brand-500 hover:bg-brand-600 disabled:opacity-60',
+            'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',
           )}
         >
           {isSubmitting ? t('common.saving') : t('auth.signUp.submit')}

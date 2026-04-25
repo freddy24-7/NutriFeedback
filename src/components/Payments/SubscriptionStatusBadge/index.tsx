@@ -5,7 +5,7 @@ import type { SubscriptionStatus } from '@/types/api';
 
 const STATUS_CLASSES: Record<SubscriptionStatus, string> = {
   trial: 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200',
-  active: 'bg-brand-500 text-white',
+  active: 'bg-brand-700 text-white',
   comped: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
   expired: 'bg-warm-200 text-warm-500 dark:bg-warm-700 dark:text-warm-400',
   cancelled: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',

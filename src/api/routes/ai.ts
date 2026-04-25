@@ -25,7 +25,7 @@ const aiRoutes = new Hono<{ Variables: AuthVariables }>();
 // Deducts 1 credit (atomic) BEFORE calling AI.
 
 aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   // Rate limit: 10 requests/min per user
   const { success: withinLimit } = await rateLimits.aiFoodParse.limit(user.id);
@@ -102,7 +102,7 @@ aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (
 // Requires 3+ distinct log days. Deducts 2 credits (atomic) BEFORE calling AI.
 
 aiRoutes.post('/generate-tips', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   // Rate limit: 5 requests/hour per user
   const { success: withinLimit } = await rateLimits.aiGenerateTips.limit(user.id);
@@ -214,7 +214,7 @@ aiRoutes.post('/generate-tips', async (c) => {
 // Returns the user's active (non-dismissed) tips.
 
 aiRoutes.get('/tips', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const tips = await db
     .select()
@@ -240,7 +240,7 @@ aiRoutes.get('/tips', async (c) => {
 // Dismisses a tip. Scoped to the authenticated user.
 
 aiRoutes.post('/tips/:id/dismiss', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const id = c.req.param('id');
 
   const [dismissed] = await db
@@ -260,7 +260,7 @@ aiRoutes.post('/tips/:id/dismiss', async (c) => {
 // Emails the user's latest active tip. Rate-limited to 1/day per user.
 
 aiRoutes.post('/email-tips', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
 
   const { success: withinLimit } = await rateLimits.tipEmail.limit(user.id);
   if (!withinLimit) {

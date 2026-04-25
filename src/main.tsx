@@ -15,6 +15,7 @@ import '@fontsource/dm-mono/500.css';
 import './lib/i18n';
 import './index.css';
 import { App } from './App';
+import { ErrorBoundary } from './components/UI/ErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +31,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </QueryClientProvider>
     </HelmetProvider>
   </StrictMode>,

@@ -21,6 +21,9 @@
     "optional": "Optional",
     "or": "or"
   },
+  "errorBoundary": {
+    "hint": "Refresh the page or go back to the dashboard."
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -231,6 +234,7 @@
   },
   "pricing": {
     "planName": "NutriApp Pro",
+    "description": "Start with 50 free credits — no card required. Upgrade to NutriApp Pro for unlimited food tracking and AI-powered nutrition tips.",
     "feature": {
       "unlimited": "Unlimited food tracking",
       "aiTips": "Personalised AI nutrition tips",
@@ -352,6 +356,9 @@
     "open": "How to use",
     "close": "Close",
     "stepLabel": "Step {{number}}",
+    "progress": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "gotIt": "Got it",
     "step1": {
       "title": "Log your meals",
       "description": "Type what you ate in plain language — 'had pasta for lunch' works fine. The AI fills in the nutrition details."

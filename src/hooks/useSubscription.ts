@@ -12,7 +12,7 @@ export function useSubscription() {
   const { data: session } = authClient.useSession();
 
   return useQuery<SubscriptionResponse>({
-    queryKey: ['subscription', session?.user.id],
+    queryKey: ['subscription', session?.user?.id],
     queryFn: fetchSubscription,
     enabled: session !== null && session !== undefined,
     staleTime: 60_000,

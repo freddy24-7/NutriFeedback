@@ -308,7 +308,7 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
           }}
           className={cn(
             'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
-            'border border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950',
+            'border border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
             'disabled:opacity-60',
           )}
         >
@@ -324,7 +324,7 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
           }}
           className={cn(
             'rounded-pill px-6 py-2 font-display font-semibold text-white transition-colors duration-150',
-            'bg-brand-500 hover:bg-brand-600 disabled:opacity-60',
+            'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',
           )}
         >
           {isAdding ? t('common.saving') : t('foodLog.submit')}

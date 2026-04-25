@@ -858,4 +858,255 @@ type HowToUseModalProps = {
 
 ---
 
+## Phase 6 — SEO + A11y + Polish
+
+---
+
+### P6-CUR-01 — SkeletonLoader
+
+**Status:** ✅ DONE
+**File to create:** `src/components/UI/SkeletonLoader/index.tsx`
+**Reference component:** `src/pages/Pricing.tsx` (uses inline `animate-pulse` skeleton — extract + generalise)
+
+**Props:**
+
+```ts
+type SkeletonLoaderProps = {
+  variant: 'card' | 'text' | 'avatar' | 'row';
+  lines?: number; // for variant='text', default 3
+  className?: string;
+};
+```
+
+**Design brief:**
+Animated pulse placeholder matching card shapes used throughout the app.
+
+- `card`: `h-32 w-full rounded-card bg-warm-100 dark:bg-warm-800 animate-pulse`
+- `text`: N lines of `h-3 rounded bg-warm-200 dark:bg-warm-700 animate-pulse`, last line 60% width
+- `avatar`: `h-10 w-10 rounded-full bg-warm-200 dark:bg-warm-700 animate-pulse`
+- `row`: `h-12 w-full rounded-lg bg-warm-100 dark:bg-warm-800 animate-pulse`
+
+Wrap in a `div` with `aria-busy="true"` and `aria-label="Loading"`.
+
+**States to implement:**
+
+- All four variants
+- `lines` prop: 1–5 text lines (clamp to 5)
+
+**Accessibility requirements:**
+
+- `aria-busy="true"` + `aria-label={t('common.loading')}` on wrapper
+- `role="status"` on wrapper
+
+**Cursor must not:**
+
+- Add animation libraries — use Tailwind `animate-pulse`
+- Add new npm dependencies
+- Change the props interface
+
+---
+
+### P6-CUR-02 — ErrorBoundary
+
+**Status:** ✅ DONE
+**File to create:** `src/components/UI/ErrorBoundary/index.tsx`
+**Reference component:** `src/pages/NotFound.tsx` (same visual language)
+
+**Props:**
+
+```ts
+type ErrorBoundaryProps = {
+  children: React.ReactNode;
+  fallback?: React.ReactNode; // custom fallback; default is the built-in error card
+};
+```
+
+**Design brief:**
+Class component (React error boundary must be a class component). Default fallback:
+
+```
+[!] Something went wrong
+    Refresh the page or go back to the dashboard.
+    [Go to dashboard] [Retry]
+```
+
+Card: `max-w-sm mx-auto mt-16 rounded-card p-8 text-center bg-warm-50 dark:bg-warm-800 border border-warm-200 dark:border-warm-700`.
+Error icon: `text-4xl text-red-400 mb-4` (use "!" in a circle or inline SVG — no new icon libraries).
+Title: `font-display font-semibold text-warm-900 dark:text-warm-100`.
+Subtitle: `text-sm text-warm-500 mt-2`.
+Buttons: `Go to dashboard` (link to `/dashboard`, brand pill style) + `Retry` (calls `this.setState({ hasError: false })`, outline pill style).
+
+**Translation keys** (already in both locale files):
+
+- `common.error` — "Something went wrong" / "Er is iets misgegaan"
+- `common.retry` — "Try again" / "Opnieuw proberen"
+- `nav.dashboard` — "Dashboard" / "Dashboard"
+
+**Accessibility requirements:**
+
+- `role="alert"` on the fallback card
+- Focus the error heading on mount (`useRef` / `ref` + `.focus()`)
+
+**Cursor must not:**
+
+- Use hooks inside the class component (use a functional inner component for i18n if needed)
+- Add new npm dependencies
+- Change the props interface
+
+---
+
+### P6-CUR-03 — EmptyState
+
+**Status:** ✅ DONE
+**File to create:** `src/components/UI/EmptyState/index.tsx`
+**Reference component:** `src/components/FoodLog/DailyView/index.tsx` (already has an inline empty state — extract + generalise)
+
+**Props:**
+
+```ts
+type EmptyStateProps = {
+  icon?: React.ReactNode; // optional decorative icon or SVG
+  title: string;
+  subtitle?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+};
+```
+
+**Design brief:**
+Centred card for zero-data states.
+
+Layout: `flex flex-col items-center justify-center gap-3 py-12 text-center`.
+Icon area: `text-5xl text-warm-300 dark:text-warm-600` (if provided, otherwise show a simple plate emoji `🍽️` as default).
+Title: `font-display font-semibold text-warm-700 dark:text-warm-200 text-lg`.
+Subtitle: `text-sm text-warm-400 dark:text-warm-500 max-w-xs`.
+Action button (optional): brand pill button — `bg-brand-500 text-white rounded-pill px-5 py-2.5 text-sm font-medium`.
+
+**States to implement:**
+
+- Without action: icon + title + subtitle only
+- With action: include the action button below subtitle
+- Without icon: no icon area rendered (no default emoji if icon prop omitted)
+
+**Accessibility requirements:**
+
+- `role="status"` on wrapper (informs screen readers this is an empty-data region)
+- Action button must have descriptive `aria-label` if label is ambiguous
+
+**Cursor must not:**
+
+- Add new npm dependencies
+- Hardcode any copy — all text comes from props
+- Change the props interface
+
+---
+
+### P6-CUR-04 — OnboardingTooltip
+
+**Status:** ✅ DONE
+**File to create:** `src/components/UI/OnboardingTooltip/index.tsx`
+**Reference component:** `src/components/HowToUse/HowToUseModal/index.tsx`
+
+**Props:**
+
+```ts
+type OnboardingTooltipProps = {
+  step: 1 | 2 | 3 | 4;
+  anchor: 'top' | 'bottom' | 'left' | 'right'; // which side of the target
+  isVisible: boolean;
+  onDismiss: () => void;
+  onNext?: () => void; // absent on final step
+};
+```
+
+**Data hook:** none — all state managed by parent
+
+**Design brief:**
+Small floating tooltip that walks a first-time user through 4 key actions.
+Tooltip card: `bg-brand-600 text-white rounded-lg shadow-xl p-4 max-w-xs text-sm z-50 absolute`.
+Arrow: CSS triangle pointing toward the anchor element.
+Step indicator: `Step 1 of 4` in `text-xs opacity-75`.
+Title + description from `howToUse.step{N}.title` + `howToUse.step{N}.description`.
+"Next" button (steps 1–3): white text, semi-transparent bg.
+"Got it" button (step 4): same style.
+Dismiss × button: `absolute top-2 right-2 opacity-60 hover:opacity-100`.
+
+**Wiring:**
+The parent component (in `DashboardPage`) tracks `onboardingStep` in local state.
+`isVisible` is `onboardingStep === step`.
+Dismiss sets `onboardingStep` to null and writes `hasCompletedOnboarding: true` to `localStorage`.
+
+**Translation keys** (already in both locale files):
+
+- `howToUse.stepLabel` — "Step {{number}}" / "Stap {{number}}"
+- `howToUse.step1.title`, `howToUse.step1.description` (×4)
+- `common.close` — "Close" / "Sluiten"
+
+**Accessibility requirements:**
+
+- `role="tooltip"` on the card
+- `aria-live="polite"` so screen readers announce each step
+- Escape key calls `onDismiss`
+
+**Cursor must not:**
+
+- Use a third-party tooltip library — pure CSS + React
+- Store onboarding state inside this component
+- Add new npm dependencies
+
+---
+
+### P6-CUR-05 — PWAInstallPrompt
+
+**Status:** ✅ DONE
+**File to create:** `src/components/UI/PWAInstallPrompt/index.tsx`
+
+**Props:**
+
+```ts
+type PWAInstallPromptProps = {
+  isVisible: boolean;
+  onAccept: () => void;
+  onDismiss: () => void;
+};
+```
+
+**Behaviour:**
+Listens for the browser's `beforeinstallprompt` event (already captured at the top level — passed down via props to keep this component pure).
+
+**Design brief:**
+Slide-up banner at bottom of screen: `fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom`.
+Card surface: `bg-white dark:bg-warm-900 border-t border-warm-200 dark:border-warm-700 shadow-xl p-4`.
+Content: NutriApp icon (32×32 placeholder circle, brand colour) + "Add NutriApp to your home screen" text + "Add" button (brand pill) + × dismiss.
+
+Copy (hardcode EN/NL based on current i18n language):
+
+- EN: "Add NutriApp to your home screen for quick access"
+- NL: "Voeg NutriApp toe aan je beginscherm voor snelle toegang"
+- Button: "Add" / "Toevoegen"
+
+(These strings do not need to be in i18n files — they are only shown in the browser prompt context and do not need translation infrastructure.)
+
+**States to implement:**
+
+- Hidden (`isVisible = false`): `translate-y-full` (off-screen)
+- Visible: slides in with `transition-transform duration-300`
+- Dismissed: calls `onDismiss`, parent sets `isVisible = false`
+- Accepted: calls `onAccept`, parent triggers the deferred install prompt
+
+**Accessibility requirements:**
+
+- `role="dialog"` + `aria-label="Install app"` on the banner
+- Dismiss button: `aria-label="Dismiss install prompt"`
+
+**Cursor must not:**
+
+- Call `window.prompt()` or interact with the `beforeinstallprompt` event directly — parent handles this
+- Add new npm dependencies
+- Import from any icon library
+
+---
+
 ## Upcoming Phases (not yet ready)

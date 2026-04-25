@@ -55,6 +55,8 @@ export function ContactPage() {
         <title>
           {t('contact.title')} — {t('app.name')}
         </title>
+        <meta name="description" content={t('contact.subtitle')} />
+        <link rel="canonical" href={`${import.meta.env['VITE_APP_URL'] ?? ''}/contact`} />
       </Helmet>
 
       <div className="mx-auto max-w-xl">
@@ -201,7 +203,7 @@ export function ContactPage() {
             disabled={isPending}
             className={cn(
               'w-full rounded-pill py-2.5 font-display font-semibold text-white transition-colors duration-150',
-              'bg-brand-500 hover:bg-brand-600 disabled:opacity-60',
+              'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',
             )}
           >
             {isPending ? t('contact.submitting') : t('contact.submit')}

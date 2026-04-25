@@ -86,7 +86,7 @@ async function lookupOpenFoodFacts(barcode: string): Promise<ProductLookupResult
 
   return {
     barcode,
-    name: p.product_name,
+    name: p.product_name ?? '',
     brand: p.brands?.split(',')[0]?.trim() ?? null,
     nutritionalPer100g: {
       calories: n['energy-kcal_100g'] ?? null,

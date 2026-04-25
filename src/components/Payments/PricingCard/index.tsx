@@ -27,13 +27,13 @@ export function PricingCard({ subscription, priceId, priceDisplay }: PricingCard
         {t('pricing.planName')}
       </h2>
 
-      <p className="mt-3 text-4xl font-bold text-brand-600 dark:text-brand-400">{priceDisplay}</p>
+      <p className="mt-3 text-4xl font-bold text-brand-700 dark:text-brand-400">{priceDisplay}</p>
 
       <ul className="mt-6 space-y-3 text-left">
         {(['unlimited', 'aiTips', 'barcode'] as const).map((key) => (
           <li key={key} className="flex items-start gap-2 text-sm text-warm-700 dark:text-warm-300">
             <svg
-              className="mt-0.5 h-4 w-4 shrink-0 text-brand-500"
+              className="mt-0.5 h-4 w-4 shrink-0 text-brand-700"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -60,7 +60,7 @@ export function PricingCard({ subscription, priceId, priceDisplay }: PricingCard
 
       <div className="mt-6">
         {isAllSet ? (
-          <p className="font-display font-semibold text-brand-600 dark:text-brand-400">
+          <p className="font-display font-semibold text-brand-700 dark:text-brand-400">
             {t('pricing.alreadyActive')}
           </p>
         ) : (
@@ -70,8 +70,8 @@ export function PricingCard({ subscription, priceId, priceDisplay }: PricingCard
             disabled={isPending}
             aria-label={t('pricing.upgrade')}
             className={cn(
-              'flex w-full items-center justify-center rounded-pill bg-brand-500 px-6 py-3 text-lg font-medium text-white transition-colors',
-              'hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60',
+              'flex w-full items-center justify-center rounded-pill bg-brand-700 px-6 py-3 text-lg font-medium text-white transition-colors',
+              'hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
             )}
           >

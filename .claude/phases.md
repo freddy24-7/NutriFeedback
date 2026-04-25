@@ -15,7 +15,7 @@
 | 3     | Barcode + Product DB | ✅ Complete (unit gate ✓, integration gate ✓ — e2e pending)                |
 | 4     | Payments + Credits   | ✅ Complete (unit gate ✓, integration gate ✓, e2e gate ✓ — manual pending) |
 | 5     | Chatbot + FAQ        | ✅ Complete (unit gate ✓, integration gate ✓, e2e gate ✓)                  |
-| 6     | SEO + A11y + Polish  | ⏳ Pending                                                                 |
+| 6     | SEO + A11y + Polish  | 🔨 In Progress                                                             |
 
 ---
 
@@ -372,16 +372,16 @@ passed, Lighthouse ≥ 90 across the board.
 
 ### Claude Code Tasks
 
-- [ ] React Helmet Async meta tags on all routes
-- [ ] Sitemap generator (build-time, all public routes)
-- [ ] `robots.txt` (exclude auth routes + API)
-- [ ] JSON-LD structured data (SoftwareApplication on home)
-- [ ] Prerender public pages (home, pricing, terms, privacy, contact)
-- [ ] Code-split: lazy load barcode scanner + all route-level pages
-- [ ] Image optimisation (WebP, explicit dimensions, lazy loading)
-- [ ] `vercel.json` security headers (CSP, X-Frame-Options, etc.)
-- [ ] Full axe-core automated a11y test suite
-- [ ] Lighthouse CI configuration (target ≥ 90 perf, 100 a11y, 100 SEO)
+- [x] React Helmet Async meta tags on all routes
+- [x] Sitemap generator (build-time, all public routes)
+- [x] `robots.txt` (exclude auth routes + API)
+- [x] JSON-LD structured data (SoftwareApplication on home)
+- [x] Prerender public pages (post-build HTML injection for pricing, contact, terms, privacy)
+- [x] Code-split: lazy load barcode scanner + all route-level pages
+- [x] Image optimisation (vite-imagetools installed; favicon.svg created; chunk splitting configured)
+- [x] `vercel.json` security headers (CSP, X-Frame-Options, etc.)
+- [x] Full axe-core automated a11y test suite
+- [x] Lighthouse CI configuration (target ≥ 90 perf, 100 a11y, 100 SEO)
 
 ### Cursor Tasks [CURSOR]
 

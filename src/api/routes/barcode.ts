@@ -18,7 +18,7 @@ const barcodeRoutes = new Hono<{ Variables: AuthVariables }>();
 // Lookup chain: DB cache → Open Food Facts → USDA → AI estimate.
 
 barcodeRoutes.get('/:barcode', async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const barcode = c.req.param('barcode');
 
   const { success: withinLimit } = await rateLimits.barcodeLookup.limit(user.id);
@@ -146,7 +146,7 @@ barcodeRoutes.get('/:barcode', async (c) => {
 // User registers a product manually.
 
 barcodeRoutes.post('/products', zValidator('json', RegisterProductSchema), async (c) => {
-  const user = c.get('user');
+  const user = c.get('user')!;
   const body = c.req.valid('json');
 
   const name = sanitiseTextServer(body.name);

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /auth/
+
+Sitemap: https://nutriapp.example.com/sitemap.xml

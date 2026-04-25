@@ -31,7 +31,7 @@ export function LanguageToggle() {
               'rounded-pill border px-2 py-1 font-mono text-xs font-semibold uppercase transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
               active
-                ? 'border-brand-500 bg-brand-500 text-white'
+                ? 'border-brand-700 bg-brand-700 text-white'
                 : 'border-warm-300 bg-transparent text-warm-600 hover:bg-warm-100 dark:border-warm-600 dark:text-warm-300 dark:hover:bg-warm-800',
             )}
           >

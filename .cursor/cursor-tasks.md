@@ -516,7 +516,7 @@ Processing level indicator: 4 coloured squares (`w-3 h-3 rounded-sm`):
 
 ### P4-CUR-01 — CreditCounter
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Payments/CreditCounter/index.tsx`
 **Reference component:** `src/components/AI/ConfidenceBadge/index.tsx`
 
@@ -565,7 +565,7 @@ Compact counter for the navigation bar. Two sub-states:
 
 ### P4-CUR-02 — SubscriptionStatusBadge
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Payments/SubscriptionStatusBadge/index.tsx`
 **Reference component:** `src/components/FoodLog/MealTypeBadge/index.tsx`
 
@@ -610,7 +610,7 @@ Pill badge showing subscription status. Shape: `inline-flex items-center px-2 py
 
 ### P4-CUR-03 — DiscountCodeInput
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Payments/DiscountCodeInput/index.tsx`
 **Reference component:** `src/components/Contact/ContactForm/index.tsx`
 
@@ -661,7 +661,7 @@ States:
 
 ### P4-CUR-04 — PaywallModal
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Payments/PaywallModal/index.tsx`
 **Reference component:** `src/components/Barcode/BarcodeScanner/index.tsx` (for modal shell)
 
@@ -717,7 +717,7 @@ Structure:
 
 ### P4-CUR-05 — PricingCard
 
-**Status:** ✅ READY
+**Status:** ✅ DONE
 **File to create:** `src/components/Payments/PricingCard/index.tsx`
 **Reference component:** `src/components/Payments/PaywallModal/index.tsx` _(build P4-CUR-04 first)_
 

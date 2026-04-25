@@ -28,6 +28,7 @@
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign out",
+    "pricing": "Pricing",
     "terms": "Terms",
     "privacy": "Privacy",
     "openMenu": "Open menu",
@@ -192,9 +193,51 @@
   "credits": {
     "remaining_one": "{{count}} credit remaining",
     "remaining_other": "{{count}} credits remaining",
+    "remaining": "{{count}} credits",
+    "unlimited": "Unlimited access",
+    "expiresIn_one": "{{count}} day left",
+    "expiresIn_other": "{{count}} days left",
+    "expired": "Trial ended",
     "low": "Low credits",
     "exhausted": "No credits remaining",
     "upgrade": "Upgrade for more"
+  },
+  "subscription": {
+    "status": {
+      "trial": "Trial",
+      "active": "Active",
+      "comped": "Beta Access",
+      "expired": "Expired",
+      "cancelled": "Cancelled"
+    },
+    "discount": {
+      "placeholder": "Discount code",
+      "apply": "Apply",
+      "applied": "Code applied — access granted!"
+    }
+  },
+  "paywall": {
+    "title": {
+      "no_credits": "You've used all your free credits",
+      "expired": "Your free trial has ended"
+    },
+    "body": {
+      "no_credits": "Upgrade to NutriApp Pro for unlimited food tracking and AI tips.",
+      "expired": "Your 30-day trial is over. Have a discount code? Enter it below."
+    },
+    "upgrade": "Upgrade to Pro",
+    "skip": "Maybe later",
+    "or": "— or —"
+  },
+  "pricing": {
+    "planName": "NutriApp Pro",
+    "feature": {
+      "unlimited": "Unlimited food tracking",
+      "aiTips": "Personalised AI nutrition tips",
+      "barcode": "Barcode scanner with 3M+ products"
+    },
+    "alreadyActive": "You're all set ✓",
+    "upgrade": "Upgrade to Pro"
   },
   "ai": {
     "parseFood": {

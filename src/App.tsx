@@ -13,6 +13,7 @@ import { AuthConfirmPage } from './pages/AuthConfirm';
 import { TermsPage } from './pages/Terms';
 import { PrivacyPage } from './pages/Privacy';
 import { ContactPage } from './pages/Contact';
+import { PricingPage } from './pages/Pricing';
 import { NotFoundPage } from './pages/NotFound';
 
 const router = createBrowserRouter([
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: '/terms', element: <TermsPage /> },
       { path: '/privacy', element: <PrivacyPage /> },
       { path: '/contact', element: <ContactPage /> },
+      { path: '/pricing', element: <PricingPage /> },
       {
         element: <ProtectedRoute />,
         children: [{ path: '/dashboard', element: <DashboardPage /> }],

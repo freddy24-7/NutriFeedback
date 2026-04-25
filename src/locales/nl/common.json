@@ -28,6 +28,7 @@
     "signIn": "Inloggen",
     "signUp": "Registreren",
     "signOut": "Uitloggen",
+    "pricing": "Prijzen",
     "terms": "Voorwaarden",
     "privacy": "Privacy",
     "openMenu": "Menu openen",
@@ -192,9 +193,51 @@
   "credits": {
     "remaining_one": "{{count}} credit resterend",
     "remaining_other": "{{count}} credits resterend",
+    "remaining": "{{count}} tegoed",
+    "unlimited": "Onbeperkte toegang",
+    "expiresIn_one": "nog {{count}} dag",
+    "expiresIn_other": "nog {{count}} dagen",
+    "expired": "Proefperiode voorbij",
     "low": "Weinig credits",
     "exhausted": "Geen credits meer",
     "upgrade": "Upgraden voor meer"
+  },
+  "subscription": {
+    "status": {
+      "trial": "Proefperiode",
+      "active": "Actief",
+      "comped": "Betatoegang",
+      "expired": "Verlopen",
+      "cancelled": "Geannuleerd"
+    },
+    "discount": {
+      "placeholder": "Kortingscode",
+      "apply": "Toepassen",
+      "applied": "Code toegepast — toegang verleend!"
+    }
+  },
+  "paywall": {
+    "title": {
+      "no_credits": "Je hebt al je gratis tegoed gebruikt",
+      "expired": "Je proefperiode is afgelopen"
+    },
+    "body": {
+      "no_credits": "Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en AI-tips.",
+      "expired": "Je proefperiode van 30 dagen is voorbij. Heb je een kortingscode? Voer hem hieronder in."
+    },
+    "upgrade": "Upgrade naar Pro",
+    "skip": "Misschien later",
+    "or": "— of —"
+  },
+  "pricing": {
+    "planName": "NutriApp Pro",
+    "feature": {
+      "unlimited": "Onbeperkt voedsel bijhouden",
+      "aiTips": "Persoonlijke AI-voedingstips",
+      "barcode": "Barcodescanner met 3M+ producten"
+    },
+    "alreadyActive": "Je bent klaar ✓",
+    "upgrade": "Upgrade naar Pro"
   },
   "ai": {
     "parseFood": {

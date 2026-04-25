@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { authClient } from '@/lib/auth/client';
 import { ThemeToggle } from '@/components/Layout/ThemeToggle';
 import { LanguageToggle } from '@/components/Layout/LanguageToggle';
+import { CreditCounter } from '@/components/Payments/CreditCounter';
+import { useSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/utils/cn';
 
 export function AppLayout() {
   const { t } = useTranslation();
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
+  const { data: sub } = useSubscription();
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -43,6 +46,20 @@ export function AppLayout() {
                 >
                   {t('nav.dashboard')}
                 </Link>
+                <Link
+                  to="/pricing"
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                  aria-label={t('nav.pricing')}
+                >
+                  {t('nav.pricing')}
+                </Link>
+                {sub !== undefined && (
+                  <CreditCounter
+                    creditsRemaining={sub.creditsRemaining}
+                    creditsExpiresAt={sub.creditsExpiresAt}
+                  />
+                )}
                 <button
                   onClick={() => void handleSignOut()}
                   className="text-sm font-medium"

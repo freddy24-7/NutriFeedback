@@ -7,7 +7,9 @@ import { todayISO, formatDate } from '@/utils/date';
 import { DailyView } from '@/components/FoodLog/DailyView';
 import { FoodEntryForm } from '@/components/FoodLog/FoodEntryForm';
 import { AiTipCard } from '@/components/AI/AiTipCard';
+import { PaywallModal } from '@/components/Payments/PaywallModal';
 import { useAiTips, useDismissTip, useGenerateTip } from '@/hooks/useAiTips';
+import { useSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/utils/cn';
 
 export function DashboardPage() {
@@ -17,6 +19,17 @@ export function DashboardPage() {
   const [date, setDate] = useState(todayISO());
   const [showForm, setShowForm] = useState(false);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
+
+  const { data: sub } = useSubscription();
+  const [paywallDismissed, setPaywallDismissed] = useState(false);
+
+  const paywallReason = sub?.status === 'expired' ? 'expired' : 'no_credits';
+
+  // Auto-open when credits exhausted or trial expired, unless user has dismissed it this session
+  const shouldShowPaywall =
+    !paywallDismissed &&
+    sub !== undefined &&
+    (sub.status === 'expired' || (sub.status === 'trial' && sub.creditsRemaining === 0));
 
   const { data: tips } = useAiTips();
   const { mutate: dismissTip } = useDismissTip();
@@ -41,6 +54,12 @@ export function DashboardPage() {
 
   return (
     <>
+      <PaywallModal
+        isOpen={shouldShowPaywall}
+        onClose={() => setPaywallDismissed(true)}
+        reason={paywallReason}
+      />
+
       <Helmet>
         <title>
           {t('dashboard.title')} — {t('app.name')}

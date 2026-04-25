@@ -65,3 +65,32 @@ export type ProductCardProps = {
   onConfirm: (product: ProductResponse) => void;
   onDismiss: () => void;
 };
+
+// ─── Phase 4 — Payments components ───────────────────────────────────────────
+
+import type { SubscriptionResponse, SubscriptionStatus } from './api';
+
+export type CreditCounterProps = {
+  creditsRemaining: number;
+  creditsExpiresAt: string | null;
+};
+
+export type SubscriptionStatusBadgeProps = {
+  status: SubscriptionStatus;
+};
+
+export type PaywallModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  reason?: 'no_credits' | 'expired';
+};
+
+export type DiscountCodeInputProps = {
+  onSuccess?: (result: { granted: boolean; type: string }) => void;
+};
+
+export type PricingCardProps = {
+  subscription: SubscriptionResponse;
+  priceId: string;
+  priceDisplay: string;
+};

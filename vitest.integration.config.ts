@@ -22,6 +22,10 @@ export default defineConfig(({ mode }) => {
         BETTER_AUTH_SECRET: env['BETTER_AUTH_SECRET'] ?? '',
         BETTER_AUTH_URL: env['BETTER_AUTH_URL'] ?? 'http://localhost:5173',
         VITE_APP_URL: env['VITE_APP_URL'] ?? 'http://localhost:5173',
+        // Stripe: real key loaded from .env.local; placeholder used in tests that mock Stripe.
+        STRIPE_SECRET_KEY: env['STRIPE_SECRET_KEY'] ?? 'sk_test_placeholder',
+        STRIPE_WEBHOOK_SECRET: env['STRIPE_WEBHOOK_SECRET'] ?? 'whsec_placeholder',
+        STRIPE_PRICE_ID: env['STRIPE_PRICE_ID'] ?? 'price_placeholder',
         NODE_ENV: 'test',
       },
     },

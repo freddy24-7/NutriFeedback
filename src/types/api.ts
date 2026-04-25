@@ -136,6 +136,37 @@ export const NewFoodEntryWithProductSchema = z.object({
   productId: z.string().uuid().optional(),
 });
 
+// ─── Payments ─────────────────────────────────────────────────────────────────
+
+export const CheckoutRequestSchema = z.object({
+  priceId: z.string().startsWith('price_'),
+  successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+});
+export type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
+
+export const DiscountValidateSchema = z.object({
+  code: z.string().min(1).max(50).toUpperCase(),
+});
+export type DiscountValidateInput = z.infer<typeof DiscountValidateSchema>;
+
+export const SubscriptionStatusSchema = z.enum([
+  'trial',
+  'active',
+  'comped',
+  'expired',
+  'cancelled',
+]);
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
+
+export const SubscriptionResponseSchema = z.object({
+  status: SubscriptionStatusSchema,
+  currentPeriodEnd: z.string().nullable(),
+  creditsRemaining: z.number().int(),
+  creditsExpiresAt: z.string().nullable(),
+});
+export type SubscriptionResponse = z.infer<typeof SubscriptionResponseSchema>;
+
 // ─── API response shape ───────────────────────────────────────────────────────
 
 export type ApiError = { error: string };

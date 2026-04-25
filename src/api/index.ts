@@ -7,6 +7,7 @@ import { foodLogRoutes } from './routes/foodLog';
 import { aiRoutes } from './routes/ai';
 import { barcodeRoutes } from './routes/barcode';
 import { contactRoutes } from './routes/contact';
+import { paymentsRoutes } from './routes/payments';
 
 export const runtime = 'edge';
 
@@ -31,5 +32,12 @@ app.route('/ai', aiRoutes);
 
 app.use('/barcode/*', authMiddleware);
 app.route('/barcode', barcodeRoutes);
+
+// Payment routes — webhook is public (Stripe calls it directly, signature-verified internally).
+// All other /payments/* sub-paths require auth.
+app.use('/payments/checkout', authMiddleware);
+app.use('/payments/discount', authMiddleware);
+app.use('/payments/status', authMiddleware);
+app.route('/payments', paymentsRoutes);
 
 export default handle(app);

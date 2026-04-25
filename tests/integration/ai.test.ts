@@ -18,6 +18,11 @@ import { seedUser, seedFoodLog, seedTip, cleanupUser, type TestUser } from '../h
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
+vi.mock('@/lib/redis/client', async () => {
+  const { mockRedisModule } = await import('../helpers/mockRateLimiter');
+  return mockRedisModule();
+});
+
 vi.mock('@/lib/ai/client', () => ({
   generateAIResponse: vi.fn(),
 }));

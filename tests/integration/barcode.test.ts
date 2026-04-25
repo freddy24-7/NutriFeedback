@@ -18,6 +18,11 @@ import { seedUser, cleanupUser, type TestUser } from '../helpers/dbFixtures';
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
+vi.mock('@/lib/redis/client', async () => {
+  const { mockRedisModule } = await import('../helpers/mockRateLimiter');
+  return mockRedisModule();
+});
+
 vi.mock('@/lib/ai/client', () => ({
   generateAIResponse: vi.fn(),
 }));

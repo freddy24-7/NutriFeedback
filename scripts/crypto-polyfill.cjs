@@ -13,12 +13,14 @@ if (!globalThis.crypto) {
   globalThis.crypto = crypto.webcrypto;
 }
 
-// globalThis.fetch is required by @neondatabase/serverless and @upstash/redis.
-// On Node 16 it doesn't exist natively; polyfill with node-fetch v2.
+// globalThis.fetch is required by @neondatabase/serverless, @upstash/redis, etc.
+// Use undici — the same fetch implementation as Node 18/20 native fetch.
+// node-fetch v2 has DNS resolution issues on some macOS environments.
 if (!globalThis.fetch) {
-  const nodeFetch = require('node-fetch');
-  globalThis.fetch = nodeFetch.default ?? nodeFetch;
-  globalThis.Headers = nodeFetch.Headers;
-  globalThis.Request = nodeFetch.Request;
-  globalThis.Response = nodeFetch.Response;
+  const undici = require('undici');
+  globalThis.fetch = undici.fetch;
+  globalThis.Headers = undici.Headers;
+  globalThis.Request = undici.Request;
+  globalThis.Response = undici.Response;
+  globalThis.FormData = undici.FormData;
 }

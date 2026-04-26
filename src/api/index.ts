@@ -24,7 +24,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     else if (Array.isArray(v)) v.forEach((s) => webHeaders.append(k, s));
   }
 
-  let body: Uint8Array | undefined;
+  let body: Buffer | undefined;
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     const chunks: Buffer[] = [];
     await new Promise<void>((resolve, reject) => {
@@ -36,7 +36,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   const response = await app.fetch(
-    new Request(url, { method: req.method ?? 'GET', headers: webHeaders, ...(body && { body }) }),
+    new Request(url, {
+      method: req.method ?? 'GET',
+      headers: webHeaders,
+      ...(body && { body: body as BodyInit }),
+    }),
   );
 
   res.statusCode = response.status;

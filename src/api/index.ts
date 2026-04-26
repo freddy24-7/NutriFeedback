@@ -10,8 +10,6 @@ import { contactRoutes } from './routes/contact';
 import { paymentsRoutes } from './routes/payments';
 import { chatRoutes } from './routes/chat';
 
-export const runtime = 'edge';
-
 const appUrl = process.env['VITE_APP_URL'] ?? 'http://localhost:5173';
 
 const app = new Hono().basePath('/api');

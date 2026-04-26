@@ -28,6 +28,12 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     const chunks: Buffer[] = [];
     await new Promise<void>((resolve, reject) => {
+      // Guard: if Vercel already consumed the stream, resolve immediately.
+      // Normally prevented by bodyParser:false in api/index.ts config export.
+      if (req.readableEnded) {
+        resolve();
+        return;
+      }
       req.on('data', (c: Buffer) => chunks.push(c));
       req.on('end', resolve);
       req.on('error', reject);

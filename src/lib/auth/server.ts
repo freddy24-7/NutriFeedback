@@ -62,5 +62,5 @@ export const auth = betterAuth({
     },
   },
 
-  trustedOrigins: [process.env['VITE_APP_URL'] ?? 'http://localhost:5173'],
+  trustedOrigins: process.env['VITE_APP_URL'] ? [process.env['VITE_APP_URL']] : [],
 });

@@ -3,13 +3,16 @@
   "outputDirectory": "dist",
   "buildCommand": "npm run build",
   "rewrites": [{ "source": "/api/(.*)", "destination": "/src/api/index.ts" }],
+  "functions": {
+    "src/api/index.ts": {}
+  },
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; connect-src 'self' https://*.neon.tech https://api.stripe.com https://generativelanguage.googleapis.com; frame-src https://js.stripe.com; img-src 'self' data: https://images.openfoodfacts.org;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://vercel.live; font-src 'self' data:; connect-src 'self' https://*.neon.tech https://api.stripe.com https://generativelanguage.googleapis.com https://vercel.live; frame-src https://js.stripe.com; img-src 'self' data: https://images.openfoodfacts.org;"
         },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },

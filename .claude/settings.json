@@ -5,7 +5,13 @@
       "Bash(npx playwright *)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
       "Bash(node ./scripts/generate-sitemap.cjs)",
-      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff --stat HEAD)"
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff --stat HEAD)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp status --short)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp log --oneline -5)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff HEAD vercel.json src/lib/auth/client.ts src/lib/auth/server.ts vite.config.ts api/index.ts src/types/api.ts tests/e2e/auth.spec.ts tests/e2e/food-log.spec.ts)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp log --oneline origin/main..HEAD)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp log --oneline origin/feature/Scanner..HEAD)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp remote -v)"
     ]
   }
 }

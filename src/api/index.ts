@@ -4,7 +4,7 @@ import { createApiApp } from './create-app';
 // Disable Vercel's body pre-parsing so we can read the raw stream.
 // Required for correct Stripe webhook signature verification and for
 // passing the unmodified body to Better Auth.
-export const config = { api: { bodyParser: false } };
+export const config = { maxDuration: 60, api: { bodyParser: false } };
 
 const app = createApiApp();
 

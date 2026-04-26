@@ -1,2 +1,2 @@
-export const runtime = 'edge';
+export const config = { runtime: 'edge' };
 export { default } from '../src/api/index';

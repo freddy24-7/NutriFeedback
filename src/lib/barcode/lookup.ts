@@ -33,11 +33,13 @@ export type NutritionalPer100g = {
 const CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 async function getCached(barcode: string): Promise<ProductLookupResult | null> {
+  if (redis === null) return null;
   const cached = await redis.get<ProductLookupResult>(cacheKeys.offProduct(barcode));
   return cached ?? null;
 }
 
 async function setCache(barcode: string, product: ProductLookupResult): Promise<void> {
+  if (redis === null) return;
   await redis.set(cacheKeys.offProduct(barcode), product, { ex: CACHE_TTL_SECONDS });
 }
 

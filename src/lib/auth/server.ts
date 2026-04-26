@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '@/lib/db/client';
+import { db } from '@/lib/db/client-auth';
 import {
   authUser,
   authSession,
@@ -8,7 +8,8 @@ import {
   authVerification,
   userProfiles,
   userCredits,
-} from '@/lib/db/schema';
+} from '@/lib/db/schema-better-auth';
+import { corsAllowedOrigins } from '@/api/origins';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -62,5 +63,5 @@ export const auth = betterAuth({
     },
   },
 
-  trustedOrigins: process.env['VITE_APP_URL'] ? [process.env['VITE_APP_URL']] : [],
+  trustedOrigins: corsAllowedOrigins(),
 });

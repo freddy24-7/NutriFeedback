@@ -158,16 +158,24 @@ npx drizzle-kit migrate
 # 4. Seed dev data
 psql $DATABASE_URL_UNPOOLED < neon/seed.sql
 
-# 5. Start dev server
+# 5. Start dev server (Vite + local Hono API — `/api` is proxied to port 8787)
 npm run dev
 ```
+
+`npm run dev` runs **two processes**: the Hono API (`dev:api`, default `http://127.0.0.1:8787`) and Vite (`dev:vite`). The browser talks only to Vite; `/api/*` is proxied to the API. Ensure `.env.local` includes `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_APP_URL` (see `.env.example`). For production or `vercel dev`, the bundled `api/index.js` is used instead.
+
+### Deploying on Vercel (production)
+
+Set **`VITE_APP_URL`** and **`BETTER_AUTH_URL`** to your public site URL (for example `https://your-domain.com`, no trailing slash). Use the same values for **Production** in the Vercel dashboard so the client bundle and serverless API agree. The API also trusts **`VERCEL_URL`** (injected by Vercel on every deployment), which helps **Preview** URLs (`*.vercel.app`) when `VITE_APP_URL` is only defined for production. Ensure **`DATABASE_URL`**, **`BETTER_AUTH_SECRET`**, and other server secrets are set for the **Production** (and **Preview** if needed) environments.
 
 ### Scripts
 
 ```bash
-npm run dev               # Dev server at http://localhost:5173
+npm run dev               # Vite + local API (see Setup step 5)
+npm run dev:vite          # Frontend only (needs API elsewhere, e.g. `vercel dev` or `npm run dev:api`)
+npm run dev:api           # Hono API only on DEV_API_PORT (default 8787)
 npm run build             # Production build (includes prerender + PWA)
-npm run preview           # Preview production build locally
+npm run preview           # Preview production build locally (proxies /api to DEV_API_PROXY)
 
 npm run lint              # ESLint
 npm run lint:fix          # ESLint with auto-fix

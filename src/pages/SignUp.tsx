@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { authClient } from '@/lib/auth/client';
 import { SignUpFormSchema, type SignUpFormInput } from '@/types/api';
+import {
+  AUTH_REQUEST_TIMEOUT_MS,
+  isAuthTimeoutError,
+  withAuthRequestTimeout,
+} from '@/utils/auth-request';
 import { cn } from '@/utils/cn';
 
 export function SignUpPage() {
@@ -21,18 +26,27 @@ export function SignUpPage() {
 
   const onSubmit = async (data: SignUpFormInput) => {
     setServerError(null);
-    const { error } = await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.email.split('@')[0] ?? data.email,
-    });
+    try {
+      const { error } = await withAuthRequestTimeout(
+        authClient.signUp.email({
+          email: data.email,
+          password: data.password,
+          name: data.email.split('@')[0] ?? data.email,
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+      );
 
-    if (error) {
-      setServerError(error.status === 422 ? t('auth.error.emailTaken') : t('auth.error.generic'));
-      return;
+      if (error) {
+        setServerError(error.status === 422 ? t('auth.error.emailTaken') : t('auth.error.generic'));
+        return;
+      }
+
+      setEmailSent(data.email);
+    } catch (e) {
+      setServerError(
+        isAuthTimeoutError(e) ? t('auth.error.timeout') : t('auth.error.networkError'),
+      );
     }
-
-    setEmailSent(data.email);
   };
 
   if (emailSent !== null) {

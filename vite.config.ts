@@ -1,68 +1,91 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
-export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
-      manifest: {
-        name: 'NutriApp',
-        short_name: 'NutriApp',
-        description: 'Flexible nutrition tracking — log what you eat, get AI-powered tips',
-        theme_color: '#339e68',
-        background_color: '#fafaf8',
-        display: 'standalone',
-        orientation: 'portrait',
-        start_url: '/',
-        icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'pages-cache',
-              networkTimeoutSeconds: 3,
-              cacheableResponse: { statuses: [200] },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const apiProxyTarget = env['DEV_API_PROXY'] || 'http://127.0.0.1:8787';
+
+  return {
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.svg'],
+        manifest: {
+          name: 'NutriApp',
+          short_name: 'NutriApp',
+          description: 'Flexible nutrition tracking — log what you eat, get AI-powered tips',
+          theme_color: '#339e68',
+          background_color: '#fafaf8',
+          display: 'standalone',
+          orientation: 'portrait',
+          start_url: '/',
+          icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ request }) => request.mode === 'navigate',
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'pages-cache',
+                networkTimeoutSeconds: 3,
+                cacheableResponse: { statuses: [200] },
+              },
             },
-          },
-          {
-            urlPattern: /^\/api\//,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 10,
-              cacheableResponse: { statuses: [200] },
+            {
+              // Never cache POST/PUT auth or mutations — only optional GET reads via SW.
+              urlPattern: ({ request, url }) =>
+                request.method === 'GET' && url.pathname.startsWith('/api/'),
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                networkTimeoutSeconds: 10,
+                cacheableResponse: { statuses: [200] },
+              },
             },
-          },
-        ],
+          ],
+        },
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
     },
-  },
-  build: {
-    // Warn when individual chunks exceed 500 kB
-    chunkSizeWarningLimit: 500,
-    rollupOptions: {
-      output: {
-        // Split vendor chunks for better long-term caching
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          query: ['@tanstack/react-query'],
-          i18n: ['react-i18next', 'i18next'],
+    server: {
+      proxy: {
+        '/api': {
+          target: apiProxyTarget,
+          changeOrigin: true,
         },
       },
     },
-  },
+    preview: {
+      proxy: {
+        '/api': {
+          target: apiProxyTarget,
+          changeOrigin: true,
+        },
+      },
+    },
+    build: {
+      // Warn when individual chunks exceed 500 kB
+      chunkSizeWarningLimit: 500,
+      rollupOptions: {
+        output: {
+          // Split vendor chunks for better long-term caching
+          manualChunks: {
+            react: ['react', 'react-dom'],
+            router: ['react-router-dom'],
+            query: ['@tanstack/react-query'],
+            i18n: ['react-i18next', 'i18next'],
+          },
+        },
+      },
+    },
+  };
 });

@@ -12,10 +12,21 @@ import {
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
 import { sql } from 'drizzle-orm';
 
+import { authUser, languageEnum, userProfiles, userCredits } from './schema-better-auth';
+
+export {
+  languageEnum,
+  themeEnum,
+  authUser,
+  authSession,
+  authAccount,
+  authVerification,
+  userProfiles,
+  userCredits,
+} from './schema-better-auth';
+
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
-export const languageEnum = pgEnum('language', ['en', 'nl']);
-export const themeEnum = pgEnum('theme', ['light', 'dark']);
 export const mealTypeEnum = pgEnum('meal_type', ['breakfast', 'lunch', 'dinner', 'snack', 'drink']);
 export const sourceEnum = pgEnum('source', ['manual', 'barcode', 'ai_parsed', 'imported']);
 export const productSourceEnum = pgEnum('product_source', [
@@ -34,76 +45,8 @@ export const subscriptionStatusEnum = pgEnum('subscription_status', [
 export const discountTypeEnum = pgEnum('discount_type', ['beta', 'influencer', 'timed']);
 export const severityEnum = pgEnum('severity', ['info', 'suggestion', 'important']);
 
-// ─── Better Auth tables ───────────────────────────────────────────────────────
-// These are managed by Better Auth. Field names must match Better Auth's schema.
-// Do not rename columns — Better Auth maps to them by camelCase convention.
-
-export const authUser = pgTable('user', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').notNull().default(false),
-  image: text('image'),
-  createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull(),
-});
-
-export const authSession = pgTable('session', {
-  id: text('id').primaryKey(),
-  expiresAt: timestamp('expires_at').notNull(),
-  token: text('token').notNull().unique(),
-  createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull(),
-  ipAddress: text('ip_address'),
-  userAgent: text('user_agent'),
-  userId: text('user_id')
-    .notNull()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
-});
-
-export const authAccount = pgTable('account', {
-  id: text('id').primaryKey(),
-  accountId: text('account_id').notNull(),
-  providerId: text('provider_id').notNull(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  idToken: text('id_token'),
-  accessTokenExpiresAt: timestamp('access_token_expires_at'),
-  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
-  scope: text('scope'),
-  password: text('password'),
-  createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull(),
-});
-
-export const authVerification = pgTable('verification', {
-  id: text('id').primaryKey(),
-  identifier: text('identifier').notNull(),
-  value: text('value').notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
-  createdAt: timestamp('created_at'),
-  updatedAt: timestamp('updated_at'),
-});
-
 // ─── App tables ──────────────────────────────────────────────────────────────
 // userId fields reference authUser.id (text) — not uuid — to match Better Auth.
-
-export const userProfiles = pgTable('user_profiles', {
-  id: text('id')
-    .primaryKey()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
-  language: languageEnum('language').notNull().default('en'),
-  theme: themeEnum('theme').notNull().default('light'),
-  dateOfBirth: text('date_of_birth'),
-  sex: text('sex'),
-  acceptedTermsAt: timestamp('accepted_terms_at'),
-  acceptedPrivacyAt: timestamp('accepted_privacy_at'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
 
 export const foodLogEntries = pgTable('food_log_entries', {
   id: uuid('id')
@@ -136,16 +79,6 @@ export const products = pgTable('products', {
   verified: boolean('verified').notNull().default(false),
   createdBy: text('created_by').references(() => authUser.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-});
-
-export const userCredits = pgTable('user_credits', {
-  userId: text('user_id')
-    .primaryKey()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
-  creditsRemaining: integer('credits_remaining').notNull().default(0),
-  creditsUsed: integer('credits_used').notNull().default(0),
-  expiresAt: timestamp('expires_at'),
-  convertedToPaidAt: timestamp('converted_to_paid_at'),
 });
 
 export const creditTransactions = pgTable('credit_transactions', {

@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { authClient } from '@/lib/auth/client';
 import { SignInFormSchema, type SignInFormInput } from '@/types/api';
+import {
+  AUTH_REQUEST_TIMEOUT_MS,
+  isAuthTimeoutError,
+  withAuthRequestTimeout,
+} from '@/utils/auth-request';
 import { cn } from '@/utils/cn';
 
 export function SignInPage() {
@@ -21,17 +26,26 @@ export function SignInPage() {
 
   const onSubmit = async (data: SignInFormInput) => {
     setServerError(null);
-    const { error } = await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const { error } = await withAuthRequestTimeout(
+        authClient.signIn.email({
+          email: data.email,
+          password: data.password,
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+      );
 
-    if (error) {
-      setServerError(t('auth.error.invalidCredentials'));
-      return;
+      if (error) {
+        setServerError(t('auth.error.invalidCredentials'));
+        return;
+      }
+
+      void navigate('/dashboard');
+    } catch (e) {
+      setServerError(
+        isAuthTimeoutError(e) ? t('auth.error.timeout') : t('auth.error.networkError'),
+      );
     }
-
-    void navigate('/dashboard');
   };
 
   return (

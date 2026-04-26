@@ -1,46 +1,49 @@
-import { Hono } from 'hono';
-import { handle } from 'hono/vercel';
-import { cors } from 'hono/cors';
-import { auth } from '@/lib/auth/server';
-import { authMiddleware, optionalAuthMiddleware } from './middleware/auth';
-import { foodLogRoutes } from './routes/foodLog';
-import { aiRoutes } from './routes/ai';
-import { barcodeRoutes } from './routes/barcode';
-import { contactRoutes } from './routes/contact';
-import { paymentsRoutes } from './routes/payments';
-import { chatRoutes } from './routes/chat';
+import type { IncomingMessage, ServerResponse } from 'http';
+import { createApiApp } from './create-app';
 
-const appUrl = process.env['VITE_APP_URL'] ?? 'http://localhost:5173';
+// Disable Vercel's body pre-parsing so we can read the raw stream.
+// Required for correct Stripe webhook signature verification and for
+// passing the unmodified body to Better Auth.
+export const config = { api: { bodyParser: false } };
 
-const app = new Hono().basePath('/api');
+const app = createApiApp();
 
-app.use('*', cors({ origin: appUrl, credentials: true }));
+// Explicit Node.js handler — Vercel detects two declared parameters and
+// uses the legacy (req, res) calling convention, so we must write to res.
+// Using handle(app) from hono/vercel returns Promise<Response> that Vercel
+// never reads in legacy mode, leaving the connection open until timeout.
+export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const proto = header(req.headers['x-forwarded-proto']) ?? 'https';
+  const host =
+    header(req.headers['x-forwarded-host']) ?? header(req.headers['host']) ?? 'localhost';
+  const url = `${proto}://${host}${req.url ?? '/'}`;
 
-// Better Auth handles all /api/auth/** routes (sign-in, sign-up, session, etc.)
-app.on(['GET', 'POST'], '/auth/**', (c) => auth.handler(c.req.raw));
+  const webHeaders = new Headers();
+  for (const [k, v] of Object.entries(req.headers)) {
+    if (typeof v === 'string') webHeaders.set(k, v);
+    else if (Array.isArray(v)) v.forEach((s) => webHeaders.append(k, s));
+  }
 
-// Public routes
-app.route('/contact', contactRoutes);
+  let body: Uint8Array | undefined;
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    const chunks: Buffer[] = [];
+    await new Promise<void>((resolve, reject) => {
+      req.on('data', (c: Buffer) => chunks.push(c));
+      req.on('end', resolve);
+      req.on('error', reject);
+    });
+    if (chunks.length > 0) body = Buffer.concat(chunks);
+  }
 
-// Protected routes
-app.use('/food-log/*', authMiddleware);
-app.route('/food-log', foodLogRoutes);
+  const response = await app.fetch(
+    new Request(url, { method: req.method ?? 'GET', headers: webHeaders, ...(body && { body }) }),
+  );
 
-app.use('/ai/*', authMiddleware);
-app.route('/ai', aiRoutes);
+  res.statusCode = response.status;
+  response.headers.forEach((v, k) => res.setHeader(k, v));
+  res.end(Buffer.from(await response.arrayBuffer()));
+}
 
-app.use('/barcode/*', authMiddleware);
-app.route('/barcode', barcodeRoutes);
-
-// Payment routes — webhook is public (Stripe calls it directly, signature-verified internally).
-// All other /payments/* sub-paths require auth.
-app.use('/payments/checkout', authMiddleware);
-app.use('/payments/discount', authMiddleware);
-app.use('/payments/status', authMiddleware);
-app.route('/payments', paymentsRoutes);
-
-// Chat is semi-public — optional auth injected by middleware, rate limited per IP for anon
-app.use('/chat', optionalAuthMiddleware);
-app.route('/chat', chatRoutes);
-
-export default handle(app);
+function header(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}

@@ -100,7 +100,8 @@
       "weakPassword": "Password must be at least 8 characters",
       "passwordMismatch": "Passwords do not match",
       "generic": "Something went wrong. Please try again.",
-      "networkError": "Network error. Please check your connection."
+      "networkError": "Network error. Please check your connection.",
+      "timeout": "That took too long. Check that the dev API is running, then try again."
     },
     "signOut": "Sign out"
   },

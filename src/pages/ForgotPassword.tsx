@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { authClient } from '@/lib/auth/client';
 import { ForgotPasswordFormSchema, type ForgotPasswordFormInput } from '@/types/api';
+import {
+  AUTH_REQUEST_TIMEOUT_MS,
+  isAuthTimeoutError,
+  withAuthRequestTimeout,
+} from '@/utils/auth-request';
 import { cn } from '@/utils/cn';
 
 export function ForgotPasswordPage() {
@@ -21,15 +26,24 @@ export function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordFormInput) => {
     setServerError(null);
-    const { error } = await authClient.requestPasswordReset({
-      email: data.email,
-      redirectTo: `${window.location.origin}/auth/confirm`,
-    });
-    if (error) {
-      setServerError(t('auth.error.generic'));
-      return;
+    try {
+      const { error } = await withAuthRequestTimeout(
+        authClient.requestPasswordReset({
+          email: data.email,
+          redirectTo: `${window.location.origin}/auth/confirm`,
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+      );
+      if (error) {
+        setServerError(t('auth.error.generic'));
+        return;
+      }
+      setSubmitted(data.email);
+    } catch (e) {
+      setServerError(
+        isAuthTimeoutError(e) ? t('auth.error.timeout') : t('auth.error.networkError'),
+      );
     }
-    setSubmitted(data.email);
   };
 
   if (submitted !== null) {

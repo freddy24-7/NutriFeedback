@@ -1,3 +1,5 @@
+// Error boundaries must be class components — Fast Refresh doesn't support them.
+/* eslint-disable react-refresh/only-export-components */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef } from 'react';

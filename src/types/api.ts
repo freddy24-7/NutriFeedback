@@ -7,7 +7,7 @@ export type MealType = z.infer<typeof MealTypeSchema>;
 
 export const NewFoodEntrySchema = z.object({
   description: z.string().min(1, 'Required').max(500, 'Too long'),
-  mealType: MealTypeSchema.optional(),
+  mealType: z.preprocess((v) => (v === '' ? undefined : v), MealTypeSchema.optional()),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date — use YYYY-MM-DD'),
 });
 export type NewFoodEntryInput = z.infer<typeof NewFoodEntrySchema>;

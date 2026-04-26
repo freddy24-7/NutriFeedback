@@ -2,7 +2,7 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "buildCommand": "npm run build",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.ts" }],
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index.js" }],
   "headers": [
     {
       "source": "/(.*)",

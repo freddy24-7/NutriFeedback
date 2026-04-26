@@ -2,11 +2,6 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "buildCommand": "npm run build",
-  "functions": {
-    "src/api/index.ts": {
-      "runtime": "@vercel/edge"
-    }
-  },
   "rewrites": [{ "source": "/api/(.*)", "destination": "/src/api/index.ts" }],
   "headers": [
     {

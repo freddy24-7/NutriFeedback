@@ -15,7 +15,19 @@ export function createApiApp() {
 
   app.use('*', cors({ origin: corsAllowedOrigins(), credentials: true }));
 
-  app.on(['GET', 'POST'], '/auth/**', (c) => auth.handler(c.req.raw));
+  app.on(['GET', 'POST', 'PUT', 'DELETE'], '/auth/**', async (c) => {
+    const path = c.req.path;
+    const method = c.req.method;
+    console.log(`[auth] ${method} ${path}`);
+    try {
+      const result = await auth.handler(c.req.raw);
+      console.log(`[auth] ${method} ${path} -> ${result.status}`);
+      return result;
+    } catch (e) {
+      console.error('[auth] Handler error:', e);
+      return c.json({ error: 'Auth service unavailable' }, 500);
+    }
+  });
 
   app.route('/contact', contactRoutes);
 

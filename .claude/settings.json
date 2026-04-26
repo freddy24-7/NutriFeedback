@@ -16,7 +16,9 @@
       "Bash(git commit -m ' *)",
       "Bash(/usr/local/bin/node --version)",
       "Bash(~/.nvm/versions/node/*/bin/node --version)",
-      "Bash(brew list *)"
+      "Bash(brew list *)",
+      "Bash(git rm *)",
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff HEAD -- vercel.json src/api/index.ts)"
     ]
   }
 }

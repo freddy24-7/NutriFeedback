@@ -59,9 +59,9 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 
 ### AI
 
-- **Development:** Google Gemini 1.5 Flash (free tier)
+- **Development:** Google Gemini 2.0 Flash Lite (free tier)
 - **Production:** Anthropic Claude API
-- **Chatbot (always, both environments):** Gemini 1.5 Flash only
+- **Chatbot (always, both environments):** Gemini 2.0 Flash Lite only
 - All AI calls routed through `src/lib/ai/client.ts` exclusively
 - Never import Gemini or Anthropic SDK outside of that file
 

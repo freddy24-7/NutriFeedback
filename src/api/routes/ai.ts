@@ -6,7 +6,7 @@ import { Resend } from 'resend';
 import { db } from '@/lib/db/client';
 import { foodLogEntries, userCredits, aiTips, userProfiles } from '@/lib/db/schema';
 import { clerkClient } from '@/lib/auth/server';
-import { generateAIResponse } from '@/lib/ai/client';
+import { generateAIResponse, stripJsonFences } from '@/lib/ai/client';
 import {
   PARSE_FOOD_SYSTEM,
   PARSE_FOOD_PROMPT,
@@ -20,6 +20,27 @@ import { ParseFoodRequestSchema, ParsedNutrientsSchema, type ParsedNutrients } f
 import { authMiddleware, type AuthVariables } from '../middleware/auth';
 
 const aiRoutes = new Hono<{ Variables: AuthVariables }>();
+
+// GET /generate-tips — registered before auth so mistaken browser visits don’t hit 401 first.
+// HTML navigations redirect to the dashboard; non-browser clients (curl, API tools) get 405 JSON.
+aiRoutes.get('/generate-tips', (c) => {
+  const accept = c.req.header('Accept') ?? '';
+  const secFetchDest = c.req.header('Sec-Fetch-Dest');
+  const navigateLikeBrowser =
+    accept.includes('text/html') || secFetchDest === 'document' || secFetchDest === 'iframe';
+  if (navigateLikeBrowser) {
+    return c.redirect('/dashboard', 302);
+  }
+  return c.json(
+    {
+      error: 'Method not allowed',
+      message: 'Use POST /api/ai/generate-tips with Authorization: Bearer <Clerk session token>.',
+    },
+    405,
+    { Allow: 'POST' },
+  );
+});
+
 aiRoutes.use('*', authMiddleware);
 
 // ─── POST /api/ai/parse-food ──────────────────────────────────────────────────
@@ -63,9 +84,10 @@ aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (
       language,
     });
 
-    const parsed: unknown = JSON.parse(text);
+    const parsed: unknown = JSON.parse(stripJsonFences(text));
     nutrients = ParsedNutrientsSchema.parse(parsed);
-  } catch {
+  } catch (err) {
+    console.error('[parse-food] AI response error:', err);
     // Refund the credit if AI fails — don't charge for a failed parse
     await db
       .update(userCredits)
@@ -101,21 +123,7 @@ aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (
 
 // ─── POST /api/ai/generate-tips ───────────────────────────────────────────────
 // Generates a personalised nutrition tip from the user's recent food log.
-// Requires 3+ distinct log days. Deducts 2 credits (atomic) BEFORE calling AI.
-//
-// GET returns 405 so opening the URL in a browser (GET only) is explicit; generation is POST + Clerk.
-
-aiRoutes.get('/generate-tips', (c) =>
-  c.json(
-    {
-      error: 'Method not allowed',
-      message:
-        'Tip generation uses POST with a Clerk session token. Use the dashboard action, or POST /api/ai/generate-tips with Authorization: Bearer <token>.',
-    },
-    405,
-    { Allow: 'POST' },
-  ),
-);
+// Requires enough distinct log days. Deducts 2 credits (atomic) BEFORE calling AI.
 
 aiRoutes.post('/generate-tips', async (c) => {
   const user = c.get('user')!;
@@ -185,8 +193,9 @@ aiRoutes.post('/generate-tips', async (c) => {
       language: 'en',
     });
 
-    tipJson = JSON.parse(text) as TipJson;
-  } catch {
+    tipJson = JSON.parse(stripJsonFences(text)) as TipJson;
+  } catch (err) {
+    console.error('[generate-tips] AI response error:', err);
     // Refund credits if AI fails
     await db
       .update(userCredits)

@@ -15,13 +15,18 @@ export type AIResponse = {
   model: 'gemini' | 'anthropic';
 };
 
+/** Model id for `getGenerativeModel` — not the REST `models/...` path. */
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+
 async function callGemini(req: AIRequest): Promise<AIResponse> {
   const apiKey = process.env['GEMINI_API_KEY'];
   if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
 
+  const modelId = process.env['GEMINI_MODEL']?.trim() || DEFAULT_GEMINI_MODEL;
+
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: modelId,
     systemInstruction: req.systemPrompt,
   });
 
@@ -48,6 +53,25 @@ async function callAnthropic(req: AIRequest): Promise<AIResponse> {
 }
 
 export async function generateAIResponse(req: AIRequest): Promise<AIResponse> {
-  const useGemini = process.env['NODE_ENV'] === 'development' || req.forceGemini === true;
-  return useGemini ? callGemini(req) : callAnthropic(req);
+  const preferGemini =
+    (process.env['NODE_ENV'] === 'development' || req.forceGemini === true) &&
+    Boolean(process.env['GEMINI_API_KEY']);
+
+  if (preferGemini) {
+    try {
+      return await callGemini(req);
+    } catch (err) {
+      // Gemini quota / project billing issue — fall back to Anthropic silently
+      console.warn('[AI] Gemini unavailable, using Anthropic:', (err as Error).message);
+    }
+  }
+
+  return callAnthropic(req);
+}
+
+// Strip ```json ... ``` or ``` ... ``` fences that models sometimes add
+// despite "return ONLY JSON" instructions.
+export function stripJsonFences(text: string): string {
+  const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  return match ? (match[1] ?? text).trim() : text.trim();
 }

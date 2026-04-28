@@ -48,6 +48,11 @@ export function useAiTips() {
     queryFn: () => authFetch<AiTipResponse[]>('/api/ai/tips', getToken),
     enabled: isSignedIn === true,
     staleTime: 5 * 60_000,
+    // Default retry=3 re-runs the request 4× total — can amplify 429s from upstream or look like “spam”.
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message === 'rate_limited') return false;
+      return failureCount < 2;
+    },
   });
 }
 

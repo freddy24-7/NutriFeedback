@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k -n api,vite -c blue,green \"npm run dev:api\" \"npm run dev:vite\"",
     "dev:vite": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs\" vite",
-    "dev:api": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs --require ./scripts/load-env.cjs\" tsx --tsconfig tsconfig.app.json src/api/dev-server.ts",
+    "dev:api": "NODE_ENV=development NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs --require ./scripts/load-env.cjs\" tsx --tsconfig tsconfig.app.json src/api/dev-server.ts",
     "sitemap": "node ./scripts/generate-sitemap.cjs",
     "prebuild": "node ./scripts/generate-sitemap.cjs",
     "build": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs\" tsc -b && vite build && npm run build:api",

@@ -60,7 +60,7 @@ export function DashboardPage() {
     sub !== undefined &&
     (sub.status === 'expired' || (sub.status === 'trial' && sub.creditsRemaining === 0));
 
-  const { data: tips } = useAiTips();
+  const { data: tips, error: tipsQueryError, isError: tipsQueryFailed } = useAiTips();
   const { mutate: dismissTip } = useDismissTip();
   const { mutate: generateTip, isPending: isGenerating, error: tipError } = useGenerateTip();
 
@@ -69,9 +69,8 @@ export function DashboardPage() {
     dismissTip(id, { onSettled: () => setDismissingId(null) });
   };
 
-  const tipErrorMessage = (() => {
-    if (!tipError) return null;
-    const msg = tipError instanceof Error ? tipError.message : '';
+  const mapTipFlowError = (err: unknown): string => {
+    const msg = err instanceof Error ? err.message : '';
     if (msg === 'insufficient_credits') return t('ai.tip.insufficientCredits');
     if (
       msg === 'not_enough_data' ||
@@ -82,7 +81,10 @@ export function DashboardPage() {
     }
     if (msg === 'rate_limited') return t('ai.tip.rateLimited');
     return t('common.error');
-  })();
+  };
+
+  const tipErrorMessage = tipError ? mapTipFlowError(tipError) : null;
+  const tipsLoadErrorMessage = tipsQueryFailed ? mapTipFlowError(tipsQueryError) : null;
 
   const displayDate = formatDate(date, i18n.language);
 
@@ -173,6 +175,12 @@ export function DashboardPage() {
         {showForm && <FoodEntryForm defaultDate={date} onSuccess={() => setShowForm(false)} />}
 
         {/* AI tips */}
+        {tipsLoadErrorMessage !== null && (
+          <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
+            {tipsLoadErrorMessage}
+          </p>
+        )}
+
         {tips !== undefined && tips.length > 0 && (
           <section aria-label={t('ai.tip.generate')} className="space-y-3">
             {tips.map((tip) => (

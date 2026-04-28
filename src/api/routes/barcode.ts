@@ -9,10 +9,11 @@ import { generateAIResponse } from '@/lib/ai/client';
 import { BARCODE_ESTIMATE_SYSTEM, BARCODE_ESTIMATE_PROMPT } from '@/lib/ai/prompts';
 import { rateLimits } from '@/lib/redis/client';
 import { RegisterProductSchema, NutritionalPer100gSchema } from '@/types/api';
-import { type AuthVariables } from '../middleware/auth';
+import { authMiddleware, type AuthVariables } from '../middleware/auth';
 import { sanitiseTextServer } from '../middleware/sanitise';
 
 const barcodeRoutes = new Hono<{ Variables: AuthVariables }>();
+barcodeRoutes.use('*', authMiddleware);
 
 // ─── GET /api/barcode/:barcode ────────────────────────────────────────────────
 // Lookup chain: DB cache → Open Food Facts → USDA → AI estimate.

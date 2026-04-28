@@ -47,6 +47,7 @@ export const PARSE_FOOD_PROMPT = (description: string) =>
 export type TipContext = {
   foodSummary: string;
   timeframeDays: number;
+  distinctDays: number;
 };
 
 export const GENERATE_TIPS_SYSTEM = `Always respond in English AND Dutch — see output format below.
@@ -71,10 +72,10 @@ Rules:
 - Never use alarming language — this is a wellness app, not a medical tool`;
 
 export const GENERATE_TIPS_PROMPT = (ctx: TipContext) =>
-  `Here is a summary of foods logged over the last ${ctx.timeframeDays} days:
+  `Here is a summary of foods logged over the last ${ctx.timeframeDays} days (${ctx.distinctDays} ${ctx.distinctDays === 1 ? 'day' : 'days'} of data available):
 <user_input>${ctx.foodSummary}</user_input>
 
-Generate one personalised nutrition tip based on this data.`;
+Generate one personalised nutrition tip based on this data. If only one day of data is available, focus on observations from that day rather than multi-day patterns.`;
 
 // ─── Barcode AI fallback ──────────────────────────────────────────────────────
 

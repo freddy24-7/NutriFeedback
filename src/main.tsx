@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
+import { ClerkProvider } from '@clerk/clerk-react';
 
 import '@fontsource/plus-jakarta-sans/600.css';
 import '@fontsource/plus-jakarta-sans/700.css';
@@ -24,17 +25,24 @@ const queryClient = new QueryClient({
   },
 });
 
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
+if (!PUBLISHABLE_KEY && import.meta.env.VITE_E2E_TEST_MODE !== 'true') {
+  throw new Error('VITE_CLERK_PUBLISHABLE_KEY is not set');
+}
+
 const rootElement = document.getElementById('root');
 if (rootElement === null) throw new Error('Root element #root not found');
 
 createRoot(rootElement).render(
   <StrictMode>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ClerkProvider>
   </StrictMode>,
 );

@@ -3,10 +3,13 @@
  *
  * Each helper inserts the minimum rows needed for a test scenario.
  * Always call the matching cleanup function in afterEach.
+ *
+ * With Clerk auth, there is no user row in the DB — Clerk owns that.
+ * seedUser only creates the app-level profile and credit rows.
  */
 
 import { db } from '@/lib/db/client';
-import { authUser, userProfiles, userCredits, foodLogEntries, aiTips } from '@/lib/db/schema';
+import { userProfiles, userCredits, foodLogEntries, aiTips } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export type TestUser = {
@@ -17,15 +20,6 @@ export type TestUser = {
 
 /** Insert the minimum rows needed for an authenticated user. */
 export async function seedUser(user: TestUser, credits = 50): Promise<void> {
-  await db.insert(authUser).values({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    emailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-
   await db.insert(userProfiles).values({
     id: user.id,
     language: 'en',
@@ -42,8 +36,9 @@ export async function seedUser(user: TestUser, credits = 50): Promise<void> {
   });
 }
 
-/** Insert food log entries across distinct dates to satisfy the 3-day gate. */
+/** Insert food log entries across distinct dates. */
 export async function seedFoodLog(userId: string, dates: string[]): Promise<void> {
+  if (dates.length === 0) return;
   await db.insert(foodLogEntries).values(
     dates.map((date) => ({
       userId,
@@ -81,5 +76,4 @@ export async function cleanupUser(userId: string): Promise<void> {
   await db.delete(foodLogEntries).where(eq(foodLogEntries.userId, userId));
   await db.delete(userCredits).where(eq(userCredits.userId, userId));
   await db.delete(userProfiles).where(eq(userProfiles.id, userId));
-  await db.delete(authUser).where(eq(authUser.id, userId));
 }

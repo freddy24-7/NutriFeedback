@@ -1,64 +1,57 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import Stripe from 'stripe';
 import { and, eq, gt, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
-import { subscriptions, discountCodes, userCredits, authUser } from '@/lib/db/schema';
+import { subscriptions, discountCodes, userCredits } from '@/lib/db/schema';
 import { rateLimits } from '@/lib/redis/client';
 import { CheckoutRequestSchema, DiscountValidateSchema } from '@/types/api';
-import { type AuthVariables } from '../middleware/auth';
-
-const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] ?? '', {
-  apiVersion: '2025-02-24.acacia',
-});
+import { authMiddleware, type AuthVariables } from '../middleware/auth';
+import { clerkClient } from '@/lib/auth/server';
+import { getStripe } from '@/lib/stripe-config';
+import type Stripe from 'stripe';
 
 const paymentsRoutes = new Hono<{ Variables: AuthVariables }>();
 
 // ─── POST /api/payments/checkout ──────────────────────────────────────────────
-// Creates a Stripe Checkout session and returns the hosted page URL.
 
-paymentsRoutes.post('/checkout', zValidator('json', CheckoutRequestSchema), async (c) => {
-  const user = c.get('user')!;
+paymentsRoutes.post(
+  '/checkout',
+  authMiddleware,
+  zValidator('json', CheckoutRequestSchema),
+  async (c) => {
+    const user = c.get('user')!;
 
-  const { success: withinLimit } = await rateLimits.paymentsCheckout.limit(user.id);
-  if (!withinLimit) {
-    return c.json({ error: 'Too many checkout attempts — try again later' }, 429);
-  }
+    const { success: withinLimit } = await rateLimits.paymentsCheckout.limit(user.id);
+    if (!withinLimit) {
+      return c.json({ error: 'Too many checkout attempts — try again later' }, 429);
+    }
 
-  const { priceId, successUrl, cancelUrl } = c.req.valid('json');
+    const { priceId, successUrl, cancelUrl } = c.req.valid('json');
 
-  // Fetch user email for Stripe prefill
-  const [authUserRow] = await db
-    .select({ email: authUser.email })
-    .from(authUser)
-    .where(eq(authUser.id, user.id));
-  if (!authUserRow) return c.json({ error: 'User not found' }, 404);
+    const clerkUser = await clerkClient.users.getUser(user.id);
+    const email = clerkUser.emailAddresses[0]?.emailAddress ?? '';
+    const meta = clerkUser.publicMetadata as { stripeCustomerId?: string };
 
-  // Reuse existing Stripe customer if available
-  const [existing] = await db
-    .select({ stripeCustomerId: subscriptions.stripeCustomerId })
-    .from(subscriptions)
-    .where(eq(subscriptions.userId, user.id));
+    const appUrl = process.env['VITE_APP_URL'] ?? 'http://localhost:5173';
+    const stripe = getStripe();
 
-  const appUrl = process.env['VITE_APP_URL'] ?? 'http://localhost:5173';
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer: meta.stripeCustomerId ?? undefined,
+      customer_email: meta.stripeCustomerId ? undefined : email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl ?? `${appUrl}/dashboard?checkout=success`,
+      cancel_url: cancelUrl ?? `${appUrl}/pricing?checkout=cancelled`,
+      metadata: { userId: user.id },
+      subscription_data: { metadata: { userId: user.id } },
+    });
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    customer: existing?.stripeCustomerId ?? undefined,
-    customer_email: existing?.stripeCustomerId ? undefined : authUserRow.email,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl ?? `${appUrl}/dashboard?checkout=success`,
-    cancel_url: cancelUrl ?? `${appUrl}/pricing?checkout=cancelled`,
-    metadata: { userId: user.id },
-    subscription_data: { metadata: { userId: user.id } },
-  });
-
-  return c.json({ url: session.url });
-});
+    return c.json({ url: session.url });
+  },
+);
 
 // ─── POST /api/payments/webhook ───────────────────────────────────────────────
-// Stripe sends events here. Verifies signature, updates DB accordingly.
-// This route is intentionally PUBLIC — Stripe calls it directly.
+// Public — Stripe calls it directly. Verifies signature before processing.
 
 paymentsRoutes.post('/webhook', async (c) => {
   const sig = c.req.header('stripe-signature');
@@ -69,6 +62,7 @@ paymentsRoutes.post('/webhook', async (c) => {
   }
 
   const body = await c.req.text();
+  const stripe = getStripe();
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
@@ -82,39 +76,61 @@ paymentsRoutes.post('/webhook', async (c) => {
       const userId = session.metadata?.userId;
       if (!userId || !session.customer || !session.subscription) break;
 
+      const customerId = session.customer as string;
+      const subscriptionId = session.subscription as string;
+
+      const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
+      const priceId = stripeSub.items.data[0]?.price.id ?? null;
+
+      const plan =
+        priceId === process.env['STRIPE_PRICE_ID_MONTHLY']
+          ? 'pro-monthly'
+          : priceId === process.env['STRIPE_PRICE_ID_YEARLY']
+            ? 'pro-yearly'
+            : 'pro-monthly';
+
       await db
         .insert(subscriptions)
         .values({
           userId,
           status: 'active',
-          stripeCustomerId: session.customer as string,
-          stripeSubscriptionId: session.subscription as string,
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: subscriptionId,
+          stripePriceId: priceId,
           currentPeriodEnd: null,
         })
         .onConflictDoUpdate({
           target: subscriptions.userId,
           set: {
             status: 'active',
-            stripeCustomerId: session.customer as string,
-            stripeSubscriptionId: session.subscription as string,
+            stripeCustomerId: customerId,
+            stripeSubscriptionId: subscriptionId,
+            stripePriceId: priceId,
             updatedAt: new Date(),
           },
         });
 
-      // Mark credits as converted (no longer trial-limited)
       await db
         .update(userCredits)
         .set({ convertedToPaidAt: new Date(), expiresAt: null })
         .where(eq(userCredits.userId, userId));
+
+      // Sync to Clerk metadata for fast client-side reads
+      await clerkClient.users.updateUserMetadata(userId, {
+        publicMetadata: {
+          stripeCustomerId: customerId,
+          subscription: { status: 'active', plan },
+        },
+      });
       break;
     }
 
     case 'invoice.paid': {
       const invoice = event.data.object as Stripe.Invoice;
-      const sub = invoice.subscription
-        ? await stripe.subscriptions.retrieve(invoice.subscription as string)
-        : null;
-      const userId = sub?.metadata?.userId;
+      const subId = invoice.subscription as string | null;
+      if (!subId) break;
+      const sub = await stripe.subscriptions.retrieve(subId);
+      const userId = sub.metadata?.userId;
       if (!userId) break;
 
       const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000) : null;
@@ -135,6 +151,10 @@ paymentsRoutes.post('/webhook', async (c) => {
         .update(subscriptions)
         .set({ status: 'cancelled', updatedAt: new Date() })
         .where(eq(subscriptions.userId, userId));
+
+      await clerkClient.users.updateUserMetadata(userId, {
+        publicMetadata: { subscription: { status: 'cancelled', plan: 'free' } },
+      });
       break;
     }
 
@@ -159,94 +179,88 @@ paymentsRoutes.post('/webhook', async (c) => {
 });
 
 // ─── POST /api/payments/discount ─────────────────────────────────────────────
-// Validates a discount code and grants access atomically.
 
-paymentsRoutes.post('/discount', zValidator('json', DiscountValidateSchema), async (c) => {
-  const user = c.get('user')!;
+paymentsRoutes.post(
+  '/discount',
+  authMiddleware,
+  zValidator('json', DiscountValidateSchema),
+  async (c) => {
+    const user = c.get('user')!;
 
-  const { success: withinLimit } = await rateLimits.paymentsDiscount.limit(user.id);
-  if (!withinLimit) {
-    return c.json({ error: 'Too many attempts — try again later' }, 429);
-  }
-
-  const { code } = c.req.valid('json');
-
-  // Check for an already-active subscription — don't let codes stack
-  const [existingSub] = await db
-    .select({ status: subscriptions.status })
-    .from(subscriptions)
-    .where(eq(subscriptions.userId, user.id));
-
-  if (existingSub?.status === 'active' || existingSub?.status === 'comped') {
-    return c.json({ error: 'You already have an active subscription' }, 409);
-  }
-
-  // Validate the code
-  const [discountRow] = await db.select().from(discountCodes).where(eq(discountCodes.code, code));
-
-  if (!discountRow) {
-    return c.json({ error: 'Invalid discount code' }, 400);
-  }
-  if (discountRow.expiresAt && discountRow.expiresAt < new Date()) {
-    return c.json({ error: 'This discount code has expired' }, 400);
-  }
-  if (discountRow.usesRemaining !== null && discountRow.usesRemaining <= 0) {
-    return c.json({ error: 'This discount code has no uses remaining' }, 400);
-  }
-
-  // Atomically decrement usesRemaining — WHERE guard prevents double-redemption
-  if (discountRow.usesRemaining !== null) {
-    const decremented = await db
-      .update(discountCodes)
-      .set({ usesRemaining: sql`${discountCodes.usesRemaining} - 1` })
-      .where(and(eq(discountCodes.code, code), gt(discountCodes.usesRemaining, 0)))
-      .returning({ usesRemaining: discountCodes.usesRemaining });
-
-    if (decremented.length === 0) {
-      return c.json({ error: 'This discount code has no uses remaining' }, 400);
+    const { success: withinLimit } = await rateLimits.paymentsDiscount.limit(user.id);
+    if (!withinLimit) {
+      return c.json({ error: 'Too many attempts — try again later' }, 429);
     }
-  }
 
-  // Grant access based on discount type
-  if (discountRow.type === 'beta' || discountRow.type === 'influencer') {
-    await db
-      .insert(subscriptions)
-      .values({ userId: user.id, status: 'comped' })
-      .onConflictDoUpdate({
-        target: subscriptions.userId,
-        set: { status: 'comped', updatedAt: new Date() },
-      });
+    const { code } = c.req.valid('json');
 
-    await db
-      .update(userCredits)
-      .set({ expiresAt: null, convertedToPaidAt: new Date() })
-      .where(eq(userCredits.userId, user.id));
-  } else {
-    const days = discountRow.trialDays ?? 30;
-    const newExpiry = new Date();
-    newExpiry.setDate(newExpiry.getDate() + days);
+    const [existingSub] = await db
+      .select({ status: subscriptions.status })
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, user.id));
 
-    await db
-      .insert(subscriptions)
-      .values({ userId: user.id, status: 'trial' })
-      .onConflictDoUpdate({
-        target: subscriptions.userId,
-        set: { status: 'trial', updatedAt: new Date() },
-      });
+    if (existingSub?.status === 'active' || existingSub?.status === 'comped') {
+      return c.json({ error: 'You already have an active subscription' }, 409);
+    }
 
-    await db
-      .update(userCredits)
-      .set({ expiresAt: newExpiry })
-      .where(eq(userCredits.userId, user.id));
-  }
+    const [discountRow] = await db.select().from(discountCodes).where(eq(discountCodes.code, code));
 
-  return c.json({ granted: true, type: discountRow.type });
-});
+    if (!discountRow) return c.json({ error: 'Invalid discount code' }, 400);
+    if (discountRow.expiresAt && discountRow.expiresAt < new Date())
+      return c.json({ error: 'This discount code has expired' }, 400);
+    if (discountRow.usesRemaining !== null && discountRow.usesRemaining <= 0)
+      return c.json({ error: 'This discount code has no uses remaining' }, 400);
+
+    if (discountRow.usesRemaining !== null) {
+      const decremented = await db
+        .update(discountCodes)
+        .set({ usesRemaining: sql`${discountCodes.usesRemaining} - 1` })
+        .where(and(eq(discountCodes.code, code), gt(discountCodes.usesRemaining, 0)))
+        .returning({ usesRemaining: discountCodes.usesRemaining });
+
+      if (decremented.length === 0)
+        return c.json({ error: 'This discount code has no uses remaining' }, 400);
+    }
+
+    if (discountRow.type === 'beta' || discountRow.type === 'influencer') {
+      await db
+        .insert(subscriptions)
+        .values({ userId: user.id, status: 'comped' })
+        .onConflictDoUpdate({
+          target: subscriptions.userId,
+          set: { status: 'comped', updatedAt: new Date() },
+        });
+
+      await db
+        .update(userCredits)
+        .set({ expiresAt: null, convertedToPaidAt: new Date() })
+        .where(eq(userCredits.userId, user.id));
+    } else {
+      const days = discountRow.trialDays ?? 30;
+      const newExpiry = new Date();
+      newExpiry.setDate(newExpiry.getDate() + days);
+
+      await db
+        .insert(subscriptions)
+        .values({ userId: user.id, status: 'trial' })
+        .onConflictDoUpdate({
+          target: subscriptions.userId,
+          set: { status: 'trial', updatedAt: new Date() },
+        });
+
+      await db
+        .update(userCredits)
+        .set({ expiresAt: newExpiry })
+        .where(eq(userCredits.userId, user.id));
+    }
+
+    return c.json({ granted: true, type: discountRow.type });
+  },
+);
 
 // ─── GET /api/payments/status ─────────────────────────────────────────────────
-// Returns the user's current subscription status + credit info.
 
-paymentsRoutes.get('/status', async (c) => {
+paymentsRoutes.get('/status', authMiddleware, async (c) => {
   const user = c.get('user')!;
 
   const [[sub], [credits]] = await Promise.all([
@@ -254,7 +268,6 @@ paymentsRoutes.get('/status', async (c) => {
     db.select().from(userCredits).where(eq(userCredits.userId, user.id)),
   ]);
 
-  // Auto-expire trial if credits have run out and expiry passed
   if (sub?.status === 'trial' && credits?.expiresAt && credits.expiresAt < new Date()) {
     await db
       .update(subscriptions)

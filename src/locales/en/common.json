@@ -61,7 +61,7 @@
       "alreadyHaveAccount": "Already have an account?",
       "signIn": "Sign in",
       "confirmEmailTitle": "Check your email",
-      "confirmEmailMessage": "We sent a confirmation link to {{email}}. Click it to activate your account.",
+      "confirmEmailMessage": "We sent a 6-digit verification code to {{email}}. Enter it below.",
       "terms": "By creating an account you agree to our",
       "termsLink": "Terms of Service",
       "and": "and",
@@ -84,6 +84,7 @@
       "emailLabel": "Email address",
       "emailPlaceholder": "you@example.com",
       "submit": "Send reset link",
+      "resetSubmit": "Set new password",
       "back": "Back to sign in",
       "success": "Reset link sent!",
       "successSubtitle": "If an account exists for {{email}}, you'll receive a reset link shortly."
@@ -92,7 +93,9 @@
       "loading": "Confirming your email...",
       "success": "Email confirmed! Taking you to your dashboard...",
       "error": "Confirmation failed. The link may have expired.",
-      "tryAgain": "Try signing in again"
+      "tryAgain": "Try signing in again",
+      "codeLabel": "Verification code",
+      "submit": "Verify email"
     },
     "error": {
       "invalidCredentials": "Invalid email or password",
@@ -103,7 +106,8 @@
       "networkError": "Network error. Please check your connection.",
       "timeout": "That took too long. Check that the dev API is running, then try again."
     },
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "googleButton": "Continue with Google"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -257,8 +261,9 @@
       "generate": "Generate tip",
       "generating": "Generating...",
       "dismiss": "Dismiss tip",
-      "notEnoughData": "Log food for 3 or more days to get personalised tips",
+      "notEnoughData": "Log at least one meal to generate your first tip.",
       "insufficientCredits": "Not enough credits to generate a tip",
+      "rateLimited": "Too many tip requests — try again later",
       "severity": {
         "info": "Info",
         "suggestion": "Suggestion",
@@ -370,7 +375,7 @@
     },
     "step3": {
       "title": "Get AI tips",
-      "description": "After 3 days of logging, the AI spots patterns and gives you one personalised tip at a time."
+      "description": "After your first meal log, the AI can give you a personalised tip. The more you log, the better the insights."
     },
     "step4": {
       "title": "Track over time",

@@ -10,18 +10,17 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
-import { mockSession, mockSubscription } from './helpers';
+import { mockSubscription } from './helpers';
 
 // ─── /pricing page ────────────────────────────────────────────────────────────
 
-// All mocking is handled here — do not call mockSession/mockSubscription separately.
+// All subscription mocking is handled here — do not call mockSubscription separately.
 // Playwright routes are LIFO, so double-registering the same pattern causes the
 // earlier registration (the test's custom override) to lose to the later one.
 async function gotoPricingLoaded(
   page: Page,
   subscriptionOverrides: Parameters<typeof mockSubscription>[1] = {},
 ) {
-  await mockSession(page);
   await mockSubscription(page, subscriptionOverrides);
   await page.goto('/pricing');
   await page.waitForLoadState('networkidle');
@@ -61,7 +60,6 @@ test.describe('/pricing page', () => {
 
 test.describe('Credit counter in nav', () => {
   test('shows credit count for trial user', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { creditsRemaining: 47 });
 
     await page.goto('/pricing');
@@ -72,7 +70,6 @@ test.describe('Credit counter in nav', () => {
   });
 
   test('shows infinity icon for comped/unlimited user', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, {
       status: 'comped',
       creditsRemaining: 50,
@@ -86,7 +83,6 @@ test.describe('Credit counter in nav', () => {
   });
 
   test('credit counter turns red at 0 credits', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { creditsRemaining: 0 });
 
     await page.goto('/pricing');
@@ -102,7 +98,6 @@ test.describe('Credit counter in nav', () => {
 
 test.describe('Discount code input', () => {
   test('valid code shows success message', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
     await page.route('**/api/payments/discount', (route) =>
       route.fulfill({
@@ -121,7 +116,6 @@ test.describe('Discount code input', () => {
   });
 
   test('invalid code shows error message inline', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
     await page.route('**/api/payments/discount', (route) =>
       route.fulfill({
@@ -140,7 +134,6 @@ test.describe('Discount code input', () => {
   });
 
   test('expired code shows specific error', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
     await page.route('**/api/payments/discount', (route) =>
       route.fulfill({
@@ -159,7 +152,6 @@ test.describe('Discount code input', () => {
   });
 
   test('code is auto-uppercased on input', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
 
     await page.goto('/pricing');
@@ -175,7 +167,6 @@ test.describe('Discount code input', () => {
 
 test.describe('Paywall modal', () => {
   test('auto-opens on dashboard when credits are exhausted', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { status: 'trial', creditsRemaining: 0 });
     // Mock food log and tips so dashboard renders without errors
     await page.route('**/api/food-log**', (route) =>
@@ -192,7 +183,6 @@ test.describe('Paywall modal', () => {
   });
 
   test('auto-opens on dashboard when trial has expired', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, {
       status: 'expired',
       creditsRemaining: 0,
@@ -212,7 +202,6 @@ test.describe('Paywall modal', () => {
   });
 
   test('closes when "Maybe later" is clicked', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { status: 'trial', creditsRemaining: 0 });
     await page.route('**/api/food-log**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
@@ -230,7 +219,6 @@ test.describe('Paywall modal', () => {
   });
 
   test('closes when Escape is pressed', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { status: 'trial', creditsRemaining: 0 });
     await page.route('**/api/food-log**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
@@ -248,7 +236,6 @@ test.describe('Paywall modal', () => {
   });
 
   test('contains discount code input and upgrade button', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page, { status: 'trial', creditsRemaining: 0 });
     await page.route('**/api/food-log**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
@@ -269,7 +256,6 @@ test.describe('Paywall modal', () => {
 
 test.describe('Stripe Checkout', () => {
   test('upgrade button calls checkout API and follows redirect URL', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
     await page.route('**/api/payments/checkout', (route) =>
       route.fulfill({

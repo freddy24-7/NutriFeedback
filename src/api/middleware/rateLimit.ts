@@ -14,16 +14,17 @@ export function rateLimitMiddleware(
 ) {
   return createMiddleware(async (c, next) => {
     const identifier = getIdentifier(c);
-    const { success, limit, remaining, reset } = await limiter.limit(identifier);
-
-    c.header('X-RateLimit-Limit', String(limit));
-    c.header('X-RateLimit-Remaining', String(remaining));
-    c.header('X-RateLimit-Reset', String(reset));
-
-    if (!success) {
-      return c.json({ error: 'Rate limit exceeded. Please try again later.' }, 429);
+    try {
+      const { success, limit, remaining, reset } = await limiter.limit(identifier);
+      c.header('X-RateLimit-Limit', String(limit));
+      c.header('X-RateLimit-Remaining', String(remaining));
+      c.header('X-RateLimit-Reset', String(reset));
+      if (!success) {
+        return c.json({ error: 'Rate limit exceeded. Please try again later.' }, 429);
+      }
+    } catch {
+      // Redis unreachable — fail open so the request proceeds
     }
-
     await next();
   });
 }

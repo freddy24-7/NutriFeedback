@@ -1,20 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import type { UserCredits } from '@/lib/db/schema';
-import { authClient } from '@/lib/auth/client';
-
-async function fetchCredits(): Promise<UserCredits> {
-  const res = await fetch('/api/credits', { credentials: 'include' });
-  if (!res.ok) throw new Error('Failed to fetch credits');
-  return res.json() as Promise<UserCredits>;
-}
+import { useAuth } from '@clerk/clerk-react';
 
 export function useCredits() {
-  const { data: session } = authClient.useSession();
+  const { isSignedIn, userId } = useAuth();
 
-  return useQuery<UserCredits>({
-    queryKey: ['credits', session?.user.id],
-    queryFn: fetchCredits,
-    enabled: session !== null && session !== undefined,
+  // Credits are returned as part of /api/payments/status — no separate endpoint needed.
+  // This hook is kept for backward compatibility; use useSubscription() directly instead.
+  return useQuery({
+    queryKey: ['credits', userId],
+    queryFn: async () => {
+      const res = await fetch('/api/payments/status', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch credits');
+      return res.json() as Promise<{ creditsRemaining: number; creditsExpiresAt: string | null }>;
+    },
+    enabled: isSignedIn === true,
     staleTime: 30_000,
   });
 }

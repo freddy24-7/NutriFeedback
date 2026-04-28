@@ -18,7 +18,14 @@
       "Bash(~/.nvm/versions/node/*/bin/node --version)",
       "Bash(brew list *)",
       "Bash(git rm *)",
-      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff HEAD -- vercel.json src/api/index.ts)"
+      "Bash(git -C /Users/freddyaustli/Desktop/NutriApp diff HEAD -- vercel.json src/api/index.ts)",
+      "Bash(node_modules/.bin/tsx --version)",
+      "Bash(gtimeout 15 npm run dev:api)",
+      "Bash(kill %1)",
+      "Bash(wait)",
+      "Bash(node scripts/fix-fk.cjs)",
+      "Bash(node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/fix-fk.mts)",
+      "Bash(node -e \"console.log\\(typeof fetch, process.version\\)\")"
     ]
   }
 }

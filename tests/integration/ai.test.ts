@@ -35,6 +35,18 @@ vi.mock('resend', () => ({
   })),
 }));
 
+vi.mock('@/lib/auth/server', () => ({
+  clerkClient: {
+    users: {
+      getUser: vi.fn().mockResolvedValue({
+        emailAddresses: [{ emailAddress: 'test@example.com' }],
+        firstName: 'Test',
+        lastName: 'User',
+      }),
+    },
+  },
+}));
+
 import { generateAIResponse } from '@/lib/ai/client';
 
 const mockGenerateAIResponse = vi.mocked(generateAIResponse);
@@ -261,9 +273,7 @@ describe('POST /api/ai/generate-tips', () => {
     expect(credits?.creditsRemaining).toBe(50);
   });
 
-  it('returns 422 when fewer than 3 distinct log days exist', async () => {
-    await seedFoodLog(TEST_USER.id, [THREE_DAYS[0], THREE_DAYS[1]]);
-
+  it('returns 422 when no food log data exists', async () => {
     const app = createTestApp(TEST_USER.id);
     const res = await app.request('/api/ai/generate-tips', { method: 'POST' });
 

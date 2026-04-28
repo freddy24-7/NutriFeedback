@@ -4,7 +4,8 @@ import { eq, and, gte, desc, countDistinct, gt } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import { Resend } from 'resend';
 import { db } from '@/lib/db/client';
-import { foodLogEntries, userCredits, aiTips, authUser, userProfiles } from '@/lib/db/schema';
+import { foodLogEntries, userCredits, aiTips, userProfiles } from '@/lib/db/schema';
+import { clerkClient } from '@/lib/auth/server';
 import { generateAIResponse } from '@/lib/ai/client';
 import {
   PARSE_FOOD_SYSTEM,
@@ -16,9 +17,10 @@ import { buildTipEmailHtml, buildTipEmailText } from '@/lib/email/templates';
 import { sanitiseTextServer } from '../middleware/sanitise';
 import { rateLimits } from '@/lib/redis/client';
 import { ParseFoodRequestSchema, ParsedNutrientsSchema, type ParsedNutrients } from '@/types/api';
-import { type AuthVariables } from '../middleware/auth';
+import { authMiddleware, type AuthVariables } from '../middleware/auth';
 
 const aiRoutes = new Hono<{ Variables: AuthVariables }>();
+aiRoutes.use('*', authMiddleware);
 
 // ─── POST /api/ai/parse-food ──────────────────────────────────────────────────
 // Parses a food description into structured nutrients via AI.
@@ -100,6 +102,20 @@ aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (
 // ─── POST /api/ai/generate-tips ───────────────────────────────────────────────
 // Generates a personalised nutrition tip from the user's recent food log.
 // Requires 3+ distinct log days. Deducts 2 credits (atomic) BEFORE calling AI.
+//
+// GET returns 405 so opening the URL in a browser (GET only) is explicit; generation is POST + Clerk.
+
+aiRoutes.get('/generate-tips', (c) =>
+  c.json(
+    {
+      error: 'Method not allowed',
+      message:
+        'Tip generation uses POST with a Clerk session token. Use the dashboard action, or POST /api/ai/generate-tips with Authorization: Bearer <token>.',
+    },
+    405,
+    { Allow: 'POST' },
+  ),
+);
 
 aiRoutes.post('/generate-tips', async (c) => {
   const user = c.get('user')!;
@@ -120,8 +136,8 @@ aiRoutes.post('/generate-tips', async (c) => {
 
   const distinctDays = countResult[0]?.distinctDays ?? 0;
 
-  if (distinctDays < 3) {
-    return c.json({ error: 'Need at least 3 days of food log data to generate tips' }, 422);
+  if (distinctDays < 1) {
+    return c.json({ error: 'Log at least one meal before generating a tip' }, 422);
   }
 
   // Deduct 2 credits atomically BEFORE AI call
@@ -164,7 +180,7 @@ aiRoutes.post('/generate-tips', async (c) => {
   let tipJson: TipJson;
   try {
     const { text } = await generateAIResponse({
-      prompt: GENERATE_TIPS_PROMPT({ foodSummary, timeframeDays: 30 }),
+      prompt: GENERATE_TIPS_PROMPT({ foodSummary, timeframeDays: 30, distinctDays }),
       systemPrompt: GENERATE_TIPS_SYSTEM,
       language: 'en',
     });
@@ -279,16 +295,11 @@ aiRoutes.post('/email-tips', async (c) => {
     return c.json({ error: 'No active tips to send' }, 404);
   }
 
-  // Fetch user record for email + name
-  const [userRecord] = await db
-    .select({ email: authUser.email, name: authUser.name })
-    .from(authUser)
-    .where(eq(authUser.id, user.id))
-    .limit(1);
+  const clerkUser = await clerkClient.users.getUser(user.id).catch(() => null);
+  if (!clerkUser) return c.json({ error: 'User not found' }, 404);
 
-  if (userRecord === undefined) {
-    return c.json({ error: 'User not found' }, 404);
-  }
+  const userEmail = clerkUser.emailAddresses[0]?.emailAddress ?? '';
+  const userName = `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || userEmail;
 
   const resendKey = process.env['RESEND_API_KEY'];
   const fromEmail = process.env['RESEND_FROM_EMAIL'];
@@ -307,7 +318,7 @@ aiRoutes.post('/email-tips', async (c) => {
   const language: 'en' | 'nl' = profileRow?.language ?? 'en';
 
   const emailData = {
-    userName: userRecord.name,
+    userName,
     tipTextEn: tip.tipTextEn,
     tipTextNl: tip.tipTextNl,
     nutrientsFlagged: tip.nutrientsFlagged ?? null,
@@ -321,7 +332,7 @@ aiRoutes.post('/email-tips', async (c) => {
 
   const { error } = await resend.emails.send({
     from: fromEmail,
-    to: userRecord.email,
+    to: userEmail,
     subject,
     text: buildTipEmailText(emailData),
     html: buildTipEmailHtml(emailData),

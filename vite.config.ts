@@ -54,6 +54,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        ...(process.env['VITE_E2E_TEST_MODE'] === 'true'
+          ? {
+              '@clerk/clerk-react': path.resolve(__dirname, './src/lib/auth/e2e-clerk-mock.tsx'),
+            }
+          : {}),
       },
     },
     server: {

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { mockSession, mockSubscription, gotoAuthenticatedPage } from './helpers';
+import { mockSubscription, gotoAuthenticatedPage } from './helpers';
 
 test.describe('accessibility — public pages', () => {
   test('home page has no critical a11y violations', async ({ page }) => {
@@ -22,7 +22,6 @@ test.describe('accessibility — public pages', () => {
   });
 
   test('pricing page has no critical a11y violations', async ({ page }) => {
-    await mockSession(page);
     await mockSubscription(page);
     await page.goto('/pricing');
     await page.waitForLoadState('networkidle');

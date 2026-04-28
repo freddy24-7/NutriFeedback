@@ -5,10 +5,11 @@ import { db } from '@/lib/db/client';
 import { foodLogEntries } from '@/lib/db/schema';
 import { NewFoodEntryWithProductSchema, GetFoodLogQuerySchema } from '@/types/api';
 import { sanitiseTextServer } from '../middleware/sanitise';
-import { type AuthVariables } from '../middleware/auth';
+import { authMiddleware, type AuthVariables } from '../middleware/auth';
 import { todayISO } from '@/utils/date';
 
 const foodLogRoutes = new Hono<{ Variables: AuthVariables }>();
+foodLogRoutes.use('*', authMiddleware);
 
 // GET /api/food-log?date=YYYY-MM-DD
 // Returns the authenticated user's entries for the given date (defaults to today).

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { authClient } from '@/lib/auth/client';
+import { useAuth, useClerk } from '@clerk/clerk-react';
 import { ThemeToggle } from '@/components/Layout/ThemeToggle';
 import { LanguageToggle } from '@/components/Layout/LanguageToggle';
 import { CreditCounter } from '@/components/Payments/CreditCounter';
@@ -13,7 +13,8 @@ import { cn } from '@/utils/cn';
 
 export function AppLayout() {
   const { t } = useTranslation();
-  const { data: session } = authClient.useSession();
+  const { isSignedIn } = useAuth();
+  const { signOut } = useClerk();
   const navigate = useNavigate();
   const { data: sub } = useSubscription();
   const language = useUIStore((s) => s.language);
@@ -21,10 +22,8 @@ export function AppLayout() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHowToOpen, setIsHowToOpen] = useState(false);
 
-  const isAuthenticated = session !== null && session !== undefined;
-
   const handleSignOut = async () => {
-    await authClient.signOut();
+    await signOut();
     void navigate('/');
   };
 
@@ -47,7 +46,7 @@ export function AppLayout() {
           </Link>
 
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
+            {isSignedIn ? (
               <>
                 <Link
                   to="/dashboard"
@@ -117,7 +116,7 @@ export function AppLayout() {
           <Link to="/terms">{t('nav.terms')}</Link>
           <Link to="/privacy">{t('nav.privacy')}</Link>
           <Link to="/contact">{t('nav.contact')}</Link>
-          {isAuthenticated && (
+          {isSignedIn && (
             <button
               type="button"
               onClick={() => setIsHowToOpen(true)}
@@ -130,7 +129,7 @@ export function AppLayout() {
         <p className="mt-2">© {new Date().getFullYear()} NutriApp</p>
       </footer>
 
-      {isAuthenticated && (
+      {isSignedIn && (
         <>
           <button
             type="button"

@@ -29,6 +29,12 @@ const PricingPage = lazy(() => import('./pages/Pricing').then((m) => ({ default:
 const NotFoundPage = lazy(() =>
   import('./pages/NotFound').then((m) => ({ default: m.NotFoundPage })),
 );
+const SSOCallbackPage = lazy(() =>
+  import('./pages/SSOCallback').then((m) => ({ default: m.SSOCallbackPage })),
+);
+const ProvisionPage = lazy(() =>
+  import('./pages/Provision').then((m) => ({ default: m.ProvisionPage })),
+);
 
 const router = createBrowserRouter([
   {
@@ -54,6 +60,8 @@ const router = createBrowserRouter([
       { path: '/auth/confirm', element: <AuthConfirmPage /> },
     ],
   },
+  { path: '/sso-callback', element: <SSOCallbackPage /> },
+  { path: '/auth/provision', element: <ProvisionPage /> },
   { path: '*', element: <NotFoundPage /> },
 ]);
 

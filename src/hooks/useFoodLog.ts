@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { authClient } from '@/lib/auth/client';
+import { useAuth } from '@clerk/clerk-react';
 import type { FoodLogEntry } from '@/lib/db/schema';
 import type { NewFoodEntryInput, NewFoodEntryWithProductSchema } from '@/types/api';
 import type { z } from 'zod';
@@ -7,13 +7,17 @@ import type { z } from 'zod';
 type NewFoodEntryWithProduct = z.infer<typeof NewFoodEntryWithProductSchema>;
 import { todayISO } from '@/utils/date';
 
-// Better Auth uses cookies for sessions — credentials: 'include' sends them automatically.
-async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
+async function apiFetch<T>(
+  url: string,
+  getToken: () => Promise<string | null>,
+  init?: RequestInit,
+): Promise<T> {
+  const token = await getToken();
   const res = await fetch(url, {
     ...init,
-    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   });
@@ -27,45 +31,50 @@ async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export function useFoodLog(date?: string) {
-  const { data: session } = authClient.useSession();
+  const { isSignedIn, userId, getToken } = useAuth();
   const targetDate = date ?? todayISO();
 
   return useQuery<FoodLogEntry[]>({
-    queryKey: ['food-log', session?.user.id, targetDate],
-    queryFn: () => apiFetch<FoodLogEntry[]>(`/api/food-log?date=${targetDate}`),
-    enabled: session !== null && session !== undefined,
+    queryKey: ['food-log', userId, targetDate],
+    queryFn: () => apiFetch<FoodLogEntry[]>(`/api/food-log?date=${targetDate}`, getToken),
+    enabled: isSignedIn === true,
     staleTime: 60_000,
   });
 }
 
 export function useAddFoodEntry() {
   const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
+  const { isSignedIn, userId, getToken } = useAuth();
 
   return useMutation<FoodLogEntry, Error, NewFoodEntryInput | NewFoodEntryWithProduct>({
     mutationFn: (entry) =>
-      apiFetch<FoodLogEntry>('/api/food-log', {
+      apiFetch<FoodLogEntry>('/api/food-log', getToken, {
         method: 'POST',
         body: JSON.stringify(entry),
       }),
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: ['food-log', session?.user.id, variables.date],
-      });
+      if (isSignedIn) {
+        void queryClient.invalidateQueries({
+          queryKey: ['food-log', userId, variables.date],
+        });
+      }
     },
   });
 }
 
 export function useDeleteFoodEntry() {
   const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
+  const { isSignedIn, userId, getToken } = useAuth();
 
   return useMutation<{ ok: boolean }, Error, { id: string; date: string }>({
-    mutationFn: ({ id }) => apiFetch<{ ok: boolean }>(`/api/food-log/${id}`, { method: 'DELETE' }),
+    mutationFn: ({ id }) =>
+      apiFetch<{ ok: boolean }>(`/api/food-log/${id}`, getToken, { method: 'DELETE' }),
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: ['food-log', session?.user.id, variables.date],
-      });
+      if (isSignedIn) {
+        void queryClient.invalidateQueries({
+          queryKey: ['food-log', userId, variables.date],
+        });
+      }
     },
   });
 }

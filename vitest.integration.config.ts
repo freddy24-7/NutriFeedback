@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => {
         DATABASE_URL: env['DATABASE_URL'] ?? '',
         UPSTASH_REDIS_REST_URL: env['UPSTASH_REDIS_REST_URL'] ?? '',
         UPSTASH_REDIS_REST_TOKEN: env['UPSTASH_REDIS_REST_TOKEN'] ?? '',
-        BETTER_AUTH_SECRET: env['BETTER_AUTH_SECRET'] ?? '',
-        BETTER_AUTH_URL: env['BETTER_AUTH_URL'] ?? 'http://localhost:5173',
+        CLERK_SECRET_KEY: env['CLERK_SECRET_KEY'] ?? '',
+        VITE_CLERK_PUBLISHABLE_KEY: env['VITE_CLERK_PUBLISHABLE_KEY'] ?? '',
         VITE_APP_URL: env['VITE_APP_URL'] ?? 'http://localhost:5173',
         // Stripe: real key loaded from .env.local; placeholder used in tests that mock Stripe.
         STRIPE_SECRET_KEY: env['STRIPE_SECRET_KEY'] ?? 'sk_test_placeholder',

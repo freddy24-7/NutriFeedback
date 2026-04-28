@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k -n api,vite -c blue,green \"npm run dev:api\" \"npm run dev:vite\"",
     "dev:vite": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs\" vite",
-    "dev:api": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs --require ./scripts/load-env.cjs\" tsx src/api/dev-server.ts",
+    "dev:api": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs --require ./scripts/load-env.cjs\" tsx --tsconfig tsconfig.app.json src/api/dev-server.ts",
     "sitemap": "node ./scripts/generate-sitemap.cjs",
     "prebuild": "node ./scripts/generate-sitemap.cjs",
     "build": "NODE_OPTIONS=\"--require ./scripts/crypto-polyfill.cjs\" tsc -b && vite build && npm run build:api",
@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
+    "@clerk/backend": "^3.4.1",
+    "@clerk/clerk-react": "^5.61.3",
     "@fontsource/dm-mono": "^5.1.0",
     "@fontsource/dm-sans": "^5.1.0",
     "@fontsource/plus-jakarta-sans": "^5.1.1",
@@ -40,7 +42,6 @@
     "@upstash/redis": "^1.34.0",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
-    "better-auth": "^1.6.5",
     "clsx": "^2.1.1",
     "dexie": "^4.0.10",
     "dompurify": "^3.2.0",
@@ -63,9 +64,9 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@hono/node-server": "^1.13.7",
     "@axe-core/playwright": "^4.11.2",
     "@eslint/js": "^9.15.0",
+    "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.4.0",
     "@opentelemetry/api": "^1.9.1",
     "@playwright/test": "^1.49.0",

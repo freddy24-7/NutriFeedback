@@ -39,6 +39,20 @@ vi.mock('stripe', () => {
   return { default: MockStripe };
 });
 
+vi.mock('@/lib/auth/server', () => ({
+  clerkClient: {
+    users: {
+      getUser: vi.fn().mockResolvedValue({
+        emailAddresses: [{ emailAddress: 'test@example.com' }],
+        firstName: 'Test',
+        lastName: 'User',
+        publicMetadata: {},
+      }),
+      updateUserMetadata: vi.fn().mockResolvedValue({}),
+    },
+  },
+}));
+
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
 const TEST_USER: TestUser = {
@@ -347,6 +361,12 @@ describe('POST /api/payments/webhook', () => {
   });
 
   it('checkout.session.completed creates active subscription', async () => {
+    mockSubRetrieve.mockResolvedValue({
+      items: { data: [{ price: { id: 'price_test123' } }] },
+      metadata: { userId: TEST_USER.id },
+      current_period_end: null,
+    } as never);
+
     const event = {
       type: 'checkout.session.completed',
       data: {

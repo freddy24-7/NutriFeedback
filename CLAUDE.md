@@ -29,7 +29,7 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - i18next + react-i18next (EN + NL — full coverage including AI responses)
 - TanStack Query v5 (React Query) — all server state, no raw useEffect
 - Zustand — global UI state only (theme, language)
-- **better-auth** — Neon Auth client: `createAuthClient()`, `authClient.useSession()`
+- **Clerk** (`@clerk/clerk-react`) — auth client: `useAuth()`, `useSignIn()`, `useSignUp()`, `useClerk()`
 - react-hook-form + zod — all forms, always paired
 - Fuse.js — FAQ fuzzy matching for chatbot
 - @zxing/browser — barcode scanning via device camera
@@ -51,10 +51,10 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 - **Hono** — lightweight API framework on Vercel Edge Functions
 - All API routes under `src/api/` (file-based, Hono router)
 - Zod validation on every request body and response
-- **Auth:** Better Auth (Neon-native — sessions stored in Neon Postgres)
-  - `better-auth/react` on the frontend: `createAuthClient()`, `authClient.useSession()`
-  - Session cookie validation on Hono middleware via `auth.api.getSession()`
-  - All fetches use `credentials: 'include'` — no Authorization header
+- **Auth:** Clerk (`@clerk/clerk-react` frontend, `@clerk/backend` server)
+  - Frontend: `useAuth()` → `{ isSignedIn, userId, getToken }` from `@clerk/clerk-react`
+  - Backend: `clerkClient.authenticateRequest(request)` in Hono middleware
+  - API calls use `Authorization: Bearer <token>` (token from `await getToken()`)
 - **Upstash Redis** — rate limiting (sliding window) + response caching
 
 ### AI
@@ -169,10 +169,11 @@ DATABASE_URL=            # pooled connection (runtime)
 DATABASE_URL_DEV=        # dev branch pooled connection
 DATABASE_URL_UNPOOLED=   # direct connection (migrations only)
 
-# BETTER AUTH (Neon Auth — self-hosted, sessions stored in Neon DB)
-# Generate: openssl rand -hex 32
-BETTER_AUTH_SECRET=      # random 32-byte hex secret (server only)
-BETTER_AUTH_URL=http://localhost:5173  # app base URL (used for redirects)
+# CLERK AUTH
+# Create application: https://dashboard.clerk.com → Add Email/Password
+CLERK_SECRET_KEY=                # server-side only (sk_test_xxx)
+VITE_CLERK_PUBLISHABLE_KEY=      # client-safe (pk_test_xxx)
+CLERK_WEBHOOK_SECRET=            # optional — Clerk dashboard → Webhooks
 
 # AI — DEV (free)
 # Get key: https://aistudio.google.com/app/apikey
@@ -192,6 +193,8 @@ UPSTASH_REDIS_REST_TOKEN=
 STRIPE_SECRET_KEY=               # server-side only
 STRIPE_WEBHOOK_SECRET=           # from `stripe listen` CLI
 VITE_STRIPE_PUBLISHABLE_KEY=     # safe for client
+STRIPE_PRICE_ID_MONTHLY=         # monthly pro price ID (price_xxx)
+STRIPE_PRICE_ID_YEARLY=          # yearly pro price ID (price_xxx)
 
 # RESEND
 # Create account: https://resend.com → verify domain first
@@ -308,6 +311,7 @@ Cursor (using Opus model) handles complex UI component work.
 7. Credits deducted atomically in DB before AI response is returned
 8. Input sanitised at API layer before DB write AND before AI prompt insertion
 9. Drizzle schema is the single source of truth — TypeScript types derived from it
+10. Auth is Clerk — never import `better-auth`. Use `useAuth()` / `clerkClient` only.
 
 ---
 

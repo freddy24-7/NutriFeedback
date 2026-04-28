@@ -12,18 +12,7 @@ import {
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
 import { sql } from 'drizzle-orm';
 
-import { authUser, languageEnum, userProfiles, userCredits } from './schema-better-auth';
-
-export {
-  languageEnum,
-  themeEnum,
-  authUser,
-  authSession,
-  authAccount,
-  authVerification,
-  userProfiles,
-  userCredits,
-} from './schema-better-auth';
+export { languageEnum, themeEnum, userProfiles, userCredits } from './schema-better-auth';
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
@@ -46,15 +35,14 @@ export const discountTypeEnum = pgEnum('discount_type', ['beta', 'influencer', '
 export const severityEnum = pgEnum('severity', ['info', 'suggestion', 'important']);
 
 // ─── App tables ──────────────────────────────────────────────────────────────
-// userId fields reference authUser.id (text) — not uuid — to match Better Auth.
+// userId fields hold Clerk user IDs (text, e.g. "user_2xxx").
+// No FK to an auth user table — Clerk owns auth.
 
 export const foodLogEntries = pgTable('food_log_entries', {
   id: uuid('id')
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  userId: text('user_id')
-    .notNull()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull(),
   description: text('description').notNull(),
   mealType: mealTypeEnum('meal_type'),
   date: text('date').notNull(),
@@ -77,7 +65,7 @@ export const products = pgTable('products', {
   processingLevel: integer('processing_level'),
   source: productSourceEnum('source').notNull(),
   verified: boolean('verified').notNull().default(false),
-  createdBy: text('created_by').references(() => authUser.id, { onDelete: 'set null' }),
+  createdBy: text('created_by'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -85,21 +73,18 @@ export const creditTransactions = pgTable('credit_transactions', {
   id: uuid('id')
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  userId: text('user_id')
-    .notNull()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull(),
   amount: integer('amount').notNull(),
   action: text('action').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
 export const subscriptions = pgTable('subscriptions', {
-  userId: text('user_id')
-    .primaryKey()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
+  userId: text('user_id').primaryKey(),
   status: subscriptionStatusEnum('status').notNull(),
   stripeCustomerId: text('stripe_customer_id').unique(),
   stripeSubscriptionId: text('stripe_subscription_id').unique(),
+  stripePriceId: text('stripe_price_id'),
   currentPeriodEnd: timestamp('current_period_end'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -118,9 +103,7 @@ export const aiTips = pgTable('ai_tips', {
   id: uuid('id')
     .primaryKey()
     .default(sql`gen_random_uuid()`),
-  userId: text('user_id')
-    .notNull()
-    .references(() => authUser.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull(),
   generatedAt: timestamp('generated_at').notNull().defaultNow(),
   timeframeDays: integer('timeframe_days').notNull(),
   nutrientsFlagged: text('nutrients_flagged').array(),
@@ -135,7 +118,7 @@ export const chatbotSessions = pgTable('chatbot_sessions', {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   ipHash: text('ip_hash').notNull(),
-  userId: text('user_id').references(() => authUser.id, { onDelete: 'set null' }),
+  userId: text('user_id'),
   messagesToday: integer('messages_today').notNull().default(0),
   date: text('date').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -146,7 +129,7 @@ export const unansweredQuestions = pgTable('unanswered_questions', {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   question: text('question').notNull(),
-  language: languageEnum('language').notNull(),
+  language: text('language').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -154,17 +137,13 @@ export const unansweredQuestions = pgTable('unanswered_questions', {
 
 export const selectFoodLogSchema = createSelectSchema(foodLogEntries);
 export const insertFoodLogSchema = createInsertSchema(foodLogEntries);
-export const selectUserProfile = createSelectSchema(userProfiles);
-export const insertUserProfile = createInsertSchema(userProfiles);
-export const selectUserCredits = createSelectSchema(userCredits);
+export const selectUserProfile = createSelectSchema;
+export const insertUserProfile = createInsertSchema;
 
 // ─── TypeScript types derived from schema (never hand-write these) ───────────
 
 export type FoodLogEntry = typeof foodLogEntries.$inferSelect;
 export type NewFoodLogEntry = typeof foodLogEntries.$inferInsert;
-export type UserProfile = typeof userProfiles.$inferSelect;
-export type NewUserProfile = typeof userProfiles.$inferInsert;
-export type UserCredits = typeof userCredits.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type DiscountCode = typeof discountCodes.$inferSelect;

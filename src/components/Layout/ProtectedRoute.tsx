@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { authClient } from '@/lib/auth/client';
+import { useAuth } from '@clerk/clerk-react';
 
 export function ProtectedRoute({ redirectTo = '/signin' }: { redirectTo?: string }) {
-  const { data: session, isPending } = authClient.useSession();
+  const { isSignedIn, isLoaded } = useAuth();
 
-  if (isPending) {
+  if (!isLoaded) {
     return (
       <div
         className="flex min-h-[50vh] items-center justify-center"
@@ -18,7 +18,7 @@ export function ProtectedRoute({ redirectTo = '/signin' }: { redirectTo?: string
     );
   }
 
-  if (!session) {
+  if (!isSignedIn) {
     return <Navigate to={redirectTo} replace />;
   }
 

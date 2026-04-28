@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { authClient } from '@/lib/auth/client';
+import { useAuth, useClerk } from '@clerk/clerk-react';
 import { useUIStore } from '@/store/uiStore';
 import { todayISO, formatDate } from '@/utils/date';
 import { DailyView } from '@/components/FoodLog/DailyView';
@@ -26,8 +26,22 @@ function readOnboardingInitialStep(): 1 | 2 | 3 | 4 | null {
 
 export function DashboardPage() {
   const { t, i18n } = useTranslation();
-  const { data: session } = authClient.useSession();
+  const { isSignedIn, isLoaded } = useAuth();
+  const { session } = useClerk();
   const language = useUIStore((s) => s.language);
+
+  // Lazy provisioning: if on-signup failed (e.g. token timing), ensure rows exist
+  useEffect(() => {
+    if (!isSignedIn || !isLoaded) return;
+    void (async () => {
+      const token = await session?.getToken();
+      if (!token) return;
+      await fetch('/api/auth/on-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      });
+    })();
+  }, [isSignedIn, isLoaded, session]);
   const [date, setDate] = useState(todayISO());
   const [showForm, setShowForm] = useState(false);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
@@ -59,7 +73,14 @@ export function DashboardPage() {
     if (!tipError) return null;
     const msg = tipError instanceof Error ? tipError.message : '';
     if (msg === 'insufficient_credits') return t('ai.tip.insufficientCredits');
-    if (msg === 'not_enough_data') return t('ai.tip.notEnoughData');
+    if (
+      msg === 'not_enough_data' ||
+      msg === 'Need at least 3 days of food log data to generate tips' ||
+      (msg.includes('at least 3 days') && msg.includes('food log'))
+    ) {
+      return t('ai.tip.notEnoughData');
+    }
+    if (msg === 'rate_limited') return t('ai.tip.rateLimited');
     return t('common.error');
   })();
 
@@ -83,7 +104,7 @@ export function DashboardPage() {
     });
   };
 
-  if (!session?.user) return null;
+  if (!isLoaded || !isSignedIn) return null;
 
   return (
     <>
@@ -181,7 +202,7 @@ export function DashboardPage() {
               {isGenerating ? t('ai.tip.generating') : t('ai.tip.generate')}
             </button>
             {tipErrorMessage !== null && (
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
                 {tipErrorMessage}
               </p>
             )}

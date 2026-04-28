@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { mockSession, mockSubscription } from './helpers';
+import { mockSubscription } from './helpers';
 
 const TODAY = new Date().toISOString().split('T')[0]!;
 
@@ -17,7 +17,6 @@ const ENTRY_STUB = {
 };
 
 async function setupDashboard(page: Page, entries: object[] = []) {
-  await mockSession(page);
   await mockSubscription(page);
   await page.route('**/api/food-log**', (route) =>
     route.fulfill({
@@ -49,7 +48,6 @@ test.describe('Food log — daily view', () => {
     // before (empty list) and after (populated list) the POST fires.
     let entryAdded = false;
 
-    await mockSession(page);
     await mockSubscription(page);
     await page.route('**/api/food-log**', (route) => {
       if (route.request().method() === 'POST') {

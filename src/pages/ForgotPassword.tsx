@@ -1,22 +1,33 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { authClient } from '@/lib/auth/client';
+import { useSignIn } from '@clerk/clerk-react';
 import { ForgotPasswordFormSchema, type ForgotPasswordFormInput } from '@/types/api';
-import {
-  AUTH_REQUEST_TIMEOUT_MS,
-  isAuthTimeoutError,
-  withAuthRequestTimeout,
-} from '@/utils/auth-request';
 import { cn } from '@/utils/cn';
+import { z } from 'zod';
+
+const ResetSchema = z
+  .object({
+    code: z.string().min(6, 'Required'),
+    password: z.string().min(8, 'At least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+type ResetInput = z.infer<typeof ResetSchema>;
 
 export function ForgotPasswordPage() {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { signIn, setActive, isLoaded } = useSignIn();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [step, setStep] = useState<'email' | 'reset'>('email');
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
   const {
     register,
@@ -24,48 +35,192 @@ export function ForgotPasswordPage() {
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormInput>({ resolver: zodResolver(ForgotPasswordFormSchema) });
 
-  const onSubmit = async (data: ForgotPasswordFormInput) => {
+  const {
+    register: registerReset,
+    handleSubmit: handleResetSubmit,
+    formState: { errors: resetErrors, isSubmitting: isResetSubmitting },
+    setValue: setResetValue,
+  } = useForm<ResetInput>({ resolver: zodResolver(ResetSchema), defaultValues: { code: '' } });
+
+  useEffect(() => {
+    if (step === 'reset') {
+      const t = setTimeout(() => setResetValue('code', ''), 50);
+      return () => clearTimeout(t);
+    }
+  }, [step, setResetValue]);
+
+  const onRequestReset = async (data: ForgotPasswordFormInput) => {
+    if (!isLoaded) return;
     setServerError(null);
     try {
-      const { error } = await withAuthRequestTimeout(
-        authClient.requestPasswordReset({
-          email: data.email,
-          redirectTo: `${window.location.origin}/auth/confirm`,
-        }),
-        AUTH_REQUEST_TIMEOUT_MS,
-      );
-      if (error) {
-        setServerError(t('auth.error.generic'));
-        return;
-      }
-      setSubmitted(data.email);
-    } catch (e) {
-      setServerError(
-        isAuthTimeoutError(e) ? t('auth.error.timeout') : t('auth.error.networkError'),
-      );
+      await signIn.create({
+        strategy: 'reset_password_email_code',
+        identifier: data.email,
+      });
+      setSubmittedEmail(data.email);
+      setStep('reset');
+    } catch {
+      setServerError(t('auth.error.generic'));
     }
   };
 
-  if (submitted !== null) {
+  const onReset = async (data: ResetInput) => {
+    if (!isLoaded) return;
+    setServerError(null);
+    try {
+      const result = await signIn.attemptFirstFactor({
+        strategy: 'reset_password_email_code',
+        code: data.code,
+        password: data.password,
+      });
+
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId });
+        void navigate('/dashboard');
+      } else {
+        setServerError(t('auth.error.generic'));
+      }
+    } catch {
+      setServerError(t('auth.error.invalidCredentials'));
+    }
+  };
+
+  if (step === 'reset') {
     return (
-      <div className="text-center">
+      <>
+        <Helmet>
+          <title>
+            {t('auth.forgotPassword.title')} — {t('app.name')}
+          </title>
+          <meta name="robots" content="noindex,nofollow" />
+        </Helmet>
+
         <h1
           className="font-display text-xl font-bold"
           style={{ color: 'var(--color-text-primary)' }}
         >
           {t('auth.forgotPassword.success')}
         </h1>
-        <p className="mt-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {t('auth.forgotPassword.successSubtitle', { email: submitted })}
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          {t('auth.forgotPassword.successSubtitle', { email: submittedEmail })}
         </p>
-        <Link
-          to="/signin"
-          className="mt-6 block text-sm font-medium"
-          style={{ color: 'var(--color-brand)' }}
+
+        <form
+          onSubmit={(e) => void handleResetSubmit(onReset)(e)}
+          className="mt-6 space-y-4"
+          autoComplete="off"
+          noValidate
         >
-          {t('auth.forgotPassword.back')}
-        </Link>
-      </div>
+          <div>
+            <label
+              htmlFor="code"
+              className="block text-sm font-medium"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {t('auth.confirm.codeLabel')}
+            </label>
+            <input
+              id="code"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              className={cn(
+                'mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors',
+                'focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
+              )}
+              style={{
+                backgroundColor: 'var(--color-bg)',
+                borderColor: resetErrors.code ? 'var(--color-error)' : 'var(--color-border)',
+                color: 'var(--color-text-primary)',
+              }}
+              {...registerReset('code')}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="new-password"
+              className="block text-sm font-medium"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {t('auth.signUp.passwordLabel')}
+            </label>
+            <input
+              id="new-password"
+              type="password"
+              autoComplete="new-password"
+              className={cn(
+                'mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors',
+                'focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
+              )}
+              style={{
+                backgroundColor: 'var(--color-bg)',
+                borderColor: resetErrors.password ? 'var(--color-error)' : 'var(--color-border)',
+                color: 'var(--color-text-primary)',
+              }}
+              {...registerReset('password')}
+            />
+            {resetErrors.password && (
+              <p role="alert" className="mt-1 text-xs" style={{ color: 'var(--color-error)' }}>
+                {resetErrors.password.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {t('auth.signUp.confirmPasswordLabel')}
+            </label>
+            <input
+              id="confirm-password"
+              type="password"
+              autoComplete="new-password"
+              className={cn(
+                'mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors',
+                'focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
+              )}
+              style={{
+                backgroundColor: 'var(--color-bg)',
+                borderColor: resetErrors.confirmPassword
+                  ? 'var(--color-error)'
+                  : 'var(--color-border)',
+                color: 'var(--color-text-primary)',
+              }}
+              {...registerReset('confirmPassword')}
+            />
+            {resetErrors.confirmPassword && (
+              <p role="alert" className="mt-1 text-xs" style={{ color: 'var(--color-error)' }}>
+                {resetErrors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
+          {serverError !== null && (
+            <p
+              role="alert"
+              className="rounded-lg p-3 text-sm"
+              style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-error)' }}
+            >
+              {serverError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isResetSubmitting}
+            className={cn(
+              'w-full rounded-pill py-2.5 font-display font-semibold text-white transition-colors duration-150',
+              'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',
+            )}
+          >
+            {isResetSubmitting ? t('common.loading') : t('auth.forgotPassword.resetSubmit')}
+          </button>
+        </form>
+      </>
     );
   }
 
@@ -85,7 +240,11 @@ export function ForgotPasswordPage() {
         {t('auth.forgotPassword.subtitle')}
       </p>
 
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mt-6 space-y-4" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onRequestReset)(e)}
+        className="mt-6 space-y-4"
+        noValidate
+      >
         <div>
           <label
             htmlFor="email"
@@ -136,7 +295,7 @@ export function ForgotPasswordPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isLoaded}
           className={cn(
             'w-full rounded-pill py-2.5 font-display font-semibold text-white transition-colors duration-150',
             'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',

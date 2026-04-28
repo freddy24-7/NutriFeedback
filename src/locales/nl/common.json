@@ -61,7 +61,7 @@
       "alreadyHaveAccount": "Heb je al een account?",
       "signIn": "Inloggen",
       "confirmEmailTitle": "Controleer je e-mail",
-      "confirmEmailMessage": "We hebben een bevestigingslink gestuurd naar {{email}}. Klik erop om je account te activeren.",
+      "confirmEmailMessage": "We hebben een 6-cijferige verificatiecode gestuurd naar {{email}}. Voer hem hieronder in.",
       "terms": "Door een account aan te maken ga je akkoord met onze",
       "termsLink": "Servicevoorwaarden",
       "and": "en",
@@ -84,6 +84,7 @@
       "emailLabel": "E-mailadres",
       "emailPlaceholder": "jij@voorbeeld.nl",
       "submit": "Resetlink versturen",
+      "resetSubmit": "Nieuw wachtwoord instellen",
       "back": "Terug naar inloggen",
       "success": "Resetlink verstuurd!",
       "successSubtitle": "Als er een account bestaat voor {{email}}, ontvang je binnenkort een resetlink."
@@ -92,7 +93,9 @@
       "loading": "E-mail bevestigen...",
       "success": "E-mail bevestigd! Je wordt doorgestuurd naar je dashboard...",
       "error": "Bevestiging mislukt. De link is mogelijk verlopen.",
-      "tryAgain": "Probeer opnieuw in te loggen"
+      "tryAgain": "Probeer opnieuw in te loggen",
+      "codeLabel": "Verificatiecode",
+      "submit": "E-mail bevestigen"
     },
     "error": {
       "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
@@ -103,7 +106,8 @@
       "networkError": "Netwerkfout. Controleer je verbinding.",
       "timeout": "Het duurde te lang. Controleer of de API-server draait en probeer opnieuw."
     },
-    "signOut": "Uitloggen"
+    "signOut": "Uitloggen",
+    "googleButton": "Doorgaan met Google"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -257,8 +261,9 @@
       "generate": "Tip genereren",
       "generating": "Bezig...",
       "dismiss": "Tip sluiten",
-      "notEnoughData": "Log eten voor 3 of meer dagen voor persoonlijke tips",
+      "notEnoughData": "Log minstens één maaltijd om je eerste tip te genereren.",
       "insufficientCredits": "Niet genoeg credits voor een tip",
+      "rateLimited": "Te veel tipverzoeken — probeer later opnieuw",
       "severity": {
         "info": "Info",
         "suggestion": "Suggestie",
@@ -370,7 +375,7 @@
     },
     "step3": {
       "title": "Ontvang AI-tips",
-      "description": "Na 3 dagen loggen herkent de AI patronen en geeft je één persoonlijke tip tegelijk."
+      "description": "Na je eerste maaltijdinvoer kan de AI je al een persoonlijke tip geven. Hoe meer je logt, hoe beter de inzichten."
     },
     "step4": {
       "title": "Volg in de loop van de tijd",

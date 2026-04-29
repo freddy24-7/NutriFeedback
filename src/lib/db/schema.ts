@@ -111,6 +111,7 @@ export const aiTips = pgTable('ai_tips', {
   tipTextNl: text('tip_text_nl').notNull(),
   severity: severityEnum('severity').notNull().default('suggestion'),
   dismissedAt: timestamp('dismissed_at'),
+  analysisData: jsonb('analysis_data'),
 });
 
 export const chatbotSessions = pgTable('chatbot_sessions', {

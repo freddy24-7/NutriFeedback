@@ -101,7 +101,7 @@ describe('POST /api/chat — FAQ matching', () => {
 
 describe('POST /api/chat — AI fallback', () => {
   it('calls AI when no FAQ match and returns answer', async () => {
-    mockGenerateAIResponse.mockResolvedValueOnce({ text: 'AI says hello!', creditsUsed: 0 });
+    mockGenerateAIResponse.mockResolvedValueOnce({ text: 'AI says hello!', model: 'gemini' });
 
     const app = createChatApp();
     const res = await app.request(
@@ -114,13 +114,12 @@ describe('POST /api/chat — AI fallback', () => {
     expect(body.answer).toBe('AI says hello!');
     expect(mockGenerateAIResponse).toHaveBeenCalledOnce();
 
-    // Verify forceGemini was passed
-    const callArgs = mockGenerateAIResponse.mock.calls[0]![0] as { forceGemini: boolean };
-    expect(callArgs.forceGemini).toBe(true);
+    const callArgs = mockGenerateAIResponse.mock.calls[0]![0] as { language: string };
+    expect(callArgs.language).toBe('en');
   });
 
   it('logs unanswered question to DB on AI fallback', async () => {
-    mockGenerateAIResponse.mockResolvedValueOnce({ text: 'AI says hello!', creditsUsed: 0 });
+    mockGenerateAIResponse.mockResolvedValueOnce({ text: 'AI says hello!', model: 'gemini' });
 
     const app = createChatApp();
     const question = `Integration test question ${Date.now()}`;

@@ -15,6 +15,13 @@
       "when": 1777312132825,
       "tag": "0001_first_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777378054548,
+      "tag": "0002_polite_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

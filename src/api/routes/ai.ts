@@ -183,6 +183,7 @@ aiRoutes.post('/generate-tips', async (c) => {
     tipTextNl: string;
     nutrientsFlagged: string[];
     severity: 'info' | 'suggestion' | 'important';
+    analysisData?: unknown;
   };
 
   let tipJson: TipJson;
@@ -217,6 +218,7 @@ aiRoutes.post('/generate-tips', async (c) => {
       tipTextNl: tipJson.tipTextNl,
       nutrientsFlagged: tipJson.nutrientsFlagged,
       severity: tipJson.severity,
+      analysisData: tipJson.analysisData ?? null,
     })
     .returning();
 
@@ -232,6 +234,7 @@ aiRoutes.post('/generate-tips', async (c) => {
     severity: tip.severity,
     generatedAt: tip.generatedAt.toISOString(),
     dismissedAt: null,
+    analysisData: tip.analysisData ?? null,
   });
 });
 
@@ -257,6 +260,7 @@ aiRoutes.get('/tips', async (c) => {
       severity: t.severity,
       generatedAt: t.generatedAt.toISOString(),
       dismissedAt: t.dismissedAt?.toISOString() ?? null,
+      analysisData: t.analysisData ?? null,
     })),
   );
 });

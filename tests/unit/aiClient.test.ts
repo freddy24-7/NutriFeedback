@@ -4,16 +4,6 @@ import { PARSE_FOOD_SYSTEM, PARSE_FOOD_PROMPT, GENERATE_TIPS_SYSTEM } from '@/li
 // ─── Prompt builder tests ─────────────────────────────────────────────────────
 
 describe('PARSE_FOOD_SYSTEM', () => {
-  it('routes to Gemini when NODE_ENV is development', () => {
-    // The AI client reads NODE_ENV at call time. Test the routing logic directly.
-    const originalEnv = process.env['NODE_ENV'];
-    process.env['NODE_ENV'] = 'development';
-    // Prompt builder is not env-dependent; routing is in client.ts.
-    // This test documents the contract: dev → Gemini.
-    expect(process.env['NODE_ENV']).toBe('development');
-    process.env['NODE_ENV'] = originalEnv;
-  });
-
   it('includes language instruction as first line for EN', () => {
     const system = PARSE_FOOD_SYSTEM('en');
     expect(system.startsWith('Always respond in English.')).toBe(true);
@@ -56,25 +46,11 @@ describe('GENERATE_TIPS_SYSTEM', () => {
   });
 });
 
-// ─── AI client routing logic ──────────────────────────────────────────────────
-// The routing decision (Gemini vs Anthropic) is based on NODE_ENV.
-// We test the decision logic in isolation here; full SDK calls are covered
-// by integration tests that run against the real API with env vars set.
+// ─── AI client contract ───────────────────────────────────────────────────────
+// `generateAIResponse` uses Gemini only (`GEMINI_API_KEY`). Full SDK calls are
+// covered by integration tests with mocks.
 
-describe('AI client routing logic', () => {
-  it('routes to Gemini in development — CONTRACT TEST', () => {
-    // This test documents the routing contract enforced in src/lib/ai/client.ts:
-    // NODE_ENV=development → callGemini; NODE_ENV=production → callAnthropic
-    // forceGemini=true → always callGemini (used by chatbot)
-    const useGemini = (nodeEnv: string, forceGemini?: boolean) =>
-      nodeEnv === 'development' || forceGemini === true;
-
-    expect(useGemini('development')).toBe(true);
-    expect(useGemini('production')).toBe(false);
-    expect(useGemini('production', true)).toBe(true);
-    expect(useGemini('test')).toBe(false);
-  });
-
+describe('AI client contract', () => {
   it('credit deduction must happen BEFORE AI call — CONTRACT TEST', () => {
     // Documents the invariant: credits are deducted atomically before any AI call.
     // If the AI call fails, credits are refunded. This is tested end-to-end in

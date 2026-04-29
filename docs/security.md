@@ -109,7 +109,6 @@ No JWT tokens, no Authorization header. Sessions stored in Neon `session` table.
 | `DATABASE_URL`                | API routes only        | Client, repo |
 | `DATABASE_URL_UNPOOLED`       | Migration scripts only | Client, repo |
 | `GEMINI_API_KEY`              | AI client only         | Client, repo |
-| `ANTHROPIC_API_KEY`           | AI client only         | Client, repo |
 | `STRIPE_SECRET_KEY`           | Payment routes only    | Client, repo |
 | `STRIPE_WEBHOOK_SECRET`       | Webhook route only     | Client, repo |
 | `RESEND_API_KEY`              | Contact route only     | Client, repo |
@@ -119,7 +118,7 @@ No JWT tokens, no Authorization header. Sessions stored in Neon `session` table.
 CI check to catch leaks (in `ci.yml`):
 
 ```bash
-grep -rE "(sk_live|sk_test|ANTHROPIC|GEMINI|RESEND|DATABASE_URL)" src/ && exit 1 || exit 0
+grep -rE "(sk_live|sk_test|GEMINI|RESEND|DATABASE_URL)" src/ && exit 1 || exit 0
 ```
 
 Any variable prefixed `VITE_` is bundled into the client. Never put secrets there.

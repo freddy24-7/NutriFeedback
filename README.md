@@ -38,13 +38,11 @@ A Progressive Web App for flexible nutrition tracking. Log what you eat in as mu
 
 ### AI
 
-| Context                          | Provider                            |
-| -------------------------------- | ----------------------------------- |
-| Development — all features       | Google Gemini 1.5 Flash (free tier) |
-| Production — food parsing + tips | Anthropic Claude API                |
-| Chatbot — always                 | Google Gemini 1.5 Flash             |
+| Context                   | Provider      |
+| ------------------------- | ------------- |
+| All features (dev + prod) | Google Gemini |
 
-All AI calls are routed through `src/lib/ai/client.ts` exclusively. Provider SDKs are never imported anywhere else.
+All AI calls are routed through `src/lib/ai/client.ts` exclusively. The Gemini SDK is never imported anywhere else.
 
 ### External Services
 

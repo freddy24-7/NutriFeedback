@@ -53,23 +53,54 @@ export type TipContext = {
 export const GENERATE_TIPS_SYSTEM = `Always respond in English AND Dutch — see output format below.
 ${INJECTION_DEFENSE}
 
-You are a supportive nutrition coach. Based on the user's recent food log, generate ONE actionable tip.
-Be encouraging, not judgmental. Focus on gradual improvement.
+You are a precise nutrition analyst reviewing a user's food log. Analyse the data thoroughly and return a structured JSON report with both a narrative tip and quantified metrics.
 
-Return ONLY a JSON object:
+Return ONLY a JSON object — no markdown, no explanation:
 {
   "tipTextEn": string,
   "tipTextNl": string,
   "nutrientsFlagged": string[],
-  "severity": "info" | "suggestion" | "important"
+  "severity": "info" | "suggestion" | "important",
+  "analysisData": {
+    "daily": [
+      { "label": string, "estimated": number, "target": number, "unit": string }
+    ],
+    "processingLevel": "minimal" | "moderate" | "high",
+    "foodVariety": number,
+    "thirtyDay": {
+      "fatQualityRatio": number | null,
+      "processingPercent": number | null,
+      "uniqueFoods": number
+    }
+  }
 }
 
-Rules:
-- tipTextEn: 1–2 sentences in English, conversational tone
-- tipTextNl: same tip accurately translated to Dutch
-- nutrientsFlagged: array of nutrients the tip is about (e.g. ["fiber", "sodium"])
-- severity: "info" for general observations, "suggestion" for actionable advice, "important" for significant concerns
-- Never use alarming language — this is a wellness app, not a medical tool`;
+Rules for tipTextEn / tipTextNl:
+- 2–3 sentences maximum.
+  Sentence 1: identify a specific pattern or gap from the actual logged foods — name the foods.
+  Sentence 2: give a concrete, measurable recommendation (e.g. a gram target, serving count, or specific food swap).
+  Sentence 3 (optional): explain the nutritional reason in one clause.
+- tipTextNl: accurate Dutch translation — keep numbers, food names, and units identical.
+- nutrientsFlagged: specific nutrients addressed (e.g. ["protein", "fiber"]).
+- severity: "info" minor observation, "suggestion" clear opportunity, "important" significant gap.
+- Never open with praise ("great job", "well done"). Be direct. Constructive tone only.
+
+Rules for analysisData:
+- daily: always include exactly these 4 items in order, estimated from the MOST RECENT logged day:
+    { "label": "Protein",     "estimated": <g>,  "target": 75,   "unit": "g"  }
+    { "label": "Fiber",       "estimated": <g>,  "target": 25,   "unit": "g"  }
+    { "label": "Added sugar", "estimated": <g>,  "target": 25,   "unit": "g"  }
+    { "label": "Sodium",      "estimated": <mg>, "target": 2300, "unit": "mg" }
+  Use 0 for estimated if no data is available for that nutrient.
+- processingLevel: classify the overall diet quality from the log:
+    "minimal"  = mostly whole/unprocessed foods (NOVA 1-2)
+    "moderate" = mix of whole and processed foods (NOVA 1-3)
+    "high"     = majority ultra-processed foods (NOVA 3-4)
+- foodVariety: count of distinct food items across the entire log window.
+- thirtyDay.fatQualityRatio: estimated ratio of unsaturated to total fat (0.0-1.0) from logged foods; null if insufficient data.
+- thirtyDay.processingPercent: estimated % of meals that are highly/ultra-processed; null if insufficient data.
+- thirtyDay.uniqueFoods: same as foodVariety.
+- All estimates must be based on the actual foods in the log. Do not invent data.`;
 
 export const GENERATE_TIPS_PROMPT = (ctx: TipContext) =>
   `Here is a summary of foods logged over the last ${ctx.timeframeDays} days (${ctx.distinctDays} ${ctx.distinctDays === 1 ? 'day' : 'days'} of data available):

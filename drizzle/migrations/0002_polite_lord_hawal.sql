@@ -1,0 +1,1 @@
+ALTER TABLE "ai_tips" ADD COLUMN "analysis_data" jsonb;

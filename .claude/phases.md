@@ -130,13 +130,12 @@ All of the following must pass before Phase 2 begins.
 ## Phase 2 — AI Integration
 
 **Goal:** Natural language food parsing, rolling tip engine,
-AI client abstraction (Gemini dev / Claude prod).
+AI client abstraction (Gemini only).
 
 ### Claude Code Tasks
 
 - [ ] Write `src/lib/ai/client.ts` unified AI abstraction
 - [ ] Write Gemini adapter (called from Hono API routes)
-- [ ] Write Anthropic adapter (prod only)
 - [ ] Write `POST /api/ai/parse-food` route:
   - Accepts: `{ description, language, userId }`
   - Sanitises input before prompt
@@ -173,8 +172,7 @@ Add GEMINI_API_KEY to .env.local
 
 **Vitest — unit:**
 
-- [ ] AI client routes to Gemini in `NODE_ENV=development`
-- [ ] AI client routes to Anthropic in `NODE_ENV=production` (mocked)
+- [ ] AI client uses Gemini only (`GEMINI_API_KEY`; mocked in tests)
 - [ ] Prompt builder includes language instruction as first line
 - [ ] Prompt builder wraps user input in `<user_input>` delimiters
 - [ ] Tip engine: returns null/empty with fewer than 3 days of data
@@ -412,7 +410,7 @@ passed, Lighthouse ≥ 90 across the board.
 - [ ] All env vars set in Vercel production environment
 - [ ] Neon `main` branch connection string in Vercel as `DATABASE_URL`
 - [ ] Neon EU region confirmed (Frankfurt) for `DATABASE_URL`
-- [ ] `ANTHROPIC_API_KEY` added (prod AI active)
+- [ ] `GEMINI_API_KEY` added (prod AI active)
 - [ ] Stripe webhook updated to production URL
 - [ ] Stripe keys switched from test to live
 - [ ] Resend sending domain verified

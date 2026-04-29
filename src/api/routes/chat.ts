@@ -64,13 +64,12 @@ chatRoutes.post('/', zValidator('json', ChatRequestSchema), async (c) => {
     });
   }
 
-  // No FAQ match — fall back to Gemini (always, never Claude for chat)
+  // No FAQ match — Gemini (same provider as all other AI routes)
   const safe = sanitiseForPrompt(message);
   const aiResponse = await generateAIResponse({
     systemPrompt: CHAT_SYSTEM(language),
     prompt: CHAT_PROMPT(safe),
     language,
-    forceGemini: true,
   });
 
   // Log unanswered question so we can expand the FAQ later

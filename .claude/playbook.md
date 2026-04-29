@@ -24,8 +24,7 @@ pieces as needed, but keep the same architectural roles.
 | ORM           | Drizzle ORM + Drizzle Kit            | Schema = source of truth, type-safe queries, migration CLI             |
 | Auth          | Better Auth (Neon-native)            | Sessions in Postgres, no external service, GDPR-friendly               |
 | Rate limiting | Upstash Redis                        | Sliding window, serverless-compatible, also useful for caching         |
-| AI (dev)      | Google Gemini 1.5 Flash              | Free tier, fast, good enough for development                           |
-| AI (prod)     | Anthropic Claude API                 | Quality, safety, reliable for user-facing features                     |
+| AI            | Google Gemini                        | Single provider for dev + prod — all calls via `src/lib/ai/client.ts`  |
 | i18n          | i18next + react-i18next              | Mature, namespace support, works with AI prompt injection              |
 | PWA           | Workbox (via vite-plugin-pwa)        | Service worker, offline fallback, install prompt                       |
 | Payments      | Stripe Checkout (hosted)             | SCA-compliant, no PCI scope, works everywhere                          |

@@ -26,7 +26,13 @@
       "Bash(node scripts/fix-fk.cjs)",
       "Bash(node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/fix-fk.mts)",
       "Bash(node -e \"console.log\\(typeof fetch, process.version\\)\")",
-      "Bash(node -e \"const p = require\\('/Users/freddyaustli/Desktop/NutriApp/package.json'\\); console.log\\(JSON.stringify\\(p.scripts, null, 2\\)\\)\")"
+      "Bash(node -e \"const p = require\\('/Users/freddyaustli/Desktop/NutriApp/package.json'\\); console.log\\(JSON.stringify\\(p.scripts, null, 2\\)\\)\")",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(tsx --tsconfig tsconfig.app.json scripts/check-db.mts)",
+      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/check-db.mts)",
+      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json -)",
+      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/apply-migration-0002.mts)",
+      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/mark-migration-0002.mts)"
     ]
   }
 }

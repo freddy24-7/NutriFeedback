@@ -1,28 +1,54 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import Anthropic from '@anthropic-ai/sdk';
 
-// Only import SDKs here — never import them anywhere else in the codebase.
+// Only import the Gemini SDK here — never import it anywhere else in the codebase.
 
 export type AIRequest = {
   prompt: string;
   systemPrompt: string;
   language: 'en' | 'nl';
-  forceGemini?: boolean;
 };
 
 export type AIResponse = {
   text: string;
-  model: 'gemini' | 'anthropic';
+  model: 'gemini';
 };
 
-/** Model id for `getGenerativeModel` — not the REST `models/...` path. */
+/** Primary model id — matches Gemini API names without the `models/` prefix (see ListModels). */
 const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
 
-async function callGemini(req: AIRequest): Promise<AIResponse> {
+/**
+ * Extra models to try in order if the primary fails (503/429/quota). Different models often have
+ * separate quota buckets; avoid stopping after one fallback that shows free-tier `limit: 0`.
+ */
+const GEMINI_FALLBACK_MODELS = [
+  'gemini-flash-latest',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+] as const;
+
+function resolvedGeminiModelId(): string {
+  const raw = process.env['GEMINI_MODEL']?.trim();
+  if (raw !== undefined && raw !== '') {
+    return raw.startsWith('models/') ? raw.slice('models/'.length) : raw;
+  }
+  return DEFAULT_GEMINI_MODEL;
+}
+
+function geminiModelCandidates(primary: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const id of [primary, ...GEMINI_FALLBACK_MODELS]) {
+    if (!seen.has(id)) {
+      seen.add(id);
+      out.push(id);
+    }
+  }
+  return out;
+}
+
+async function callGeminiModel(req: AIRequest, modelId: string): Promise<AIResponse> {
   const apiKey = process.env['GEMINI_API_KEY'];
   if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
-
-  const modelId = process.env['GEMINI_MODEL']?.trim() || DEFAULT_GEMINI_MODEL;
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
@@ -35,38 +61,25 @@ async function callGemini(req: AIRequest): Promise<AIResponse> {
   return { text, model: 'gemini' };
 }
 
-async function callAnthropic(req: AIRequest): Promise<AIResponse> {
-  const apiKey = process.env['ANTHROPIC_API_KEY'];
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set');
-
-  const client = new Anthropic({ apiKey });
-  const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1024,
-    system: req.systemPrompt,
-    messages: [{ role: 'user', content: req.prompt }],
-  });
-
-  const block = message.content[0];
-  const text = block?.type === 'text' ? block.text : '';
-  return { text, model: 'anthropic' };
-}
-
-export async function generateAIResponse(req: AIRequest): Promise<AIResponse> {
-  const preferGemini =
-    (process.env['NODE_ENV'] === 'development' || req.forceGemini === true) &&
-    Boolean(process.env['GEMINI_API_KEY']);
-
-  if (preferGemini) {
+async function callGemini(req: AIRequest): Promise<AIResponse> {
+  const primary = resolvedGeminiModelId();
+  const candidates = geminiModelCandidates(primary);
+  let lastErr: unknown;
+  for (const modelId of candidates) {
     try {
-      return await callGemini(req);
+      return await callGeminiModel(req, modelId);
     } catch (err) {
-      // Gemini quota / project billing issue — fall back to Anthropic silently
-      console.warn('[AI] Gemini unavailable, using Anthropic:', (err as Error).message);
+      lastErr = err;
+      const snippet = ((err as Error).message ?? '').slice(0, 160);
+      console.warn(`[AI] ${modelId} failed — ${snippet}${snippet.length >= 160 ? '…' : ''}`);
     }
   }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
+}
 
-  return callAnthropic(req);
+/** All AI features use Google Gemini only (dev and prod). Requires `GEMINI_API_KEY`. */
+export async function generateAIResponse(req: AIRequest): Promise<AIResponse> {
+  return callGemini(req);
 }
 
 // Strip ```json ... ``` or ``` ... ``` fences that models sometimes add

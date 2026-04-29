@@ -59,11 +59,9 @@ More input = more accurate feedback. Less input = still useful, never punishing.
 
 ### AI
 
-- **Development:** Google Gemini 2.0 Flash Lite (free tier)
-- **Production:** Anthropic Claude API
-- **Chatbot (always, both environments):** Gemini 2.0 Flash Lite only
+- **All environments:** Google Gemini (`GEMINI_API_KEY`) — parse-food, tips, chatbot
 - All AI calls routed through `src/lib/ai/client.ts` exclusively
-- Never import Gemini or Anthropic SDK outside of that file
+- Never import `@google/generative-ai` outside of that file
 
 ### External Services
 
@@ -130,7 +128,7 @@ nutriapp/
 │   ├── pages/                   ← route-level page components
 │   ├── lib/
 │   │   ├── ai/
-│   │   │   ├── client.ts        ← unified AI client (Gemini/Claude)
+│   │   │   ├── client.ts        ← unified AI client (Gemini only)
 │   │   │   └── prompts.ts       ← all prompt builders
 │   │   ├── db/
 │   │   │   ├── schema.ts        ← Drizzle schema (source of truth)
@@ -175,13 +173,9 @@ CLERK_SECRET_KEY=                # server-side only (sk_test_xxx)
 VITE_CLERK_PUBLISHABLE_KEY=      # client-safe (pk_test_xxx)
 CLERK_WEBHOOK_SECRET=            # optional — Clerk dashboard → Webhooks
 
-# AI — DEV (free)
+# AI — Google Gemini (dev + prod)
 # Get key: https://aistudio.google.com/app/apikey
 GEMINI_API_KEY=          # server-side only
-
-# AI — PROD
-# Get key: https://console.anthropic.com → API Keys
-ANTHROPIC_API_KEY=       # server-side only
 
 # UPSTASH REDIS (EU region)
 # Create DB: https://console.upstash.com

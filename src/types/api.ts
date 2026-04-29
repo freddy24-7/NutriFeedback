@@ -83,6 +83,26 @@ export const ParseFoodResponseSchema = z.object({
 });
 export type ParseFoodResponse = z.infer<typeof ParseFoodResponseSchema>;
 
+export const AnalysisDailyMetricSchema = z.object({
+  label: z.string(),
+  estimated: z.number(),
+  target: z.number(),
+  unit: z.string(),
+});
+
+export const AnalysisDataSchema = z.object({
+  daily: z.array(AnalysisDailyMetricSchema),
+  processingLevel: z.enum(['minimal', 'moderate', 'high']),
+  foodVariety: z.number().int(),
+  thirtyDay: z.object({
+    fatQualityRatio: z.number().nullable(),
+    processingPercent: z.number().nullable(),
+    uniqueFoods: z.number().int(),
+  }),
+});
+export type AnalysisData = z.infer<typeof AnalysisDataSchema>;
+export type AnalysisDailyMetric = z.infer<typeof AnalysisDailyMetricSchema>;
+
 export const AiTipResponseSchema = z.object({
   id: z.string().uuid(),
   tipTextEn: z.string(),
@@ -91,6 +111,7 @@ export const AiTipResponseSchema = z.object({
   severity: z.enum(['info', 'suggestion', 'important']),
   generatedAt: z.string(),
   dismissedAt: z.string().nullable(),
+  analysisData: AnalysisDataSchema.nullable().optional(),
 });
 export type AiTipResponse = z.infer<typeof AiTipResponseSchema>;
 

@@ -5,17 +5,17 @@ import React from 'react';
 // Tests control auth state by writing to window.__e2e_signed_out or
 // window.__e2e_signin_error before navigation via page.addInitScript().
 
-type Env = typeof globalThis & Record<string, unknown>;
+type Env = Record<string, unknown>;
 
 function getAuthState() {
-  if (typeof window !== 'undefined' && (window as Env).__e2e_signed_out) {
+  if (typeof window !== 'undefined' && (window as unknown as Env)['__e2e_signed_out']) {
     return { isSignedIn: false as const, userId: null as null };
   }
   return { isSignedIn: true as const, userId: 'user_e2e' };
 }
 
 function signInShouldFail() {
-  return typeof window !== 'undefined' && Boolean((window as Env).__e2e_signin_error);
+  return typeof window !== 'undefined' && Boolean((window as unknown as Env)['__e2e_signin_error']);
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────

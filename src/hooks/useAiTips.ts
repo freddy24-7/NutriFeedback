@@ -70,6 +70,33 @@ export function useGenerateTip() {
   });
 }
 
+type DietFeedbackInput = {
+  dietName: string;
+  dietDescription: string;
+  dietCarbs: string;
+  dietFat: string;
+  dietProtein: string;
+  dietPros: string[];
+  dietCons: string[];
+};
+
+export function useGenerateDietFeedback() {
+  const queryClient = useQueryClient();
+  const { getToken } = useAuth();
+
+  return useMutation({
+    mutationFn: (input: DietFeedbackInput) =>
+      authFetch<AiTipResponse>('/api/ai/diet-feedback', getToken, {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['ai-tips'] });
+      void queryClient.invalidateQueries({ queryKey: ['credits'] });
+    },
+  });
+}
+
 export function useDismissTip() {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();

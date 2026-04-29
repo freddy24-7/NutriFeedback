@@ -133,6 +133,74 @@ export const GENERATE_TIPS_PROMPT = (ctx: TipContext) =>
 
 Generate one personalised nutrition tip based on this data. If only one day of data is available, focus on observations from that day rather than multi-day patterns.`;
 
+// ─── Diet feedback ────────────────────────────────────────────────────────────
+
+export type DietFeedbackContext = TipContext & {
+  dietName: string;
+  dietDescription: string;
+  dietCarbs: string;
+  dietFat: string;
+  dietProtein: string;
+  dietPros: string[];
+  dietCons: string[];
+};
+
+export const DIET_FEEDBACK_SYSTEM = `Always respond in English AND Dutch — see output format below.
+${INJECTION_DEFENSE}
+
+You are a precise nutrition analyst reviewing a user's food log against their chosen diet plan. Assess how well their logged foods align with the diet's macronutrient targets and principles.
+
+Return ONLY a JSON object — no markdown, no explanation. Use the SAME shape as the general tip:
+{
+  "tipTextEn": string,
+  "tipTextNl": string,
+  "nutrientsFlagged": string[],
+  "severity": "info" | "suggestion" | "important",
+  "analysisData": {
+    "daily": [
+      { "label": string, "estimated": number, "target": number, "targetMin"?: number, "targetMax"?: number, "unit": string, "type": "floor" | "ceiling" | "range" }
+    ],
+    "processingLevel": "minimal" | "moderate" | "high",
+    "foodVariety": number,
+    "foodCategories": string[],
+    "dailyProcessing": [
+      { "date": "YYYY-MM-DD", "level": "minimal" | "moderate" | "high" }
+    ],
+    "thirtyDay": {
+      "fatQualityRatio": number | null,
+      "processingPercent": number | null,
+      "uniqueFoods": number
+    }
+  }
+}
+
+Rules for tipTextEn / tipTextNl:
+- 2–3 sentences maximum focused on diet alignment.
+  Sentence 1: identify specifically how the logged foods align or conflict with the chosen diet — name the foods.
+  Sentence 2: give a concrete, measurable recommendation to better align with the diet's targets.
+  Sentence 3 (optional): explain the nutritional reason in one clause.
+- tipTextNl: accurate Dutch translation — keep numbers, food names, and units identical.
+- nutrientsFlagged: specific nutrients that are misaligned with the diet targets.
+- severity: "info" minor deviation, "suggestion" clear opportunity to align better, "important" significant conflict.
+- Never open with praise. Be direct. Constructive tone only.
+
+Rules for analysisData.daily — use the diet's macronutrient targets to set the goals:
+- Adjust targets for Protein, Net Carbs, and Healthy Fats to match the diet's macronutrient split.
+- For the Net Carbs range bar, derive targetMin and targetMax from the diet's carb percentage applied to a 2000 kcal baseline.
+- Keep Water, Added sugar, Sodium, Saturated Fat targets at standard values unless the diet specifies otherwise.
+- Always include all 8 metrics in order: Protein, Fiber, Healthy Fats, Net Carbs, Water, Added sugar, Sodium, Saturated Fat.
+- All other analysisData rules are identical to the general tip.`;
+
+export const DIET_FEEDBACK_PROMPT = (ctx: DietFeedbackContext) =>
+  `The user follows the ${ctx.dietName}: ${ctx.dietDescription}
+Target macronutrient split — Carbs: ${ctx.dietCarbs}, Fat: ${ctx.dietFat}, Protein: ${ctx.dietProtein}.
+Diet pros: ${ctx.dietPros.join(', ')}. Diet cons to watch: ${ctx.dietCons.join(', ')}.
+
+Food log over the last ${ctx.timeframeDays} days (${ctx.distinctDays} ${ctx.distinctDays === 1 ? 'day' : 'days'} of data):
+<user_input>${ctx.foodSummary}</user_input>
+
+Assess how well this food log aligns with the ${ctx.dietName} and generate one personalised diet-specific feedback tip.`;
+
 // ─── Barcode AI fallback ──────────────────────────────────────────────────────
 
 export const BARCODE_ESTIMATE_SYSTEM = `Always respond in English.

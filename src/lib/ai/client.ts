@@ -21,9 +21,14 @@ const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
  * separate quota buckets; avoid stopping after one fallback that shows free-tier `limit: 0`.
  */
 const GEMINI_FALLBACK_MODELS = [
-  'gemini-flash-latest',
-  'gemini-1.5-flash',
   'gemini-2.0-flash',
+  'gemini-2.0-flash-001',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-lite-001',
+  'gemini-2.5-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-flash-latest',
+  'gemini-2.5-pro',
 ] as const;
 
 function resolvedGeminiModelId(): string {

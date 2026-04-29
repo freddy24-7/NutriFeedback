@@ -269,6 +269,10 @@
         "suggestion": "Suggestie",
         "important": "Belangrijk"
       }
+    },
+    "dietFeedback": {
+      "chooseDiet": "Volg je een specifiek dieet?",
+      "button": "Dieetfeedback"
     }
   },
   "barcode": {

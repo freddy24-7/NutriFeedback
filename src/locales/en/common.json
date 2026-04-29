@@ -269,6 +269,10 @@
         "suggestion": "Suggestion",
         "important": "Important"
       }
+    },
+    "dietFeedback": {
+      "chooseDiet": "Are you on a specific diet?",
+      "button": "Diet feedback"
     }
   },
   "barcode": {

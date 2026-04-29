@@ -12,7 +12,10 @@ import {
   PARSE_FOOD_PROMPT,
   GENERATE_TIPS_SYSTEM,
   GENERATE_TIPS_PROMPT,
+  DIET_FEEDBACK_SYSTEM,
+  DIET_FEEDBACK_PROMPT,
 } from '@/lib/ai/prompts';
+import { z } from 'zod';
 import { buildTipEmailHtml, buildTipEmailText } from '@/lib/email/templates';
 import { sanitiseTextServer } from '../middleware/sanitise';
 import { rateLimits } from '@/lib/redis/client';
@@ -225,6 +228,119 @@ aiRoutes.post('/generate-tips', async (c) => {
   if (tip === undefined) {
     return c.json({ error: 'Failed to save tip' }, 500);
   }
+
+  return c.json({
+    id: tip.id,
+    tipTextEn: tip.tipTextEn,
+    tipTextNl: tip.tipTextNl,
+    nutrientsFlagged: tip.nutrientsFlagged,
+    severity: tip.severity,
+    generatedAt: tip.generatedAt.toISOString(),
+    dismissedAt: null,
+    analysisData: tip.analysisData ?? null,
+  });
+});
+
+// ─── POST /api/ai/diet-feedback ───────────────────────────────────────────────
+// Generates a diet-specific feedback tip. Same credit cost as generate-tips (2 credits).
+// The chosen diet is passed in the request body — not persisted server-side.
+
+const DietFeedbackRequestSchema = z.object({
+  dietName: z.string().min(1).max(100),
+  dietDescription: z.string().min(1).max(500),
+  dietCarbs: z.string().max(20),
+  dietFat: z.string().max(20),
+  dietProtein: z.string().max(20),
+  dietPros: z.array(z.string()).max(10),
+  dietCons: z.array(z.string()).max(10),
+});
+
+aiRoutes.post('/diet-feedback', async (c) => {
+  const user = c.get('user')!;
+
+  const parsed = DietFeedbackRequestSchema.safeParse(await c.req.json());
+  if (!parsed.success) return c.json({ error: 'Invalid request body' }, 400);
+  const diet = parsed.data;
+
+  const { success: withinLimit } = await rateLimits.aiGenerateTips.limit(user.id);
+  if (!withinLimit) return c.json({ error: 'Rate limit exceeded — try again later' }, 429);
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const countResult = await db
+    .select({ distinctDays: countDistinct(foodLogEntries.date) })
+    .from(foodLogEntries)
+    .where(and(eq(foodLogEntries.userId, user.id), gte(foodLogEntries.date, thirtyDaysAgo)));
+
+  const distinctDays = countResult[0]?.distinctDays ?? 0;
+  if (distinctDays < 1)
+    return c.json({ error: 'Log at least one meal before generating feedback' }, 422);
+
+  const [updated] = await db
+    .update(userCredits)
+    .set({
+      creditsRemaining: sql`credits_remaining - 2`,
+      creditsUsed: sql`credits_used + 2`,
+    })
+    .where(and(eq(userCredits.userId, user.id), gt(userCredits.creditsRemaining, 1)))
+    .returning();
+
+  if (updated === undefined) return c.json({ error: 'Insufficient credits' }, 402);
+
+  const recentEntries = await db
+    .select({
+      description: foodLogEntries.description,
+      mealType: foodLogEntries.mealType,
+      date: foodLogEntries.date,
+    })
+    .from(foodLogEntries)
+    .where(and(eq(foodLogEntries.userId, user.id), gte(foodLogEntries.date, thirtyDaysAgo)))
+    .orderBy(desc(foodLogEntries.date))
+    .limit(50);
+
+  const foodSummary = recentEntries
+    .map((e) => `${e.date} [${e.mealType ?? 'meal'}]: ${e.description}`)
+    .join('\n');
+
+  type TipJson = {
+    tipTextEn: string;
+    tipTextNl: string;
+    nutrientsFlagged: string[];
+    severity: 'info' | 'suggestion' | 'important';
+    analysisData?: unknown;
+  };
+
+  let tipJson: TipJson;
+  try {
+    const { text } = await generateAIResponse({
+      prompt: DIET_FEEDBACK_PROMPT({ ...diet, foodSummary, timeframeDays: 30, distinctDays }),
+      systemPrompt: DIET_FEEDBACK_SYSTEM,
+      language: 'en',
+    });
+    tipJson = JSON.parse(stripJsonFences(text)) as TipJson;
+  } catch (err) {
+    console.error('[diet-feedback] AI response error:', err);
+    await db
+      .update(userCredits)
+      .set({ creditsRemaining: sql`credits_remaining + 2`, creditsUsed: sql`credits_used - 2` })
+      .where(eq(userCredits.userId, user.id));
+    return c.json({ error: 'Failed to generate diet feedback — please try again' }, 500);
+  }
+
+  const [tip] = await db
+    .insert(aiTips)
+    .values({
+      userId: user.id,
+      timeframeDays: 30,
+      tipTextEn: tipJson.tipTextEn,
+      tipTextNl: tipJson.tipTextNl,
+      nutrientsFlagged: tipJson.nutrientsFlagged,
+      severity: tipJson.severity,
+      analysisData: tipJson.analysisData ?? null,
+    })
+    .returning();
+
+  if (tip === undefined) return c.json({ error: 'Failed to save tip' }, 500);
 
   return c.json({
     id: tip.id,

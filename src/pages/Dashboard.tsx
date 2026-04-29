@@ -9,9 +9,16 @@ import { FoodEntryForm } from '@/components/FoodLog/FoodEntryForm';
 import { AiTipCard } from '@/components/AI/AiTipCard';
 import { PaywallModal } from '@/components/Payments/PaywallModal';
 import { OnboardingTooltip } from '@/components/UI/OnboardingTooltip';
-import { useAiTips, useDismissTip, useGenerateTip } from '@/hooks/useAiTips';
+import { DietPickerModal } from '@/components/AI/DietPickerModal';
+import {
+  useAiTips,
+  useDismissTip,
+  useGenerateTip,
+  useGenerateDietFeedback,
+} from '@/hooks/useAiTips';
 import { useSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/utils/cn';
+import diets from '@/data/diets.json';
 
 const ONBOARDING_DONE_KEY = 'nutriapp_hasCompletedOnboarding';
 
@@ -29,6 +36,8 @@ export function DashboardPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const { session } = useClerk();
   const language = useUIStore((s) => s.language);
+  const selectedDiet = useUIStore((s) => s.selectedDiet);
+  const setSelectedDiet = useUIStore((s) => s.setSelectedDiet);
 
   // Lazy provisioning: if on-signup failed (e.g. token timing), ensure rows exist
   useEffect(() => {
@@ -44,6 +53,7 @@ export function DashboardPage() {
   }, [isSignedIn, isLoaded, session]);
   const [date, setDate] = useState(todayISO());
   const [showForm, setShowForm] = useState(false);
+  const [showDietPicker, setShowDietPicker] = useState(false);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
 
   const { data: sub } = useSubscription();
@@ -63,10 +73,29 @@ export function DashboardPage() {
   const { data: tips, error: tipsQueryError, isError: tipsQueryFailed } = useAiTips();
   const { mutate: dismissTip } = useDismissTip();
   const { mutate: generateTip, isPending: isGenerating, error: tipError } = useGenerateTip();
+  const {
+    mutate: generateDietFeedback,
+    isPending: isDietFeedbackGenerating,
+    error: dietFeedbackError,
+  } = useGenerateDietFeedback();
 
   const handleDismiss = (id: string) => {
     setDismissingId(id);
     dismissTip(id, { onSettled: () => setDismissingId(null) });
+  };
+
+  const handleDietFeedback = () => {
+    const diet = diets.find((d) => d.name === selectedDiet);
+    if (!diet) return;
+    generateDietFeedback({
+      dietName: diet.name,
+      dietDescription: diet.description,
+      dietCarbs: diet.macronutrient_split.carbs,
+      dietFat: diet.macronutrient_split.fat,
+      dietProtein: diet.macronutrient_split.protein,
+      dietPros: diet.pros,
+      dietCons: diet.cons,
+    });
   };
 
   const mapTipFlowError = (err: unknown): string => {
@@ -84,6 +113,7 @@ export function DashboardPage() {
   };
 
   const tipErrorMessage = tipError ? mapTipFlowError(tipError) : null;
+  const dietFeedbackErrorMessage = dietFeedbackError ? mapTipFlowError(dietFeedbackError) : null;
   const tipsLoadErrorMessage = tipsQueryFailed ? mapTipFlowError(tipsQueryError) : null;
 
   const displayDate = formatDate(date, i18n.language);
@@ -195,26 +225,71 @@ export function DashboardPage() {
           </section>
         )}
 
-        {/* Generate tip button — shown when no active tips */}
+        {/* Generate tip + diet buttons */}
         {tips !== undefined && tips.length === 0 && (
           <div className="flex flex-col items-start gap-2">
-            <button
-              onClick={() => generateTip()}
-              disabled={isGenerating}
-              className={cn(
-                'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
-                'border border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
-                'disabled:opacity-60',
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => generateTip()}
+                disabled={isGenerating}
+                className={cn(
+                  'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
+                  'border border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
+                  'disabled:opacity-60',
+                )}
+              >
+                {isGenerating ? t('ai.tip.generating') : t('ai.tip.generate')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowDietPicker(true)}
+                className={cn(
+                  'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
+                  'border border-warm-300 dark:border-warm-600',
+                  selectedDiet
+                    ? 'bg-brand-50 text-brand-700 border-brand-300 dark:bg-brand-950 dark:text-brand-400 dark:border-brand-700'
+                    : 'text-warm-600 hover:bg-warm-50 dark:text-warm-300 dark:hover:bg-warm-700/50',
+                )}
+              >
+                {selectedDiet ? selectedDiet : t('ai.dietFeedback.chooseDiet')}
+              </button>
+
+              {selectedDiet !== null && (
+                <button
+                  type="button"
+                  onClick={handleDietFeedback}
+                  disabled={isDietFeedbackGenerating}
+                  className={cn(
+                    'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
+                    'bg-brand-700 text-white hover:bg-brand-800',
+                    'disabled:opacity-60',
+                  )}
+                >
+                  {isDietFeedbackGenerating ? t('ai.tip.generating') : t('ai.dietFeedback.button')}
+                </button>
               )}
-            >
-              {isGenerating ? t('ai.tip.generating') : t('ai.tip.generate')}
-            </button>
+            </div>
+
             {tipErrorMessage !== null && (
               <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
                 {tipErrorMessage}
               </p>
             )}
+            {dietFeedbackErrorMessage !== null && (
+              <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
+                {dietFeedbackErrorMessage}
+              </p>
+            )}
           </div>
+        )}
+
+        {showDietPicker && (
+          <DietPickerModal
+            selected={selectedDiet}
+            onSelect={setSelectedDiet}
+            onClose={() => setShowDietPicker(false)}
+          />
         )}
 
         <DailyView date={date} onAddEntry={() => setShowForm(true)} />

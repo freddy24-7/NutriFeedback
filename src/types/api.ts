@@ -87,13 +87,24 @@ export const AnalysisDailyMetricSchema = z.object({
   label: z.string(),
   estimated: z.number(),
   target: z.number(),
+  targetMin: z.number().optional(),
+  targetMax: z.number().optional(),
   unit: z.string(),
+  /** floor = fill-to-goal, ceiling = stay-under-limit, range = stay-in-range */
+  type: z.enum(['floor', 'ceiling', 'range']).optional(),
+});
+
+export const DailyProcessingEntrySchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  level: z.enum(['minimal', 'moderate', 'high']),
 });
 
 export const AnalysisDataSchema = z.object({
   daily: z.array(AnalysisDailyMetricSchema),
   processingLevel: z.enum(['minimal', 'moderate', 'high']),
   foodVariety: z.number().int(),
+  foodCategories: z.array(z.string()).optional(),
+  dailyProcessing: z.array(DailyProcessingEntrySchema).optional(),
   thirtyDay: z.object({
     fatQualityRatio: z.number().nullable(),
     processingPercent: z.number().nullable(),
@@ -102,6 +113,7 @@ export const AnalysisDataSchema = z.object({
 });
 export type AnalysisData = z.infer<typeof AnalysisDataSchema>;
 export type AnalysisDailyMetric = z.infer<typeof AnalysisDailyMetricSchema>;
+export type DailyProcessingEntry = z.infer<typeof DailyProcessingEntrySchema>;
 
 export const AiTipResponseSchema = z.object({
   id: z.string().uuid(),

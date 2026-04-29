@@ -258,7 +258,7 @@
       "rateLimited": "Te veel verzoeken — probeer over een minuut opnieuw"
     },
     "tip": {
-      "generate": "Tip genereren",
+      "generate": "Feedback ophalen",
       "generating": "Bezig...",
       "dismiss": "Tip sluiten",
       "notEnoughData": "Log minstens één maaltijd om je eerste tip te genereren.",

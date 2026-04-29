@@ -32,7 +32,8 @@
       "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/check-db.mts)",
       "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json -)",
       "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/apply-migration-0002.mts)",
-      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/mark-migration-0002.mts)"
+      "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/mark-migration-0002.mts)",
+      "Bash(node -e \"structuredClone\\({a:1}\\)\")"
     ]
   }
 }

@@ -258,7 +258,7 @@
       "rateLimited": "Too many requests — try again in a minute"
     },
     "tip": {
-      "generate": "Generate tip",
+      "generate": "Get feedback",
       "generating": "Generating...",
       "dismiss": "Dismiss tip",
       "notEnoughData": "Log at least one meal to generate your first tip.",

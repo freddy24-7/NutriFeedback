@@ -63,10 +63,14 @@ Return ONLY a JSON object — no markdown, no explanation:
   "severity": "info" | "suggestion" | "important",
   "analysisData": {
     "daily": [
-      { "label": string, "estimated": number, "target": number, "unit": string }
+      { "label": string, "estimated": number, "target": number, "targetMin"?: number, "targetMax"?: number, "unit": string, "type": "floor" | "ceiling" | "range" }
     ],
     "processingLevel": "minimal" | "moderate" | "high",
     "foodVariety": number,
+    "foodCategories": string[],
+    "dailyProcessing": [
+      { "date": "YYYY-MM-DD", "level": "minimal" | "moderate" | "high" }
+    ],
     "thirtyDay": {
       "fatQualityRatio": number | null,
       "processingPercent": number | null,
@@ -86,17 +90,38 @@ Rules for tipTextEn / tipTextNl:
 - Never open with praise ("great job", "well done"). Be direct. Constructive tone only.
 
 Rules for analysisData:
-- daily: always include exactly these 4 items in order, estimated from the MOST RECENT logged day:
-    { "label": "Protein",     "estimated": <g>,  "target": 75,   "unit": "g"  }
-    { "label": "Fiber",       "estimated": <g>,  "target": 25,   "unit": "g"  }
-    { "label": "Added sugar", "estimated": <g>,  "target": 25,   "unit": "g"  }
-    { "label": "Sodium",      "estimated": <mg>, "target": 2300, "unit": "mg" }
+- daily: always include exactly these 8 items in order, estimated from the MOST RECENT logged day:
+    { "label": "Protein",       "estimated": <g>,  "target": 75,   "unit": "g",  "type": "floor"   }
+    { "label": "Fiber",         "estimated": <g>,  "target": 25,   "unit": "g",  "type": "floor"   }
+    { "label": "Healthy Fats",  "estimated": <g>,  "target": 55,   "unit": "g",  "type": "floor"   }
+    { "label": "Net Carbs",     "estimated": <g>,  "targetMin": 130, "targetMax": 200, "target": 165, "unit": "g", "type": "range" }
+    { "label": "Water",         "estimated": <ml>, "target": 2000, "unit": "ml", "type": "floor"   }
+    { "label": "Added sugar",   "estimated": <g>,  "target": 25,   "unit": "g",  "type": "ceiling" }
+    { "label": "Sodium",        "estimated": <mg>, "target": 2300, "unit": "mg", "type": "ceiling" }
+    { "label": "Saturated Fat", "estimated": <g>,  "target": 20,   "unit": "g",  "type": "ceiling" }
+  Net Carbs = Total Carbs minus Fiber. Healthy Fats = unsaturated fats only (mono+poly); exclude saturated fat.
+  Water: estimate from beverages logged plus typical food water content; use 0 if no drinks were logged.
   Use 0 for estimated if no data is available for that nutrient.
 - processingLevel: classify the overall diet quality from the log:
     "minimal"  = mostly whole/unprocessed foods (NOVA 1-2)
     "moderate" = mix of whole and processed foods (NOVA 1-3)
     "high"     = majority ultra-processed foods (NOVA 3-4)
 - foodVariety: count of distinct food items across the entire log window.
+- foodCategories: array of category IDs from this fixed set that appear in the log:
+    "protein"    = meat, fish, eggs, legumes, tofu, tempeh
+    "grains"     = bread, rice, pasta, oats, cereal, crackers
+    "vegetables" = all vegetables, salads, herbs
+    "fruits"     = all fruits, including dried or juiced
+    "dairy"      = milk, cheese, yogurt, butter, cream
+    "fats"       = nuts, seeds, oils, avocado, nut butter
+    "beverages"  = coffee, tea, juice, alcohol, smoothies (not plain water)
+    "other"      = condiments, sauces, sweets, mixed dishes, snacks
+  Include a category only if at least one food in the log belongs to it.
+- dailyProcessing: for EACH distinct date that appears in the food log, return one entry:
+    "minimal"  = >70% of that day's meals are whole/unprocessed (NOVA 1-2)
+    "moderate" = 40-70% whole foods (mixed day)
+    "high"     = <40% whole foods — mostly processed/ultra-processed (NOVA 3-4)
+  Include all dates with logged meals, ordered by date descending. Maximum 30 entries.
 - thirtyDay.fatQualityRatio: estimated ratio of unsaturated to total fat (0.0-1.0) from logged foods; null if insufficient data.
 - thirtyDay.processingPercent: estimated % of meals that are highly/ultra-processed; null if insufficient data.
 - thirtyDay.uniqueFoods: same as foodVariety.

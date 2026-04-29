@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth, useClerk } from '@clerk/clerk-react';
 import { ThemeToggle } from '@/components/Layout/ThemeToggle';
 import { LanguageToggle } from '@/components/Layout/LanguageToggle';
+import { DietsDropdown } from '@/components/Layout/DietsDropdown';
 import { CreditCounter } from '@/components/Payments/CreditCounter';
 import { ChatbotDrawer } from '@/components/Chatbot/ChatbotDrawer';
 import { HowToUseModal } from '@/components/HowToUse/HowToUseModal';
@@ -46,6 +47,7 @@ export function AppLayout() {
           </Link>
 
           <div className="flex items-center gap-3">
+            <DietsDropdown />
             {isSignedIn ? (
               <>
                 <Link

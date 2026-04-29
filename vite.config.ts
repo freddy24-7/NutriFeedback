@@ -62,12 +62,19 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      proxy: {
-        '/api': {
-          target: apiProxyTarget,
-          changeOrigin: true,
-        },
-      },
+      // In e2e test mode the API proxy is intentionally disabled so that
+      // Playwright's page.route() mocks can intercept /api/* requests at
+      // the browser level. Without this, Vite's proxy intercepts first and
+      // fails with ECONNREFUSED (no real API server running during tests).
+      proxy:
+        process.env['VITE_E2E_TEST_MODE'] === 'true'
+          ? undefined
+          : {
+              '/api': {
+                target: apiProxyTarget,
+                changeOrigin: true,
+              },
+            },
     },
     preview: {
       proxy: {

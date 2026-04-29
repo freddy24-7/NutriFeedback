@@ -1,0 +1,101 @@
+[
+  {
+    "name": "Mediterranean Diet",
+    "category": "Balanced / Evidence-based",
+    "description": "Focuses on whole foods like vegetables, fruits, whole grains, fish, and olive oil.",
+    "pros": ["Strong heart health benefits", "Sustainable long-term", "Nutrient-rich"],
+    "cons": ["Can be costly", "Less structured for weight loss"],
+    "evidence_level": "High",
+    "macronutrient_split": { "carbs": "40-50%", "fat": "30-40%", "protein": "15-20%" }
+  },
+  {
+    "name": "DASH Diet",
+    "category": "Balanced / Medical",
+    "description": "Designed to reduce high blood pressure with low sodium and nutrient-rich foods.",
+    "pros": ["Clinically proven to lower blood pressure", "Balanced nutrition"],
+    "cons": ["Requires meal planning", "Lower sodium can be hard to maintain"],
+    "evidence_level": "High",
+    "macronutrient_split": { "carbs": "50-55%", "fat": "25-30%", "protein": "15-20%" }
+  },
+  {
+    "name": "Ketogenic (Keto) Diet",
+    "category": "Low-carb / High-fat",
+    "description": "Very low-carb diet that induces ketosis for fat burning.",
+    "pros": ["Effective for weight loss", "May improve blood sugar control"],
+    "cons": ["Restrictive", "Possible nutrient deficiencies", "Hard to sustain"],
+    "evidence_level": "Moderate",
+    "macronutrient_split": { "carbs": "5-10%", "fat": "70-80%", "protein": "15-25%" }
+  },
+  {
+    "name": "Atkins Diet",
+    "category": "Low-carb",
+    "description": "Phased low-carb diet that gradually reintroduces carbohydrates.",
+    "pros": ["Effective short-term weight loss", "Structured phases"],
+    "cons": ["Restrictive early phases", "Less emphasis on food quality"],
+    "evidence_level": "Moderate",
+    "macronutrient_split": { "carbs": "10-30%", "fat": "50-60%", "protein": "20-30%" }
+  },
+  {
+    "name": "Paleo Diet",
+    "category": "Ancestral",
+    "description": "Focuses on whole foods like meat, fish, fruits, vegetables; excludes grains and processed foods.",
+    "pros": ["Encourages whole foods", "Reduces processed food intake"],
+    "cons": ["Eliminates food groups", "Can be expensive"],
+    "evidence_level": "Moderate",
+    "macronutrient_split": { "carbs": "20-40%", "fat": "30-40%", "protein": "25-35%" }
+  },
+  {
+    "name": "Vegan Diet",
+    "category": "Plant-based",
+    "description": "Eliminates all animal products.",
+    "pros": ["Ethical and environmentally friendly", "High in fiber"],
+    "cons": ["Risk of B12 and iron deficiency", "Requires planning"],
+    "evidence_level": "Moderate to High",
+    "macronutrient_split": { "carbs": "55-65%", "fat": "20-30%", "protein": "10-20%" }
+  },
+  {
+    "name": "Vegetarian Diet",
+    "category": "Plant-based",
+    "description": "Excludes meat but may include dairy and eggs.",
+    "pros": ["Balanced and flexible", "Lower risk of chronic disease"],
+    "cons": ["Possible nutrient gaps", "Protein planning needed"],
+    "evidence_level": "High",
+    "macronutrient_split": { "carbs": "50-60%", "fat": "25-30%", "protein": "15-20%" }
+  },
+  {
+    "name": "Flexitarian Diet",
+    "category": "Plant-forward",
+    "description": "Mostly plant-based with occasional meat consumption.",
+    "pros": ["Flexible and sustainable", "Health benefits of plant-based eating"],
+    "cons": ["Less structured", "May lack clear guidelines"],
+    "evidence_level": "Moderate",
+    "macronutrient_split": { "carbs": "45-55%", "fat": "25-35%", "protein": "15-25%" }
+  },
+  {
+    "name": "Gluten-Free Diet",
+    "category": "Restriction-based / Medical",
+    "description": "Eliminates gluten found in wheat, barley, and rye.",
+    "pros": ["Essential for celiac disease", "Can reduce digestive symptoms"],
+    "cons": ["Unnecessary for most people", "Can be restrictive"],
+    "evidence_level": "High (for medical use), Low (general use)",
+    "macronutrient_split": { "carbs": "40-60%", "fat": "20-35%", "protein": "15-25%" }
+  },
+  {
+    "name": "Whole30",
+    "category": "Elimination / Reset",
+    "description": "30-day elimination diet removing sugar, grains, dairy, and processed foods.",
+    "pros": ["Encourages whole foods", "Identifies food sensitivities"],
+    "cons": ["Highly restrictive", "Not intended long-term"],
+    "evidence_level": "Low to Moderate",
+    "macronutrient_split": { "carbs": "20-40%", "fat": "30-50%", "protein": "20-30%" }
+  },
+  {
+    "name": "Low-FODMAP Diet",
+    "category": "Medical / Digestive",
+    "description": "Reduces specific fermentable carbs to manage IBS symptoms.",
+    "pros": ["Clinically effective for IBS", "Targeted symptom relief"],
+    "cons": ["Complex to follow", "Not meant as permanent diet"],
+    "evidence_level": "High (for IBS)",
+    "macronutrient_split": { "carbs": "40-55%", "fat": "25-35%", "protein": "15-25%" }
+  }
+]

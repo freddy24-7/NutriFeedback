@@ -25,6 +25,7 @@ vi.mock('@/lib/redis/client', async () => {
 
 vi.mock('@/lib/ai/client', () => ({
   generateAIResponse: vi.fn(),
+  stripJsonFences: (text: string) => text,
 }));
 
 vi.mock('resend', () => ({

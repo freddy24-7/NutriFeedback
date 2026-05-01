@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|icons/|locales/|faq/|.*\\..*).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/index.ts": {

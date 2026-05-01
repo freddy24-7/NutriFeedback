@@ -131,19 +131,43 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
 
       <div
         className={cn(
-          'relative aspect-square w-full max-w-sm overflow-hidden rounded-card border-2 border-brand-400',
-          state.phase === 'error' && 'border-red-400',
+          'relative aspect-square w-full max-w-sm overflow-hidden rounded-card',
+          'border-2',
+          state.phase === 'error' ? 'border-red-400' : 'border-brand-400',
         )}
       >
         <video ref={videoRef} muted playsInline autoPlay className="h-full w-full object-cover">
           <track kind="captions" />
         </video>
 
+        {/* Dark vignette so viewfinder area pops */}
+        <div className="pointer-events-none absolute inset-0 bg-black/30" />
+
+        {/* Corner brackets */}
+        {state.phase !== 'error' && (
+          <div
+            aria-hidden="true"
+            className={cn(
+              'pointer-events-none absolute inset-[18%]',
+              state.phase === 'scanning' ? 'text-brand-400' : 'text-white/40',
+            )}
+          >
+            {/* top-left */}
+            <span className="absolute left-0 top-0 block h-7 w-7 border-l-[3px] border-t-[3px] border-current rounded-tl-sm" />
+            {/* top-right */}
+            <span className="absolute right-0 top-0 block h-7 w-7 border-r-[3px] border-t-[3px] border-current rounded-tr-sm" />
+            {/* bottom-left */}
+            <span className="absolute bottom-0 left-0 block h-7 w-7 border-b-[3px] border-l-[3px] border-current rounded-bl-sm" />
+            {/* bottom-right */}
+            <span className="absolute bottom-0 right-0 block h-7 w-7 border-b-[3px] border-r-[3px] border-current rounded-br-sm" />
+          </div>
+        )}
+
         {state.phase === 'initialising' && (
           <div
             role="status"
             aria-live="polite"
-            className="absolute inset-0 flex items-center justify-center bg-black/50"
+            className="absolute inset-0 flex items-center justify-center"
           >
             <svg
               className="h-8 w-8 animate-spin text-white"
@@ -173,7 +197,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         {state.phase === 'scanning' && (
           <div
             aria-hidden="true"
-            className="absolute left-[10%] right-[10%] h-0.5 animate-scan-line bg-brand-400 opacity-75 shadow-[0_0_8px_rgba(87,186,134,0.8)]"
+            className="absolute left-[18%] right-[18%] h-0.5 animate-scan-line bg-brand-400 shadow-[0_0_10px_3px_rgba(87,186,134,0.7)]"
           />
         )}
       </div>

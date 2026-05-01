@@ -204,7 +204,12 @@
     "delete": {
       "title": "Delete account",
       "description": "Permanently deletes your account and all associated data. Billing records are anonymised and retained for 7 years as required by Dutch tax law. This cannot be undone.",
+      "dangerZone": "Danger Zone",
       "button": "Delete my account",
+      "areYouSure": "Are you sure? This cannot be undone.",
+      "warningFoodLog": "All your food log entries will be permanently deleted.",
+      "warningTips": "All your AI tips will be permanently deleted.",
+      "warningNoUndo": "This action cannot be reversed.",
       "confirmPrompt": "Type DELETE to confirm:",
       "confirmPlaceholder": "DELETE",
       "confirmButton": "Yes, permanently delete",

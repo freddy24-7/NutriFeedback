@@ -38,13 +38,25 @@ export function AppLayout() {
           className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3"
           aria-label="Main navigation"
         >
-          <Link
-            to="/"
-            className="font-display text-lg font-bold"
-            style={{ color: 'var(--color-brand)' }}
-          >
-            {t('app.name')}
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              aria-label={t('nav.home')}
+              className="rounded-md p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7A1 1 0 003 11h1v6a1 1 0 001 1h4v-4h2v4h4a1 1 0 001-1v-6h1a1 1 0 00.707-1.707l-7-7z" />
+              </svg>
+            </Link>
+            <Link
+              to="/"
+              className="font-display text-lg font-bold"
+              style={{ color: 'var(--color-brand)' }}
+            >
+              {t('app.name')}
+            </Link>
+          </div>
 
           <div className="flex items-center gap-3">
             <DietsDropdown />

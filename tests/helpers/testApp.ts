@@ -17,6 +17,7 @@ import { foodLogRoutes } from '@/api/routes/foodLog';
 import { barcodeRoutes } from '@/api/routes/barcode';
 import { paymentsRoutes } from '@/api/routes/payments';
 import { chatRoutes } from '@/api/routes/chat';
+import { userRoutes } from '@/api/routes/user';
 import { type AuthVariables } from '@/api/middleware/auth';
 
 // Reusable middleware that always rejects with 401 — used by createUnauthApp.
@@ -40,6 +41,7 @@ export function createTestApp(userId: string) {
   app.route('/barcode', barcodeRoutes);
   app.route('/payments', paymentsRoutes);
   app.route('/chat', chatRoutes);
+  app.route('/user', userRoutes);
 
   return app;
 }
@@ -81,6 +83,9 @@ export function createUnauthApp() {
     await next();
   });
   app.route('/chat', chatRoutes);
+
+  app.use('/user/*', reject401);
+  app.route('/user', userRoutes);
 
   return app;
 }

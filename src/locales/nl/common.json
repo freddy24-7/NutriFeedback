@@ -204,7 +204,12 @@
     "delete": {
       "title": "Account verwijderen",
       "description": "Verwijdert permanent je account en alle bijbehorende gegevens. Betalingsgegevens worden geanonimiseerd en 7 jaar bewaard conform de Nederlandse belastingwetgeving. Dit kan niet ongedaan worden gemaakt.",
+      "dangerZone": "Gevarenzone",
       "button": "Mijn account verwijderen",
+      "areYouSure": "Weet je het zeker? Dit kan niet ongedaan worden gemaakt.",
+      "warningFoodLog": "Al je voedingsvermeldingen worden permanent verwijderd.",
+      "warningTips": "Al je AI-tips worden permanent verwijderd.",
+      "warningNoUndo": "Deze actie kan niet worden teruggedraaid.",
       "confirmPrompt": "Typ DELETE ter bevestiging:",
       "confirmPlaceholder": "DELETE",
       "confirmButton": "Ja, permanent verwijderen",

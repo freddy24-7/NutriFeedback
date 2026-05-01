@@ -73,15 +73,36 @@ export function AccountSettingsPage() {
 
         {/* Delete account */}
         <section
-          className="space-y-3 rounded-card border p-5"
-          style={{ borderColor: 'var(--color-error)', backgroundColor: 'var(--color-surface)' }}
+          className="space-y-4 rounded-card border-2 border-red-500 p-5"
+          style={{ backgroundColor: 'var(--color-surface)' }}
         >
-          <h2 className="text-base font-semibold" style={{ color: 'var(--color-error)' }}>
-            {t('account.delete.title')}
-          </h2>
-          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            {t('account.delete.description')}
-          </p>
+          {/* Danger zone header */}
+          <div className="flex items-center gap-2">
+            <svg
+              className="h-4 w-4 shrink-0 text-red-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-xs font-bold uppercase tracking-widest text-red-500">
+              {t('account.delete.dangerZone')}
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-base font-semibold" style={{ color: 'var(--color-error)' }}>
+              {t('account.delete.title')}
+            </h2>
+            <p className="mt-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              {t('account.delete.description')}
+            </p>
+          </div>
 
           {!confirmDelete ? (
             <button
@@ -93,6 +114,18 @@ export function AccountSettingsPage() {
             </button>
           ) : (
             <div className="space-y-3">
+              {/* Warning box */}
+              <div className="rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/30">
+                <p className="mb-2 text-sm font-semibold text-red-700 dark:text-red-400">
+                  {t('account.delete.areYouSure')}
+                </p>
+                <ul className="list-disc space-y-1 pl-4 text-xs text-red-600 dark:text-red-400">
+                  <li>{t('account.delete.warningFoodLog')}</li>
+                  <li>{t('account.delete.warningTips')}</li>
+                  <li>{t('account.delete.warningNoUndo')}</li>
+                </ul>
+              </div>
+
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
                 {t('account.delete.confirmPrompt')}
               </p>

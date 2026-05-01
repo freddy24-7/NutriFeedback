@@ -9,7 +9,13 @@
  */
 
 import { db } from '@/lib/db/client';
-import { userProfiles, userCredits, foodLogEntries, aiTips } from '@/lib/db/schema';
+import {
+  userProfiles,
+  userCredits,
+  foodLogEntries,
+  aiTips,
+  creditTransactions,
+} from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export type TestUser = {
@@ -74,6 +80,7 @@ export async function seedTip(
 export async function cleanupUser(userId: string): Promise<void> {
   await db.delete(aiTips).where(eq(aiTips.userId, userId));
   await db.delete(foodLogEntries).where(eq(foodLogEntries.userId, userId));
+  await db.delete(creditTransactions).where(eq(creditTransactions.userId, userId));
   await db.delete(userCredits).where(eq(userCredits.userId, userId));
   await db.delete(userProfiles).where(eq(userProfiles.id, userId));
 }

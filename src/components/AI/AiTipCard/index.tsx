@@ -1,7 +1,6 @@
 import { useId, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PieChart, Pie, Cell } from 'recharts';
 import { cn } from '@/utils/cn';
 import type { AiTipCardProps } from '@/types/components';
 import type {
@@ -576,6 +575,35 @@ function PlantPointsRing({ categories, variety }: { categories?: string[]; varie
           ? { label: 'Growing', color: '#fbbf24' }
           : { label: 'Start', color: '#f87171' };
 
+  // SVG donut: 5 equal segments separated by small gaps, drawn on a 120×120 canvas
+  const cx = 60,
+    cy = 60,
+    innerR = 35,
+    outerR = 54;
+  const total = slices.length;
+  const gapDeg = 3;
+  const sliceDeg = (360 - total * gapDeg) / total;
+
+  function polarToXY(angleDeg: number, r: number) {
+    const rad = ((angleDeg - 90) * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function slicePath(startDeg: number, sweepDeg: number) {
+    const p1 = polarToXY(startDeg, outerR);
+    const p2 = polarToXY(startDeg + sweepDeg, outerR);
+    const p3 = polarToXY(startDeg + sweepDeg, innerR);
+    const p4 = polarToXY(startDeg, innerR);
+    const large = sweepDeg > 180 ? 1 : 0;
+    return [
+      `M ${p1.x} ${p1.y}`,
+      `A ${outerR} ${outerR} 0 ${large} 1 ${p2.x} ${p2.y}`,
+      `L ${p3.x} ${p3.y}`,
+      `A ${innerR} ${innerR} 0 ${large} 0 ${p4.x} ${p4.y}`,
+      'Z',
+    ].join(' ');
+  }
+
   return (
     <div className="flex flex-col items-center">
       {showModal && <PlantPointsModal onClose={() => setShowModal(false)} />}
@@ -592,26 +620,13 @@ function PlantPointsRing({ categories, variety }: { categories?: string[]; varie
           <span className="text-[9px] font-bold leading-none">i</span>
         </button>
       </div>
-      <div className="relative">
-        <PieChart width={120} height={120}>
-          <Pie
-            data={slices}
-            cx={60}
-            cy={60}
-            innerRadius={35}
-            outerRadius={54}
-            paddingAngle={3}
-            dataKey="value"
-            stroke="none"
-            startAngle={90}
-            endAngle={-270}
-            isAnimationActive={false}
-          >
-            {slices.map((s, i) => (
-              <Cell key={i} fill={s.fill} />
-            ))}
-          </Pie>
-        </PieChart>
+      <div className="relative" style={{ width: 120, height: 120 }}>
+        <svg viewBox="0 0 120 120" width={120} height={120} aria-hidden="true">
+          {slices.map((s, i) => {
+            const startDeg = i * (sliceDeg + gapDeg);
+            return <path key={i} d={slicePath(startDeg, sliceDeg)} fill={s.fill} />;
+          })}
+        </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-xl font-bold leading-none" style={{ color: grade.color }}>
             {variety}

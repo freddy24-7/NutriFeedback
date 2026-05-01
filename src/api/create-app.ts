@@ -8,6 +8,7 @@ import { contactRoutes } from './routes/contact';
 import { paymentsRoutes } from './routes/payments';
 import { chatRoutes } from './routes/chat';
 import { authRoutes } from './routes/auth';
+import { userRoutes } from './routes/user';
 import { corsAllowedOrigins } from './origins';
 
 export function createApiApp() {
@@ -16,6 +17,7 @@ export function createApiApp() {
   app.use('*', cors({ origin: corsAllowedOrigins(), credentials: true }));
 
   app.route('/auth', authRoutes);
+  app.route('/user', userRoutes);
   app.route('/contact', contactRoutes);
   app.route('/food-log', foodLogRoutes);
   app.route('/ai', aiRoutes);

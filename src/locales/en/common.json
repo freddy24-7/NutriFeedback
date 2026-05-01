@@ -34,6 +34,7 @@
     "pricing": "Pricing",
     "terms": "Terms",
     "privacy": "Privacy",
+    "account": "Account",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "toggleTheme": "Toggle theme",
@@ -189,6 +190,26 @@
     "dataExport": "You can export or delete all your data at any time from account settings.",
     "noSell": "We never sell your personal data.",
     "placeholder": "Full privacy policy will be published before public launch. This policy describes how NutriApp collects, uses, and protects your personal data in accordance with GDPR."
+  },
+  "account": {
+    "title": "Account settings",
+    "subtitle": "Manage your data and account.",
+    "export": {
+      "title": "Export your data",
+      "description": "Download a copy of all your food log entries, AI tips, and account data as a JSON file.",
+      "button": "Download my data",
+      "downloading": "Preparing download...",
+      "success": "Your download has started."
+    },
+    "delete": {
+      "title": "Delete account",
+      "description": "Permanently deletes your account and all associated data. Billing records are anonymised and retained for 7 years as required by Dutch tax law. This cannot be undone.",
+      "button": "Delete my account",
+      "confirmPrompt": "Type DELETE to confirm:",
+      "confirmPlaceholder": "DELETE",
+      "confirmButton": "Yes, permanently delete",
+      "deleting": "Deleting..."
+    }
   },
   "errors": {
     "notFound": "Page not found",

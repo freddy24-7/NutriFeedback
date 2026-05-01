@@ -26,6 +26,9 @@ const TermsPage = lazy(() => import('./pages/Terms').then((m) => ({ default: m.T
 const PrivacyPage = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.PrivacyPage })));
 const ContactPage = lazy(() => import('./pages/Contact').then((m) => ({ default: m.ContactPage })));
 const PricingPage = lazy(() => import('./pages/Pricing').then((m) => ({ default: m.PricingPage })));
+const AccountSettingsPage = lazy(() =>
+  import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettingsPage })),
+);
 const NotFoundPage = lazy(() =>
   import('./pages/NotFound').then((m) => ({ default: m.NotFoundPage })),
 );
@@ -47,7 +50,10 @@ const router = createBrowserRouter([
       { path: '/pricing', element: <PricingPage /> },
       {
         element: <ProtectedRoute />,
-        children: [{ path: '/dashboard', element: <DashboardPage /> }],
+        children: [
+          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/account', element: <AccountSettingsPage /> },
+        ],
       },
     ],
   },

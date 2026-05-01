@@ -34,6 +34,7 @@
     "pricing": "Prijzen",
     "terms": "Voorwaarden",
     "privacy": "Privacy",
+    "account": "Account",
     "openMenu": "Menu openen",
     "closeMenu": "Menu sluiten",
     "toggleTheme": "Thema wisselen",
@@ -189,6 +190,26 @@
     "dataExport": "Je kunt al je gegevens op elk moment exporteren of verwijderen via de accountinstellingen.",
     "noSell": "We verkopen je persoonlijke gegevens nooit.",
     "placeholder": "Het volledige privacybeleid wordt gepubliceerd vóór de publieke lancering. Dit beleid beschrijft hoe NutriApp je persoonsgegevens verzamelt, gebruikt en beschermt in overeenstemming met de AVG."
+  },
+  "account": {
+    "title": "Accountinstellingen",
+    "subtitle": "Beheer je gegevens en account.",
+    "export": {
+      "title": "Gegevens exporteren",
+      "description": "Download een kopie van al je voedingsvermeldingen, AI-tips en accountgegevens als JSON-bestand.",
+      "button": "Mijn gegevens downloaden",
+      "downloading": "Download voorbereiden...",
+      "success": "Je download is gestart."
+    },
+    "delete": {
+      "title": "Account verwijderen",
+      "description": "Verwijdert permanent je account en alle bijbehorende gegevens. Betalingsgegevens worden geanonimiseerd en 7 jaar bewaard conform de Nederlandse belastingwetgeving. Dit kan niet ongedaan worden gemaakt.",
+      "button": "Mijn account verwijderen",
+      "confirmPrompt": "Typ DELETE ter bevestiging:",
+      "confirmPlaceholder": "DELETE",
+      "confirmButton": "Ja, permanent verwijderen",
+      "deleting": "Verwijderen..."
+    }
   },
   "errors": {
     "notFound": "Pagina niet gevonden",

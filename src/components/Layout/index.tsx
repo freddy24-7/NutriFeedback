@@ -71,6 +71,13 @@ export function AppLayout() {
                     creditsExpiresAt={sub.creditsExpiresAt}
                   />
                 )}
+                <Link
+                  to="/account"
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
+                  {t('nav.account')}
+                </Link>
                 <button
                   onClick={() => void handleSignOut()}
                   className="text-sm font-medium"

@@ -27,7 +27,7 @@ export function SignInPage() {
     try {
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
+        redirectUrl: `${window.location.origin}/sso-callback`,
         redirectUrlComplete: '/dashboard',
       });
     } catch {

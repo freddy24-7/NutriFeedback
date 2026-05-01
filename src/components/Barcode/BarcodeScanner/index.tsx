@@ -7,7 +7,11 @@ import type { BarcodeScannerProps } from '@/types/components';
 type ScannerState =
   | { phase: 'initialising' }
   | { phase: 'scanning' }
-  | { phase: 'error'; messageKey: 'barcode.permissionDenied' | 'barcode.notSupported' };
+  | {
+      phase: 'error';
+      messageKey: 'barcode.permissionDenied' | 'barcode.notSupported';
+      debugInfo?: string;
+    };
 
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   const { t } = useTranslation();
@@ -51,19 +55,25 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
     const reader = new BrowserMultiFormatReader();
     let cancelled = false;
 
-    reader
-      .decodeFromConstraints(
-        { video: { facingMode: 'environment' } },
+    const callback = (result: unknown, _err: unknown, controls: IScannerControls) => {
+      if (cancelled || hasFiredRef.current) return;
+      if (result !== undefined && result !== null) {
+        hasFiredRef.current = true;
+        controls.stop();
+        onScan((result as { getText(): string }).getText());
+      }
+    };
+
+    // Try rear camera first; fall back to any camera (needed on some iOS devices)
+    const startScanner = (facingMode: ConstrainDOMString | undefined) =>
+      reader.decodeFromConstraints(
+        { video: facingMode ? { facingMode } : true },
         videoEl,
-        (result, _err, controls) => {
-          if (cancelled || hasFiredRef.current) return;
-          if (result !== undefined) {
-            hasFiredRef.current = true;
-            controls.stop();
-            onScan(result.getText());
-          }
-        },
-      )
+        callback,
+      );
+
+    startScanner('environment')
+      .catch(() => (cancelled ? Promise.reject(new Error('cancelled')) : startScanner(undefined)))
       .then((controls) => {
         if (cancelled) {
           controls.stop();
@@ -75,11 +85,12 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       .catch((err: unknown) => {
         if (cancelled) return;
         const name = err instanceof Error ? err.name : '';
+        const message = err instanceof Error ? err.message : String(err);
         const key: 'barcode.permissionDenied' | 'barcode.notSupported' =
-          name === 'NotAllowedError' || name === 'SecurityError'
+          name === 'NotAllowedError' || name === 'SecurityError' || name === 'NotReadableError'
             ? 'barcode.permissionDenied'
             : 'barcode.notSupported';
-        setState({ phase: 'error', messageKey: key });
+        setState({ phase: 'error', messageKey: key, debugInfo: `${name}: ${message}` });
       });
 
     return () => {
@@ -212,6 +223,11 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       >
         {statusText}
       </p>
+      {state.phase === 'error' && state.debugInfo && (
+        <p className="mt-2 max-w-xs break-all text-center text-xs text-white/50">
+          {state.debugInfo}
+        </p>
+      )}
     </div>
   );
 }

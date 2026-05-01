@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg'],
+        includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
         manifest: {
           name: 'NutriApp',
           short_name: 'NutriApp',
@@ -22,7 +22,22 @@ export default defineConfig(({ mode }) => {
           display: 'standalone',
           orientation: 'portrait',
           start_url: '/',
-          icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
+          icons: [
+            { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+            {
+              src: 'icon-192-maskable.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+            {
+              src: 'icon-512-maskable.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+          ],
         },
         workbox: {
           globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],

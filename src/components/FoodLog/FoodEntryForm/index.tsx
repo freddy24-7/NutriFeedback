@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,8 @@ import { useUIStore } from '@/store/uiStore';
 import { sanitiseText } from '@/utils/sanitise';
 import { todayISO } from '@/utils/date';
 import { cn } from '@/utils/cn';
+import { BarcodeScanner } from '@/components/Barcode/BarcodeScanner';
 import { ProductCard } from '@/components/Barcode/ProductCard';
-
-const BarcodeScanner = lazy(() =>
-  import('@/components/Barcode/BarcodeScanner').then((m) => ({ default: m.BarcodeScanner })),
-);
 import type { FoodEntryFormProps } from '@/types/components';
 
 type SubmitMode = 'manual' | 'ai';
@@ -120,11 +117,7 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
 
   // ── Barcode scan flow ──────────────────────────────────────────────────────
   if (showScanner) {
-    return (
-      <Suspense fallback={null}>
-        <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />
-      </Suspense>
-    );
+    return <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />;
   }
 
   if (scannedBarcode !== null) {

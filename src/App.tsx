@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useUIStore } from './store/uiStore';
 import { AppLayout } from './components/Layout';
 import { AuthLayout } from './components/Layout/AuthLayout';
@@ -76,6 +77,11 @@ export function App() {
   const deferredInstallRef = useRef<BeforeInstallPromptEvent | null>(null);
   const [installPromptVisible, setInstallPromptVisible] = useState(false);
 
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW();
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
@@ -92,6 +98,18 @@ export function App() {
 
   return (
     <>
+      {needRefresh && (
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex items-center gap-3 rounded-xl bg-warm-900 px-4 py-3 shadow-lg dark:bg-warm-100">
+          <span className="text-sm text-white dark:text-warm-900">Update available</span>
+          <button
+            type="button"
+            onClick={() => void updateServiceWorker(true)}
+            className="rounded-lg bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600"
+          >
+            Refresh
+          </button>
+        </div>
+      )}
       <Suspense>
         <RouterProvider router={router} />
       </Suspense>

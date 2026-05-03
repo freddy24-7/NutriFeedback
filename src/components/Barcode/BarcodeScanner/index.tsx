@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser';
 import { cn } from '@/utils/cn';
@@ -13,38 +14,49 @@ type ScannerState =
       debugInfo?: string;
     };
 
+function tryGetBarcodeText(result: unknown): string | null {
+  if (typeof result !== 'object' || result === null) return null;
+  const getText = (result as { getText?: unknown }).getText;
+  if (typeof getText !== 'function') return null;
+  const text = getText.call(result) as unknown;
+  return typeof text === 'string' ? text : null;
+}
+
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   const { t } = useTranslation();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
   const hasFiredRef = useRef(false);
+  const onScanRef = useRef(onScan);
+  const onCloseRef = useRef(onClose);
+  const scannerCleanupRef = useRef<(() => void) | null>(null);
+
+  onScanRef.current = onScan;
+  onCloseRef.current = onClose;
 
   const [state, setState] = useState<ScannerState>({ phase: 'initialising' });
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
+  const handleKeyDownCapture = useCallback((event: ReactKeyboardEvent) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      onCloseRef.current();
+      return;
+    }
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      closeButtonRef.current?.focus();
+    }
   }, []);
 
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        onClose();
-        return;
-      }
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        closeButtonRef.current?.focus();
-      }
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [onClose]);
+  const videoRefCallback = useCallback((videoEl: HTMLVideoElement | null) => {
+    scannerCleanupRef.current?.();
+    scannerCleanupRef.current = null;
 
-  useEffect(() => {
-    const videoEl = videoRef.current;
-    if (videoEl === null) return;
+    if (videoEl === null) {
+      return;
+    }
+
+    setState({ phase: 'initialising' });
 
     const mediaDevices = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
     if (mediaDevices === undefined || typeof mediaDevices.getUserMedia !== 'function') {
@@ -55,16 +67,25 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
     const reader = new BrowserMultiFormatReader();
     let cancelled = false;
 
+    const sessionCleanup = () => {
+      cancelled = true;
+      controlsRef.current?.stop();
+      controlsRef.current = null;
+      BrowserMultiFormatReader.releaseAllStreams();
+    };
+
+    scannerCleanupRef.current = sessionCleanup;
+
     const callback = (result: unknown, _err: unknown, controls: IScannerControls) => {
       if (cancelled || hasFiredRef.current) return;
-      if (result !== undefined && result !== null) {
+      const text = tryGetBarcodeText(result);
+      if (text !== null && text.length > 0) {
         hasFiredRef.current = true;
         controls.stop();
-        onScan((result as { getText(): string }).getText());
+        onScanRef.current(text);
       }
     };
 
-    // Try rear camera first; fall back to any camera (needed on some iOS devices)
     const startScanner = (facingMode: ConstrainDOMString | undefined) =>
       reader.decodeFromConstraints(
         { video: facingMode ? { facingMode } : true },
@@ -92,14 +113,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
             : 'barcode.notSupported';
         setState({ phase: 'error', messageKey: key, debugInfo: `${name}: ${message}` });
       });
-
-    return () => {
-      cancelled = true;
-      controlsRef.current?.stop();
-      controlsRef.current = null;
-      BrowserMultiFormatReader.releaseAllStreams();
-    };
-  }, [onScan]);
+  }, []);
 
   const statusText =
     state.phase === 'initialising'
@@ -113,6 +127,8 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t('barcode.scanning')}
+      tabIndex={-1}
+      onKeyDownCapture={handleKeyDownCapture}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 p-4"
     >
       <button
@@ -147,7 +163,13 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           state.phase === 'error' ? 'border-red-400' : 'border-brand-400',
         )}
       >
-        <video ref={videoRef} muted playsInline autoPlay className="h-full w-full object-cover">
+        <video
+          ref={videoRefCallback}
+          muted
+          playsInline
+          autoPlay
+          className="h-full w-full object-cover"
+        >
           <track kind="captions" />
         </video>
 
@@ -168,7 +190,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
             {/* top-right */}
             <span className="absolute right-0 top-0 block h-7 w-7 border-r-[3px] border-t-[3px] border-current rounded-tr-sm" />
             {/* bottom-left */}
-            <span className="absolute bottom-0 left-0 block h-7 w-7 border-b-[3px] border-l-[3px] border-current rounded-bl-sm" />
+            <span className="absolute bottom-0 left-0 block h-7 w-7 border-b-[3px] border-l-[3px] border-current rounded-br-sm" />
             {/* bottom-right */}
             <span className="absolute bottom-0 right-0 block h-7 w-7 border-b-[3px] border-r-[3px] border-current rounded-br-sm" />
           </div>

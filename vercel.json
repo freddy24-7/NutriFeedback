@@ -7,7 +7,7 @@
     { "source": "/((?!api/|assets/|icons/|locales/|faq/|.*\\..*).*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "maxDuration": 60
     }
   },

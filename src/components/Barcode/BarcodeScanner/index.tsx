@@ -29,12 +29,20 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       scanner.start(
         facingMode ? { facingMode } : { deviceId: { exact: 'default' } },
         {
-          fps: 15,
+          fps: 10,
           qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
-            return { width: Math.floor(size), height: Math.floor(size * 0.5) };
+            // Wide scan box — barcodes are landscape, give the decoder as much width as possible
+            const w = Math.floor(viewfinderWidth * 0.95);
+            const h = Math.floor(Math.min(viewfinderHeight * 0.4, 200));
+            return { width: w, height: h };
           },
-          aspectRatio: 1.5,
+          aspectRatio: 1.7,
+          // Prefer higher resolution for barcode readability
+          videoConstraints: {
+            facingMode: facingMode ?? 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
         },
         (text) => {
           if (hasFiredRef.current) return;

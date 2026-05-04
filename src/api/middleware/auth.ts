@@ -10,9 +10,23 @@ export const authMiddleware = createMiddleware<{ Variables: AuthVariables }>(asy
     return;
   }
 
-  const requestState = await clerkClient.authenticateRequest(c.req.raw, {
-    publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
-  });
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Auth timeout')), 8000),
+  );
+
+  let requestState: Awaited<ReturnType<typeof clerkClient.authenticateRequest>>;
+  try {
+    requestState = await Promise.race([
+      clerkClient.authenticateRequest(c.req.raw, {
+        publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
+      }),
+      timeout,
+    ]);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[auth] authenticateRequest failed: ${msg}`);
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
 
   if (!requestState.isSignedIn) {
     return c.json({ error: 'Unauthorized' }, 401);
@@ -25,10 +39,20 @@ export const authMiddleware = createMiddleware<{ Variables: AuthVariables }>(asy
 // Sets user if session exists, continues regardless — for routes accessible to anon users
 export const optionalAuthMiddleware = createMiddleware<{ Variables: AuthVariables }>(
   async (c, next) => {
-    const requestState = await clerkClient.authenticateRequest(c.req.raw, {
-      publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
-    });
-    c.set('user', requestState.isSignedIn ? { id: requestState.toAuth().userId } : undefined);
+    try {
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Auth timeout')), 8000),
+      );
+      const requestState = await Promise.race([
+        clerkClient.authenticateRequest(c.req.raw, {
+          publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
+        }),
+        timeout,
+      ]);
+      c.set('user', requestState.isSignedIn ? { id: requestState.toAuth().userId } : undefined);
+    } catch {
+      c.set('user', undefined);
+    }
     await next();
   },
 );

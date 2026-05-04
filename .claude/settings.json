@@ -46,7 +46,10 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" \"https://world.openfoodfacts.org/api/v2/product/8710908507083?fields=product_name,brands,nutriments,nova_group,serving_size\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" \"https://world.openfoodfacts.org/api/v2/product/5000112576430?fields=product_name,brands,nutriments,nova_group,serving_size\")",
       "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/5449000000996?fields=product_name,brands,nutriments\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('env',{}\\), indent=2\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('env',{}\\), indent=2\\)\\)\")",
+      "Bash(xargs cat *)",
+      "Bash(npx vercel *)",
+      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/8710445024111?fields=product_name,product_name_en,brands,nutriments,nova_group,serving_size\")"
     ]
   }
 }

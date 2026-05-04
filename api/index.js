@@ -59972,9 +59972,9 @@ var insertUserProfile = c;
 // src/lib/db/client.ts
 var databaseUrl = process.env["DATABASE_URL"];
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+  console.error("[db] DATABASE_URL is not set \u2014 all database queries will fail");
 }
-var sql2 = Xs(databaseUrl);
+var sql2 = Xs(databaseUrl ?? "postgresql://missing");
 var db = drizzle(sql2, { schema: schema_exports });
 
 // src/types/api.ts

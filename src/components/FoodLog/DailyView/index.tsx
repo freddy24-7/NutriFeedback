@@ -6,20 +6,7 @@ import type { DailyViewProps } from '@/types/components';
 
 export function DailyView({ date, onAddEntry }: DailyViewProps) {
   const { t } = useTranslation();
-  const { data: entries, isLoading, error } = useFoodLog(date);
-
-  if (isLoading) {
-    return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="py-8 text-center text-sm"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        {t('common.loading')}
-      </div>
-    );
-  }
+  const { data: entries, error } = useFoodLog(date);
 
   if (error !== null) {
     return (

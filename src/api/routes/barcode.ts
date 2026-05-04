@@ -21,14 +21,22 @@ barcodeRoutes.use('*', authMiddleware);
 barcodeRoutes.get('/:barcode', async (c) => {
   const user = c.get('user')!;
   const barcode = c.req.param('barcode');
+  const t0 = Date.now();
+  console.log(`[barcode] lookup start barcode=${barcode}`);
 
   const { success: withinLimit } = await rateLimits.barcodeLookup.limit(user.id);
+  console.log(
+    `[barcode] rate-limit check done withinLimit=${withinLimit} elapsed=${Date.now() - t0}ms`,
+  );
   if (!withinLimit) {
     return c.json({ error: 'Rate limit exceeded — try again in a minute' }, 429);
   }
 
   // Check local products DB first (covers user-registered products too)
   const [existing] = await db.select().from(products).where(eq(products.barcode, barcode)).limit(1);
+  console.log(
+    `[barcode] db check done found=${existing !== undefined} elapsed=${Date.now() - t0}ms`,
+  );
 
   if (existing !== undefined) {
     return c.json({
@@ -44,8 +52,9 @@ barcodeRoutes.get('/:barcode', async (c) => {
     });
   }
 
-  // External lookup: OFF → USDA
+  // External lookup: OFF
   const external = await lookupProduct(barcode);
+  console.log(`[barcode] OFF lookup done found=${external !== null} elapsed=${Date.now() - t0}ms`);
 
   if (external !== null) {
     const processingLevel = external.processingLevel ?? assessProcessingLevel(external.name);
@@ -66,6 +75,7 @@ barcodeRoutes.get('/:barcode', async (c) => {
       .onConflictDoNothing()
       .returning();
 
+    console.log(`[barcode] saved to db elapsed=${Date.now() - t0}ms`);
     return c.json({
       id: saved?.id,
       barcode,
@@ -80,7 +90,7 @@ barcodeRoutes.get('/:barcode', async (c) => {
   }
 
   // AI fallback: return an estimate with low confidence.
-  // Uses the barcode as the query — AI may know well-known products.
+  console.log(`[barcode] starting AI fallback elapsed=${Date.now() - t0}ms`);
   type AIProductEstimate = {
     name: string;
     brand: string | null;
@@ -108,11 +118,15 @@ barcodeRoutes.get('/:barcode', async (c) => {
     if (nutrients.success) {
       aiEstimate = { ...parsed, nutritionalPer100g: nutrients.data };
     }
-  } catch {
-    // AI failed or timed out — return not found
+    console.log(`[barcode] AI done aiEstimate=${aiEstimate !== null} elapsed=${Date.now() - t0}ms`);
+  } catch (err) {
+    console.log(
+      `[barcode] AI failed err=${err instanceof Error ? err.message : String(err)} elapsed=${Date.now() - t0}ms`,
+    );
   }
 
   if (aiEstimate === null) {
+    console.log(`[barcode] returning 404 elapsed=${Date.now() - t0}ms`);
     return c.json({ error: 'Product not found' }, 404);
   }
 

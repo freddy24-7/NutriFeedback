@@ -42,7 +42,11 @@
       "Bash(node -e \"const p = require\\('./node_modules/@zxing/library/package.json'\\); console.log\\('@zxing/library:', p.version\\)\")",
       "Bash(node -e \"console.log\\(require\\('./node_modules/html5-qrcode/package.json'\\).version\\)\")",
       "Bash(node -e ' *)",
-      "Bash(node -e \"const p = require\\('./node_modules/html5-qrcode/package.json'\\); console.log\\(p.version, Object.keys\\(p.exports || {}\\).slice\\(0,5\\)\\)\")"
+      "Bash(node -e \"const p = require\\('./node_modules/html5-qrcode/package.json'\\); console.log\\(p.version, Object.keys\\(p.exports || {}\\).slice\\(0,5\\)\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" \"https://world.openfoodfacts.org/api/v2/product/8710908507083?fields=product_name,brands,nutriments,nova_group,serving_size\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" \"https://world.openfoodfacts.org/api/v2/product/5000112576430?fields=product_name,brands,nutriments,nova_group,serving_size\")",
+      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/5449000000996?fields=product_name,brands,nutriments\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('env',{}\\), indent=2\\)\\)\")"
     ]
   }
 }

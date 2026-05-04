@@ -81,15 +81,21 @@ async function lookupOpenFoodFacts(barcode: string): Promise<ProductLookupResult
   ].join(',');
   const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=${fields}`;
 
+  const t0 = Date.now();
   let data: OFFResponse;
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'NutriApp/1.0 (https://nutriapp.app)' },
       signal: AbortSignal.timeout(12000),
     });
+    console.log(`[OFF] fetch done status=${res.status} elapsed=${Date.now() - t0}ms`);
     if (!res.ok) return null;
     data = (await res.json()) as OFFResponse;
-  } catch {
+    console.log(`[OFF] json parsed status=${data.status} elapsed=${Date.now() - t0}ms`);
+  } catch (err) {
+    console.log(
+      `[OFF] fetch failed err=${err instanceof Error ? err.message : String(err)} elapsed=${Date.now() - t0}ms`,
+    );
     return null;
   }
 

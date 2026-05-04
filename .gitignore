@@ -37,4 +37,4 @@ public/workbox-*.js
 public/sw.js.map
 public/workbox-*.js.map
 api/auth.js
-api/index.js
+api/index.cjs

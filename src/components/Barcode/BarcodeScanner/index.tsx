@@ -105,12 +105,13 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
 
       <div
         className={cn(
-          'relative w-full max-w-sm overflow-hidden rounded-card border-2',
+          'relative w-full max-w-sm rounded-card border-2',
           state.phase === 'error' ? 'border-red-400' : 'border-brand-400',
         )}
+        style={{ minHeight: 300 }}
       >
         {/* html5-qrcode mounts the video feed into this div */}
-        <div id={SCANNER_ID} className="w-full" />
+        <div id={SCANNER_ID} className="w-full" style={{ minHeight: 300 }} />
 
         {state.phase === 'initialising' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60">

@@ -47,7 +47,8 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         (text) => {
           if (hasFiredRef.current) return;
           hasFiredRef.current = true;
-          void scanner.stop().finally(() => onScan(text));
+          onScan(text);
+          void scanner.stop().catch(() => undefined);
         },
         () => {
           /* per-frame decode errors are normal */

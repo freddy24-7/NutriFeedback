@@ -1,9 +1,11 @@
 /**
  * Barcode product lookup chain:
  * 1. Upstash cache (7-day TTL)
- * 2. Open Food Facts API
- * 3. USDA FoodData Central API
- * Returns null if not found in either — caller handles AI fallback.
+ * 2. Open Food Facts API v2 (primary — excellent European coverage)
+ * Returns null if not found — caller handles AI fallback.
+ *
+ * USDA removed: it only covers US branded foods and searching by barcode
+ * as a text query rarely returns correct matches.
  */
 
 import { redis, cacheKeys } from '@/lib/redis/client';
@@ -43,10 +45,11 @@ async function setCache(barcode: string, product: ProductLookupResult): Promise<
   await redis.set(cacheKeys.offProduct(barcode), product, { ex: CACHE_TTL_SECONDS });
 }
 
-// ─── Open Food Facts ──────────────────────────────────────────────────────────
+// ─── Open Food Facts v2 ───────────────────────────────────────────────────────
 
 type OFFProduct = {
   product_name?: string;
+  product_name_en?: string;
   brands?: string;
   serving_size?: string;
   nova_group?: number;
@@ -67,29 +70,44 @@ type OFFResponse = {
 };
 
 async function lookupOpenFoodFacts(barcode: string): Promise<ProductLookupResult | null> {
-  const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+  // Request only the fields we need — much smaller response, faster over the wire
+  const fields = [
+    'product_name',
+    'product_name_en',
+    'brands',
+    'serving_size',
+    'nova_group',
+    'nutriments',
+  ].join(',');
+  const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=${fields}`;
 
   let data: OFFResponse;
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'NutriApp/1.0 (https://nutriapp.app)' },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(12000),
     });
+    if (!res.ok) return null;
     data = (await res.json()) as OFFResponse;
   } catch {
     return null;
   }
 
-  if (data.status !== 1 || !data.product?.product_name) return null;
+  if (data.status !== 1) return null;
 
   const p = data.product;
-  const n = p.nutriments ?? {};
+  if (!p) return null;
 
+  // Use English name if available, otherwise fall back to the default product name
+  const name = (p.product_name_en?.trim() || p.product_name?.trim()) ?? '';
+  if (!name) return null;
+
+  const n = p.nutriments ?? {};
   const servingG = p.serving_size ? parseFloat(p.serving_size.replace(/[^0-9.]/g, '')) : null;
 
   return {
     barcode,
-    name: p.product_name ?? '',
+    name,
     brand: p.brands?.split(',')[0]?.trim() ?? null,
     nutritionalPer100g: {
       calories: n['energy-kcal_100g'] ?? null,
@@ -100,70 +118,9 @@ async function lookupOpenFoodFacts(barcode: string): Promise<ProductLookupResult
       sugar: n['sugars_100g'] ?? null,
       sodium: n['sodium_100g'] != null ? n['sodium_100g'] * 1000 : null,
     },
-    servingSizeG: isNaN(servingG ?? NaN) ? null : servingG,
+    servingSizeG: servingG !== null && !isNaN(servingG) ? servingG : null,
     processingLevel: p.nova_group ?? null,
     source: 'open_food_facts',
-  };
-}
-
-// ─── USDA FoodData Central ────────────────────────────────────────────────────
-
-type USDAFood = {
-  description: string;
-  brandName?: string;
-  brandOwner?: string;
-  servingSize?: number;
-  servingSizeUnit?: string;
-  foodNutrients?: Array<{
-    nutrientName: string;
-    value: number;
-    unitName: string;
-  }>;
-};
-
-type USDAResponse = {
-  foods?: USDAFood[];
-};
-
-function findNutrient(nutrients: USDAFood['foodNutrients'], name: string): number | null {
-  return nutrients?.find((n) => n.nutrientName.toLowerCase().includes(name))?.value ?? null;
-}
-
-async function lookupUSDA(barcode: string): Promise<ProductLookupResult | null> {
-  const apiKey = process.env['USDA_API_KEY'] ?? 'DEMO_KEY';
-  const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${barcode}&api_key=${apiKey}&pageSize=1`;
-
-  let data: USDAResponse;
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    data = (await res.json()) as USDAResponse;
-  } catch {
-    return null;
-  }
-
-  const food = data.foods?.[0];
-  if (!food) return null;
-
-  const n = food.foodNutrients ?? [];
-  const servingSizeG =
-    food.servingSizeUnit?.toLowerCase() === 'g' ? (food.servingSize ?? null) : null;
-
-  return {
-    barcode,
-    name: food.description,
-    brand: food.brandOwner ?? food.brandName ?? null,
-    nutritionalPer100g: {
-      calories: findNutrient(n, 'energy'),
-      protein: findNutrient(n, 'protein'),
-      carbs: findNutrient(n, 'carbohydrate'),
-      fat: findNutrient(n, 'total lipid'),
-      fiber: findNutrient(n, 'fiber'),
-      sugar: findNutrient(n, 'sugars'),
-      sodium: findNutrient(n, 'sodium'),
-    },
-    servingSizeG,
-    processingLevel: null,
-    source: 'usda',
   };
 }
 
@@ -173,7 +130,7 @@ export async function lookupProduct(barcode: string): Promise<ProductLookupResul
   const cached = await getCached(barcode);
   if (cached !== null) return cached;
 
-  const result = (await lookupOpenFoodFacts(barcode)) ?? (await lookupUSDA(barcode));
+  const result = await lookupOpenFoodFacts(barcode);
   if (result !== null) await setCache(barcode, result);
 
   return result;

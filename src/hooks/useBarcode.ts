@@ -7,7 +7,7 @@ type RegisterProductInput = z.infer<typeof RegisterProductSchema>;
 async function fetchProduct(barcode: string): Promise<ProductResponse> {
   const res = await fetch(`/api/barcode/${barcode}`, {
     credentials: 'include',
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(30000),
   });
   if (!res.ok) {
     const body = (await res.json()) as { error?: string };

@@ -1,5 +1,5 @@
-import { createRequire } from 'module';
 import Fuse from 'fuse.js';
+import faqDataRaw from '../../public/faq/faq.json';
 
 export type FaqEntry = {
   id: string;
@@ -16,8 +16,7 @@ export type FaqMatch = {
   score: number;
 };
 
-const require = createRequire(import.meta.url);
-const faqData = require('../../public/faq/faq.json') as { faqs: FaqEntry[]; threshold: number };
+const faqData = faqDataRaw as { faqs: FaqEntry[]; threshold: number };
 
 const faqs = faqData.faqs as FaqEntry[];
 const SCORE_THRESHOLD = 1 - (faqData.threshold as number); // Fuse uses 0=perfect, 1=worst

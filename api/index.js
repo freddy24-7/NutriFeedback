@@ -73239,9 +73239,6 @@ paymentsRoutes.get("/status", authMiddleware, async (c3) => {
   });
 });
 
-// src/utils/faqMatcher.ts
-import { createRequire } from "module";
-
 // node_modules/fuse.js/dist/fuse.mjs
 function isArray(value) {
   return !Array.isArray ? getTag(value) === "[object Array]" : Array.isArray(value);
@@ -75170,9 +75167,106 @@ Fuse.use = function(...plugins) {
   plugins.forEach((plugin) => register(plugin));
 };
 
+// public/faq/faq.json
+var faq_default = {
+  version: "1.0",
+  threshold: 0.75,
+  faqs: [
+    {
+      id: "what-is-app",
+      category: "general",
+      keywords: ["what", "about", "explain", "overview", "is", "app", "does", "do"],
+      question_en: "What is NutriApp?",
+      question_nl: "Wat is NutriApp?",
+      answer_en: "NutriApp is a flexible nutrition tracker. You log what you eat \u2014 in as much or as little detail as you like \u2014 and the app tracks your nutrition over time, giving you AI-powered tips to help you eat better. The more detail you give, the more accurate the feedback. But even rough entries are useful!",
+      answer_nl: "NutriApp is een flexibele voedingstracker. Je logt wat je eet \u2014 zo veel of zo weinig detail als je wilt \u2014 en de app houdt je voeding bij en geeft je AI-tips om beter te eten. Hoe meer detail je geeft, hoe nauwkeuriger de feedback. Maar ook ruwe invoer is nuttig!"
+    },
+    {
+      id: "is-it-free",
+      category: "pricing",
+      keywords: ["free", "cost", "price", "pay", "money", "trial", "credits"],
+      question_en: "Is it free?",
+      question_nl: "Is het gratis?",
+      answer_en: "You start with free credits that let you try all features. Once those run out, you can switch to a paid plan \u2014 or enter a discount code if you have one. We want you to see the value before you pay anything.",
+      answer_nl: "Je begint met gratis credits waarmee je alle functies kunt uitproberen. Als die op zijn, kun je overstappen op een betaald abonnement \u2014 of een kortingscode invoeren als je die hebt. We willen dat je de waarde ziet voordat je iets betaalt."
+    },
+    {
+      id: "how-accurate",
+      category: "accuracy",
+      keywords: ["accurate", "accuracy", "exact", "estimate", "reliable", "trust", "correct"],
+      question_en: "How accurate is the nutrition data?",
+      question_nl: "Hoe nauwkeurig zijn de voedingsgegevens?",
+      answer_en: "It depends on how much detail you provide. Scanned products (via barcode) are the most accurate, using verified databases. Text entries like 'had pasta for lunch' are AI-estimated with a confidence score shown. You decide how much accuracy you need.",
+      answer_nl: "Dat hangt af van hoeveel detail je geeft. Gescande producten (via barcode) zijn het nauwkeurigst en gebruiken geverifieerde databases. Tekstinvoer zoals 'had pasta voor de lunch' is AI-geschat met een weergegeven betrouwbaarheidsscore. Jij bepaalt hoeveel nauwkeurigheid je nodig hebt."
+    },
+    {
+      id: "barcode-scanning",
+      category: "features",
+      keywords: ["barcode", "scan", "camera", "product", "package", "label"],
+      question_en: "How does barcode scanning work?",
+      question_nl: "Hoe werkt barcodeScanning?",
+      answer_en: "Tap the barcode button and point your camera at any product barcode. We look it up in the Open Food Facts database (3 million+ products). If it's not found, AI makes an estimate based on the product name. You can then log it or save it for future use.",
+      answer_nl: "Tik op de barcodeknop en richt je camera op een productbarcode. We zoeken het op in de Open Food Facts database (meer dan 3 miljoen producten). Als het niet gevonden wordt, maakt AI een schatting op basis van de productnaam. Je kunt het dan loggen of opslaan voor later gebruik."
+    },
+    {
+      id: "ai-tips",
+      category: "features",
+      keywords: ["tips", "suggestions", "recommendations", "advice", "ai", "feedback"],
+      question_en: "When do I get AI tips?",
+      question_nl: "Wanneer krijg ik AI-tips?",
+      answer_en: "Tips start appearing after you have 3 or more days of food logs. The AI looks at patterns \u2014 things like consistently low iron, or protein that dips on certain days \u2014 and suggests small, practical changes using foods you already eat.",
+      answer_nl: "Tips verschijnen nadat je 3 of meer dagen voedingslogs hebt. De AI kijkt naar patronen \u2014 zoals consistent laag ijzer, of eiwit dat op bepaalde dagen daalt \u2014 en stelt kleine, praktische aanpassingen voor met voedingsmiddelen die je al eet."
+    },
+    {
+      id: "dutch-language",
+      category: "general",
+      keywords: ["dutch", "nederlands", "taal", "language", "nl", "switch"],
+      question_en: "Can I use the app in Dutch?",
+      question_nl: "Kan ik de app in het Nederlands gebruiken?",
+      answer_en: "Yes! Tap the EN | NL toggle in the navigation to switch to Dutch. Everything changes \u2014 the interface, AI tips, and chatbot responses \u2014 all in Dutch.",
+      answer_nl: "Ja! Tik op de EN | NL-schakelaar in de navigatie om over te schakelen naar het Nederlands. Alles verandert \u2014 de interface, AI-tips en chatbotreacties \u2014 allemaal in het Nederlands."
+    },
+    {
+      id: "data-privacy",
+      category: "privacy",
+      keywords: ["data", "privacy", "gdpr", "secure", "safe", "personal", "delete", "stored"],
+      question_en: "Is my data safe and private?",
+      question_nl: "Zijn mijn gegevens veilig en priv\xE9?",
+      answer_en: "Yes. Your data is stored in the EU (Frankfurt), you can export or delete it any time from your account settings, and we never sell your data. See our Privacy Policy for full details.",
+      answer_nl: "Ja. Je gegevens worden opgeslagen in de EU (Frankfurt), je kunt ze op elk moment exporteren of verwijderen via je accountinstellingen, en we verkopen je gegevens nooit. Zie ons Privacybeleid voor volledige details."
+    },
+    {
+      id: "how-much-input",
+      category: "usage",
+      keywords: ["how much", "input", "effort", "detail", "time", "quick", "easy", "simple"],
+      question_en: "How much effort does logging take?",
+      question_nl: "Hoeveel moeite kost het loggen?",
+      answer_en: "As little or as much as you want. You can type 'had cereal and coffee' and the AI fills in the rest. Or you can scan barcodes for precision. Most people spend about 30 seconds per meal. The app adapts to however much you give it.",
+      answer_nl: "Zo weinig of zo veel als je wilt. Je kunt typen 'had ontbijtgranen en koffie' en de AI vult de rest in. Of je kunt barcodes scannen voor precisie. De meeste mensen besteden ongeveer 30 seconden per maaltijd. De app past zich aan aan wat jij geeft."
+    },
+    {
+      id: "discount-code",
+      category: "pricing",
+      keywords: ["code", "discount", "promo", "coupon", "free access", "voucher"],
+      question_en: "I have a discount code \u2014 how do I use it?",
+      question_nl: "Ik heb een kortingscode \u2014 hoe gebruik ik die?",
+      answer_en: "Go to the pricing page and enter your code in the discount code field. If it's valid, you'll get free access immediately without needing to enter any payment details.",
+      answer_nl: "Ga naar de prijspagina en voer je code in het kortingscodeveld in. Als het geldig is, krijg je direct gratis toegang zonder betalingsgegevens in te hoeven voeren."
+    },
+    {
+      id: "contact",
+      category: "support",
+      keywords: ["contact", "support", "help", "question", "problem", "issue", "reach", "email"],
+      question_en: "How can I contact support?",
+      question_nl: "Hoe kan ik contact opnemen met support?",
+      answer_en: "Use the Contact page to send us a message. We typically respond within 1-2 business days.",
+      answer_nl: "Gebruik de Contactpagina om ons een bericht te sturen. We reageren doorgaans binnen 1-2 werkdagen."
+    }
+  ]
+};
+
 // src/utils/faqMatcher.ts
-var require2 = createRequire(import.meta.url);
-var faqData = require2("../../public/faq/faq.json");
+var faqData = faq_default;
 var faqs = faqData.faqs;
 var SCORE_THRESHOLD = 1 - faqData.threshold;
 var fuseEn = new Fuse(faqs, {

@@ -1,7 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
-import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { useTranslation } from 'react-i18next';
-import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser';
 import { cn } from '@/utils/cn';
 import type { BarcodeScannerProps } from '@/types/components';
 
@@ -14,97 +13,33 @@ type ScannerState =
       debugInfo?: string;
     };
 
-function tryGetBarcodeText(result: unknown): string | null {
-  if (typeof result !== 'object' || result === null) return null;
-  const getText = (result as { getText?: unknown }).getText;
-  if (typeof getText !== 'function') return null;
-  const text = getText.call(result) as unknown;
-  return typeof text === 'string' ? text : null;
-}
+const SCANNER_ID = 'html5-qrcode-scanner';
 
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   const { t } = useTranslation();
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const hasFiredRef = useRef(false);
-  const onScanRef = useRef(onScan);
-  const onCloseRef = useRef(onClose);
-  const scannerCleanupRef = useRef<(() => void) | null>(null);
-
-  onScanRef.current = onScan;
-  onCloseRef.current = onClose;
-
   const [state, setState] = useState<ScannerState>({ phase: 'initialising' });
 
-  const handleKeyDownCapture = useCallback((event: ReactKeyboardEvent) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      onCloseRef.current();
-      return;
-    }
-    if (event.key === 'Tab') {
-      event.preventDefault();
-      closeButtonRef.current?.focus();
-    }
-  }, []);
+  useEffect(() => {
+    const scanner = new Html5Qrcode(SCANNER_ID, { verbose: false });
+    scannerRef.current = scanner;
 
-  const videoRefCallback = useCallback((videoEl: HTMLVideoElement | null) => {
-    scannerCleanupRef.current?.();
-    scannerCleanupRef.current = null;
-
-    if (videoEl === null) {
-      return;
-    }
-
-    setState({ phase: 'initialising' });
-
-    const mediaDevices = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
-    if (mediaDevices === undefined || typeof mediaDevices.getUserMedia !== 'function') {
-      setState({ phase: 'error', messageKey: 'barcode.notSupported' });
-      return;
-    }
-
-    const reader = new BrowserMultiFormatReader();
-    let cancelled = false;
-
-    const sessionCleanup = () => {
-      cancelled = true;
-      controlsRef.current?.stop();
-      controlsRef.current = null;
-      BrowserMultiFormatReader.releaseAllStreams();
-    };
-
-    scannerCleanupRef.current = sessionCleanup;
-
-    const callback = (result: unknown, _err: unknown, controls: IScannerControls) => {
-      if (cancelled || hasFiredRef.current) return;
-      const text = tryGetBarcodeText(result);
-      if (text !== null && text.length > 0) {
-        hasFiredRef.current = true;
-        controls.stop();
-        onScanRef.current(text);
-      }
-    };
-
-    const startScanner = (facingMode: ConstrainDOMString | undefined) =>
-      reader.decodeFromConstraints(
-        { video: facingMode ? { facingMode } : true },
-        videoEl,
-        callback,
-      );
-
-    startScanner('environment')
-      .catch(() => (cancelled ? Promise.reject(new Error('cancelled')) : startScanner(undefined)))
-      .then((controls) => {
-        if (cancelled) {
-          controls.stop();
-          return;
-        }
-        controlsRef.current = controls;
-        setState({ phase: 'scanning' });
-      })
+    scanner
+      .start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (text) => {
+          if (hasFiredRef.current) return;
+          hasFiredRef.current = true;
+          void scanner.stop().finally(() => onScan(text));
+        },
+        () => {
+          /* per-frame decode errors are normal, ignore */
+        },
+      )
+      .then(() => setState({ phase: 'scanning' }))
       .catch((err: unknown) => {
-        if (cancelled) return;
         const name = err instanceof Error ? err.name : '';
         const message = err instanceof Error ? err.message : String(err);
         const key: 'barcode.permissionDenied' | 'barcode.notSupported' =
@@ -113,7 +48,14 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
             : 'barcode.notSupported';
         setState({ phase: 'error', messageKey: key, debugInfo: `${name}: ${message}` });
       });
-  }, []);
+
+    return () => {
+      if (scannerRef.current?.isScanning) {
+        void scannerRef.current.stop().catch(() => undefined);
+      }
+      scannerRef.current = null;
+    };
+  }, [onScan]);
 
   const statusText =
     state.phase === 'initialising'
@@ -127,12 +69,9 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t('barcode.scanning')}
-      tabIndex={-1}
-      onKeyDownCapture={handleKeyDownCapture}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 p-4"
     >
       <button
-        ref={closeButtonRef}
         type="button"
         onClick={onClose}
         aria-label={t('barcode.close')}
@@ -158,50 +97,15 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
 
       <div
         className={cn(
-          'relative aspect-square w-full max-w-sm overflow-hidden rounded-card',
-          'border-2',
+          'relative w-full max-w-sm overflow-hidden rounded-card border-2',
           state.phase === 'error' ? 'border-red-400' : 'border-brand-400',
         )}
       >
-        <video
-          ref={videoRefCallback}
-          muted
-          playsInline
-          autoPlay
-          className="h-full w-full object-cover"
-        >
-          <track kind="captions" />
-        </video>
-
-        {/* Dark vignette so viewfinder area pops */}
-        <div className="pointer-events-none absolute inset-0 bg-black/30" />
-
-        {/* Corner brackets */}
-        {state.phase !== 'error' && (
-          <div
-            aria-hidden="true"
-            className={cn(
-              'pointer-events-none absolute inset-[18%]',
-              state.phase === 'scanning' ? 'text-brand-400' : 'text-white/40',
-            )}
-          >
-            {/* top-left */}
-            <span className="absolute left-0 top-0 block h-7 w-7 border-l-[3px] border-t-[3px] border-current rounded-tl-sm" />
-            {/* top-right */}
-            <span className="absolute right-0 top-0 block h-7 w-7 border-r-[3px] border-t-[3px] border-current rounded-tr-sm" />
-            {/* bottom-left */}
-            <span className="absolute bottom-0 left-0 block h-7 w-7 border-b-[3px] border-l-[3px] border-current rounded-br-sm" />
-            {/* bottom-right */}
-            <span className="absolute bottom-0 right-0 block h-7 w-7 border-b-[3px] border-r-[3px] border-current rounded-br-sm" />
-          </div>
-        )}
+        {/* html5-qrcode mounts the video feed into this div */}
+        <div id={SCANNER_ID} className="w-full" />
 
         {state.phase === 'initialising' && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="absolute inset-0 flex items-center justify-center"
-          >
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60">
             <svg
               className="h-8 w-8 animate-spin text-white"
               viewBox="0 0 24 24"
@@ -225,13 +129,6 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
               />
             </svg>
           </div>
-        )}
-
-        {state.phase === 'scanning' && (
-          <div
-            aria-hidden="true"
-            className="absolute left-[18%] right-[18%] h-0.5 animate-scan-line bg-brand-400 shadow-[0_0_10px_3px_rgba(87,186,134,0.7)]"
-          />
         )}
       </div>
 

@@ -41,26 +41,12 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
+          navigateFallback: null,
           runtimeCaching: [
             {
-              urlPattern: ({ request }) => request.mode === 'navigate',
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'pages-cache',
-                networkTimeoutSeconds: 3,
-                cacheableResponse: { statuses: [200] },
-              },
-            },
-            {
-              // Never cache POST/PUT auth or mutations — only optional GET reads via SW.
-              urlPattern: ({ request, url }) =>
-                request.method === 'GET' && url.pathname.startsWith('/api/'),
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'api-cache',
-                networkTimeoutSeconds: 10,
-                cacheableResponse: { statuses: [200] },
-              },
+              // API calls: always go to network, never cache
+              urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+              handler: 'NetworkOnly',
             },
           ],
         },

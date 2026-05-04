@@ -23,6 +23,7 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   const [aiError, setAiError] = useState<string | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
+  const [scanDebug, setScanDebug] = useState<string | null>(null);
 
   const { mutate: addEntry, isPending: isAdding, error: addError } = useAddFoodEntry();
   const { mutate: parseFood, isPending: isParsing } = useParseFood();
@@ -48,6 +49,7 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   const handleScan = (barcode: string) => {
     setShowScanner(false);
     setScannedBarcode(barcode);
+    setScanDebug(`Scanned: "${barcode}" (${barcode.length} chars)`);
   };
 
   const handleProductConfirm = (product: ProductResponse) => {
@@ -123,6 +125,11 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   if (scannedBarcode !== null) {
     return (
       <div className="space-y-3">
+        {scanDebug !== null && (
+          <p className="break-all rounded bg-warm-100 px-2 py-1 text-xs text-warm-500 dark:bg-warm-700 dark:text-warm-400">
+            {scanDebug}
+          </p>
+        )}
         {isLookingUp && (
           <p
             role="status"

@@ -73,6 +73,7 @@ async function lookupOpenFoodFacts(barcode: string): Promise<ProductLookupResult
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'NutriApp/1.0 (https://nutriapp.app)' },
+      signal: AbortSignal.timeout(6000),
     });
     data = (await res.json()) as OFFResponse;
   } catch {
@@ -134,7 +135,7 @@ async function lookupUSDA(barcode: string): Promise<ProductLookupResult | null> 
 
   let data: USDAResponse;
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
     data = (await res.json()) as USDAResponse;
   } catch {
     return null;

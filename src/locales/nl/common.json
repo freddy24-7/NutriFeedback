@@ -310,6 +310,8 @@
     "close": "Scanner sluiten",
     "confirmAdd": "Toevoegen aan logboek",
     "dismiss": "Niet dit product",
+    "notFound": "Product niet gevonden — voer het handmatig in",
+    "lookupError": "Product kon niet worden opgezocht — probeer opnieuw",
     "processingLevel": "Bewerkingsniveau",
     "source": {
       "open_food_facts": "Open Food Facts",

@@ -91,11 +91,17 @@ barcodeRoutes.get('/:barcode', async (c) => {
 
   let aiEstimate: AIProductEstimate | null = null;
   try {
-    const { text } = await generateAIResponse({
-      prompt: BARCODE_ESTIMATE_PROMPT(barcode),
-      systemPrompt: BARCODE_ESTIMATE_SYSTEM,
-      language: 'en',
-    });
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('AI timeout')), 10000),
+    );
+    const { text } = await Promise.race([
+      generateAIResponse({
+        prompt: BARCODE_ESTIMATE_PROMPT(barcode),
+        systemPrompt: BARCODE_ESTIMATE_SYSTEM,
+        language: 'en',
+      }),
+      timeout,
+    ]);
 
     const parsed = JSON.parse(text) as AIProductEstimate;
     const nutrients = NutritionalPer100gSchema.safeParse(parsed.nutritionalPer100g);
@@ -103,7 +109,7 @@ barcodeRoutes.get('/:barcode', async (c) => {
       aiEstimate = { ...parsed, nutritionalPer100g: nutrients.data };
     }
   } catch {
-    // AI failed — return not found
+    // AI failed or timed out — return not found
   }
 
   if (aiEstimate === null) {

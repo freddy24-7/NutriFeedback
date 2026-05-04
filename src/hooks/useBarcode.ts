@@ -5,7 +5,10 @@ import type { z } from 'zod';
 type RegisterProductInput = z.infer<typeof RegisterProductSchema>;
 
 async function fetchProduct(barcode: string): Promise<ProductResponse> {
-  const res = await fetch(`/api/barcode/${barcode}`, { credentials: 'include' });
+  const res = await fetch(`/api/barcode/${barcode}`, {
+    credentials: 'include',
+    signal: AbortSignal.timeout(25000),
+  });
   if (!res.ok) {
     const body = (await res.json()) as { error?: string };
     throw new Error(body.error ?? 'Failed to look up product');

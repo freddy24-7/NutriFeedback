@@ -143,7 +143,10 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
         {lookupError !== null && (
           <div className="space-y-2">
             <p role="alert" className="text-sm" style={{ color: 'var(--color-error)' }}>
-              {t('errors.notFound')}
+              {lookupError instanceof Error &&
+              lookupError.message.toLowerCase().includes('not found')
+                ? t('barcode.notFound')
+                : t('barcode.lookupError')}
             </p>
             <button
               type="button"

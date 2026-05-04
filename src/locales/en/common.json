@@ -310,6 +310,8 @@
     "close": "Close scanner",
     "confirmAdd": "Add to food log",
     "dismiss": "Not this product",
+    "notFound": "Product not found — try entering it manually",
+    "lookupError": "Could not look up product — please try again",
     "processingLevel": "Processing level",
     "source": {
       "open_food_facts": "Open Food Facts",

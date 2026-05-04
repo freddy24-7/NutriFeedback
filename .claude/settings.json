@@ -49,7 +49,8 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('env',{}\\), indent=2\\)\\)\")",
       "Bash(xargs cat *)",
       "Bash(npx vercel *)",
-      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/8710445024111?fields=product_name,product_name_en,brands,nutriments,nova_group,serving_size\")"
+      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/8710445024111?fields=product_name,product_name_en,brands,nutriments,nova_group,serving_size\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.get\\('dependencies',{}\\).items\\(\\) if 'clerk' in k.lower\\(\\) or 'jose' in k.lower\\(\\) or 'jwt' in k.lower\\(\\)}, indent=2\\)\\)\")"
     ]
   }
 }

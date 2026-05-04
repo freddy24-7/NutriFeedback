@@ -1,58 +1,48 @@
 import { createMiddleware } from 'hono/factory';
-import { clerkClient } from '@/lib/auth/server';
+import { verifyToken } from '@clerk/backend';
 
 export type AuthVariables = { user: { id: string } | undefined };
 
+async function verifyBearer(authHeader: string | undefined): Promise<string | null> {
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.slice(7);
+  if (!token) return null;
+
+  const secretKey = process.env['CLERK_SECRET_KEY'];
+  if (!secretKey) {
+    console.error('[auth] CLERK_SECRET_KEY is not set');
+    return null;
+  }
+
+  try {
+    const payload = await verifyToken(token, { secretKey });
+    return payload.sub ?? null;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[auth] token verification failed: ${msg}`);
+    return null;
+  }
+}
+
 export const authMiddleware = createMiddleware<{ Variables: AuthVariables }>(async (c, next) => {
-  // Short-circuit if a higher-level middleware already resolved auth (e.g. test stubs).
   if (c.get('user') !== undefined) {
     await next();
     return;
   }
 
-  const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Auth timeout')), 8000),
-  );
-
-  let requestState: Awaited<ReturnType<typeof clerkClient.authenticateRequest>>;
-  try {
-    requestState = await Promise.race([
-      clerkClient.authenticateRequest(c.req.raw, {
-        publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
-      }),
-      timeout,
-    ]);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`[auth] authenticateRequest failed: ${msg}`);
+  const userId = await verifyBearer(c.req.header('Authorization'));
+  if (!userId) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  if (!requestState.isSignedIn) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
-  c.set('user', { id: requestState.toAuth().userId });
+  c.set('user', { id: userId });
   await next();
 });
 
-// Sets user if session exists, continues regardless — for routes accessible to anon users
 export const optionalAuthMiddleware = createMiddleware<{ Variables: AuthVariables }>(
   async (c, next) => {
-    try {
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Auth timeout')), 8000),
-      );
-      const requestState = await Promise.race([
-        clerkClient.authenticateRequest(c.req.raw, {
-          publishableKey: process.env['VITE_CLERK_PUBLISHABLE_KEY'],
-        }),
-        timeout,
-      ]);
-      c.set('user', requestState.isSignedIn ? { id: requestState.toAuth().userId } : undefined);
-    } catch {
-      c.set('user', undefined);
-    }
+    const userId = await verifyBearer(c.req.header('Authorization'));
+    c.set('user', userId ? { id: userId } : undefined);
     await next();
   },
 );

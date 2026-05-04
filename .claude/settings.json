@@ -55,7 +55,10 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in {**d.get\\('dependencies',{}\\), **d.get\\('peerDependencies',{}\\)}.items\\(\\)}, indent=2\\)\\)\")",
       "Bash(curl -s \"https://shining-aphid-30.clerk.accounts.dev/.well-known/jwks.json\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('functions:', json.dumps\\(d.get\\('functions',{}\\), indent=2\\)\\); print\\('builds:', json.dumps\\(d.get\\('builds',[]\\), indent=2\\)\\)\")",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('main:', d.get\\('main'\\)\\); print\\('module:', d.get\\('module'\\)\\); print\\('exports:', list\\(d.get\\('exports',{}\\).keys\\(\\)\\)[:5]\\)\")",
+      "Bash(sed -n '$\\(\\(67300+638\\)\\),$\\(\\(67300+660\\)\\)p' /Users/freddyaustli/Desktop/NutriApp/api/index.js)",
+      "Bash(sed -n '67938,67960p' /Users/freddyaustli/Desktop/NutriApp/api/index.js)"
     ]
   }
 }

@@ -50,7 +50,10 @@
       "Bash(xargs cat *)",
       "Bash(npx vercel *)",
       "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/8710445024111?fields=product_name,product_name_en,brands,nutriments,nova_group,serving_size\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.get\\('dependencies',{}\\).items\\(\\) if 'clerk' in k.lower\\(\\) or 'jose' in k.lower\\(\\) or 'jwt' in k.lower\\(\\)}, indent=2\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.get\\('dependencies',{}\\).items\\(\\) if 'clerk' in k.lower\\(\\) or 'jose' in k.lower\\(\\) or 'jwt' in k.lower\\(\\)}, indent=2\\)\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/jose/package.json'\\).version\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in {**d.get\\('dependencies',{}\\), **d.get\\('peerDependencies',{}\\)}.items\\(\\)}, indent=2\\)\\)\")",
+      "Bash(curl -s \"https://shining-aphid-30.clerk.accounts.dev/.well-known/jwks.json\")"
     ]
   }
 }

@@ -6,13 +6,16 @@ import { createApiApp } from './create-app';
 // passing the unmodified body to Better Auth.
 export const config = { maxDuration: 60, api: { bodyParser: false } };
 
+console.log('[api] module init start');
 const app = createApiApp();
+console.log('[api] module init done');
 
 // Explicit Node.js handler — Vercel detects two declared parameters and
 // uses the legacy (req, res) calling convention, so we must write to res.
 // Using handle(app) from hono/vercel returns Promise<Response> that Vercel
 // never reads in legacy mode, leaving the connection open until timeout.
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  console.log(`[api] handler called method=${req.method} url=${req.url}`);
   const proto = header(req.headers['x-forwarded-proto']) ?? 'https';
   const host =
     header(req.headers['x-forwarded-host']) ?? header(req.headers['host']) ?? 'localhost';

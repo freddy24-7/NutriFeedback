@@ -28,7 +28,14 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
     const tryStart = (facingMode: string | undefined) =>
       scanner.start(
         facingMode ? { facingMode } : { deviceId: { exact: 'default' } },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        {
+          fps: 15,
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
+            return { width: Math.floor(size), height: Math.floor(size * 0.5) };
+          },
+          aspectRatio: 1.5,
+        },
         (text) => {
           if (hasFiredRef.current) return;
           hasFiredRef.current = true;
@@ -137,6 +144,14 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
                 className="opacity-75"
               />
             </svg>
+          </div>
+        )}
+
+        {state.phase === 'scanning' && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="relative w-4/5" style={{ height: '40%' }}>
+              <div className="animate-scan-line absolute left-0 right-0 h-0.5 bg-brand-400 shadow-[0_0_10px_3px_rgba(87,186,134,0.7)]" />
+            </div>
           </div>
         )}
       </div>

@@ -41,7 +41,8 @@
       "Bash(node -e \"const p = require\\('./node_modules/@zxing/browser/package.json'\\); console.log\\('@zxing/browser:', p.version\\)\")",
       "Bash(node -e \"const p = require\\('./node_modules/@zxing/library/package.json'\\); console.log\\('@zxing/library:', p.version\\)\")",
       "Bash(node -e \"console.log\\(require\\('./node_modules/html5-qrcode/package.json'\\).version\\)\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const p = require\\('./node_modules/html5-qrcode/package.json'\\); console.log\\(p.version, Object.keys\\(p.exports || {}\\).slice\\(0,5\\)\\)\")"
     ]
   }
 }

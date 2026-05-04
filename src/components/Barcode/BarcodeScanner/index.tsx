@@ -25,9 +25,9 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
     const scanner = new Html5Qrcode(SCANNER_ID, { verbose: false });
     scannerRef.current = scanner;
 
-    scanner
-      .start(
-        { facingMode: 'environment' },
+    const tryStart = (facingMode: string | undefined) =>
+      scanner.start(
+        facingMode ? { facingMode } : { deviceId: { exact: 'default' } },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (text) => {
           if (hasFiredRef.current) return;
@@ -35,18 +35,26 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           void scanner.stop().finally(() => onScan(text));
         },
         () => {
-          /* per-frame decode errors are normal, ignore */
+          /* per-frame decode errors are normal */
         },
-      )
+      );
+
+    tryStart('environment')
+      .catch(() => tryStart(undefined))
       .then(() => setState({ phase: 'scanning' }))
       .catch((err: unknown) => {
-        const name = err instanceof Error ? err.name : '';
-        const message = err instanceof Error ? err.message : String(err);
+        const name = err instanceof Error ? err.name : String(err);
+        const message = err instanceof Error ? err.message : '';
+        const stack = err instanceof Error ? (err.stack ?? '') : '';
         const key: 'barcode.permissionDenied' | 'barcode.notSupported' =
           name === 'NotAllowedError' || name === 'SecurityError' || name === 'NotReadableError'
             ? 'barcode.permissionDenied'
             : 'barcode.notSupported';
-        setState({ phase: 'error', messageKey: key, debugInfo: `${name}: ${message}` });
+        setState({
+          phase: 'error',
+          messageKey: key,
+          debugInfo: `${name}: ${message} | ${stack.split('\n')[1] ?? ''}`,
+        });
       });
 
     return () => {

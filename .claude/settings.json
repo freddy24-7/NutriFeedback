@@ -40,7 +40,8 @@
       "Bash(node -e \"const v=JSON.parse\\(require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\)\\); console.log\\(v.slice\\(-5\\).join\\('\\\\n'\\)\\)\")",
       "Bash(node -e \"const p = require\\('./node_modules/@zxing/browser/package.json'\\); console.log\\('@zxing/browser:', p.version\\)\")",
       "Bash(node -e \"const p = require\\('./node_modules/@zxing/library/package.json'\\); console.log\\('@zxing/library:', p.version\\)\")",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/html5-qrcode/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/html5-qrcode/package.json'\\).version\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

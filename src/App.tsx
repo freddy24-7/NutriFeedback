@@ -98,18 +98,18 @@ export function App() {
 
   return (
     <>
-      {needRefresh && (
-        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex items-center gap-3 rounded-xl bg-warm-900 px-4 py-3 shadow-lg dark:bg-warm-100">
-          <span className="text-sm text-white dark:text-warm-900">Update available</span>
-          <button
-            type="button"
-            onClick={() => void updateServiceWorker(true)}
-            className="rounded-lg bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600"
-          >
-            Refresh
-          </button>
-        </div>
-      )}
+      <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex items-center gap-3 rounded-xl bg-warm-900 px-4 py-3 shadow-lg dark:bg-warm-100">
+        <span className="text-sm text-white dark:text-warm-900">
+          {needRefresh ? 'Update available' : 'App up to date'}
+        </span>
+        <button
+          type="button"
+          onClick={() => void updateServiceWorker(true)}
+          className="rounded-lg bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600"
+        >
+          Refresh
+        </button>
+      </div>
       <Suspense>
         <RouterProvider router={router} />
       </Suspense>

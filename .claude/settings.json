@@ -34,7 +34,12 @@
       "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/apply-migration-0002.mts)",
       "Bash(./node_modules/.bin/tsx --tsconfig tsconfig.app.json scripts/mark-migration-0002.mts)",
       "Bash(node -e \"structuredClone\\({a:1}\\)\")",
-      "Bash(xargs ls *)"
+      "Bash(xargs ls *)",
+      "Bash(node -e \"const p = require\\('./node_modules/@zxing/browser/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(npm show *)",
+      "Bash(node -e \"const v=JSON.parse\\(require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\)\\); console.log\\(v.slice\\(-5\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const p = require\\('./node_modules/@zxing/browser/package.json'\\); console.log\\('@zxing/browser:', p.version\\)\")",
+      "Bash(node -e \"const p = require\\('./node_modules/@zxing/library/package.json'\\); console.log\\('@zxing/library:', p.version\\)\")"
     ]
   }
 }

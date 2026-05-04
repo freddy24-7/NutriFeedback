@@ -1,19 +1,14 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __require = /* @__PURE__ */ ((x4) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x4, {
-  get: (a2, b4) => (typeof require !== "undefined" ? require : a2)[b4]
-}) : x4)(function(x4) {
-  if (typeof require !== "undefined") return require.apply(this, arguments);
-  throw Error('Dynamic require of "' + x4 + '" is not supported');
-});
 var __esm = (fn2, res) => function __init() {
   return fn2 && (res = (0, fn2[__getOwnPropNames(fn2)[0]])(fn2 = 0)), res;
 };
-var __commonJS = (cb, mod) => function __require2() {
+var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all2) => {
@@ -36,6 +31,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/domelementtype/lib/esm/index.js
 function isTag(elem) {
@@ -4085,7 +4081,7 @@ var init_esm6 = __esm({
 
 // node_modules/deepmerge/dist/cjs.js
 var require_cjs = __commonJS({
-  "node_modules/deepmerge/dist/cjs.js"(exports, module) {
+  "node_modules/deepmerge/dist/cjs.js"(exports2, module2) {
     "use strict";
     var isMergeableObject = function isMergeableObject2(value) {
       return isNonNullObject(value) && !isSpecial(value);
@@ -4182,7 +4178,7 @@ var require_cjs = __commonJS({
       }, {});
     };
     var deepmerge_1 = deepmerge;
-    module.exports = deepmerge_1;
+    module2.exports = deepmerge_1;
   }
 });
 
@@ -5760,7 +5756,7 @@ var init_html_to_text = __esm({
 
 // node_modules/react/cjs/react.production.min.js
 var require_react_production_min = __commonJS({
-  "node_modules/react/cjs/react.production.min.js"(exports) {
+  "node_modules/react/cjs/react.production.min.js"(exports2) {
     "use strict";
     var l3 = /* @__PURE__ */ Symbol.for("react.element");
     var n2 = /* @__PURE__ */ Symbol.for("react.portal");
@@ -5905,7 +5901,7 @@ var require_react_production_min = __commonJS({
     function X3() {
       throw Error("act(...) is not supported in production builds of React.");
     }
-    exports.Children = { map: S4, forEach: function(a2, b4, e2) {
+    exports2.Children = { map: S4, forEach: function(a2, b4, e2) {
       S4(a2, function() {
         b4.apply(this, arguments);
       }, e2);
@@ -5923,15 +5919,15 @@ var require_react_production_min = __commonJS({
       if (!O4(a2)) throw Error("React.Children.only expected to receive a single React element child.");
       return a2;
     } };
-    exports.Component = E3;
-    exports.Fragment = p3;
-    exports.Profiler = r2;
-    exports.PureComponent = G3;
-    exports.StrictMode = q3;
-    exports.Suspense = w4;
-    exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = W4;
-    exports.act = X3;
-    exports.cloneElement = function(a2, b4, e2) {
+    exports2.Component = E3;
+    exports2.Fragment = p3;
+    exports2.Profiler = r2;
+    exports2.PureComponent = G3;
+    exports2.StrictMode = q3;
+    exports2.Suspense = w4;
+    exports2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = W4;
+    exports2.act = X3;
+    exports2.cloneElement = function(a2, b4, e2) {
       if (null === a2 || void 0 === a2) throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + a2 + ".");
       var d = C2({}, a2.props), c3 = a2.key, k3 = a2.ref, h2 = a2._owner;
       if (null != b4) {
@@ -5949,31 +5945,31 @@ var require_react_production_min = __commonJS({
       }
       return { $$typeof: l3, type: a2.type, key: c3, ref: k3, props: d, _owner: h2 };
     };
-    exports.createContext = function(a2) {
+    exports2.createContext = function(a2) {
       a2 = { $$typeof: u, _currentValue: a2, _currentValue2: a2, _threadCount: 0, Provider: null, Consumer: null, _defaultValue: null, _globalName: null };
       a2.Provider = { $$typeof: t2, _context: a2 };
       return a2.Consumer = a2;
     };
-    exports.createElement = M3;
-    exports.createFactory = function(a2) {
+    exports2.createElement = M3;
+    exports2.createFactory = function(a2) {
       var b4 = M3.bind(null, a2);
       b4.type = a2;
       return b4;
     };
-    exports.createRef = function() {
+    exports2.createRef = function() {
       return { current: null };
     };
-    exports.forwardRef = function(a2) {
+    exports2.forwardRef = function(a2) {
       return { $$typeof: v4, render: a2 };
     };
-    exports.isValidElement = O4;
-    exports.lazy = function(a2) {
+    exports2.isValidElement = O4;
+    exports2.lazy = function(a2) {
       return { $$typeof: y3, _payload: { _status: -1, _result: a2 }, _init: T2 };
     };
-    exports.memo = function(a2, b4) {
+    exports2.memo = function(a2, b4) {
       return { $$typeof: x4, type: a2, compare: void 0 === b4 ? null : b4 };
     };
-    exports.startTransition = function(a2) {
+    exports2.startTransition = function(a2) {
       var b4 = V4.transition;
       V4.transition = {};
       try {
@@ -5982,58 +5978,58 @@ var require_react_production_min = __commonJS({
         V4.transition = b4;
       }
     };
-    exports.unstable_act = X3;
-    exports.useCallback = function(a2, b4) {
+    exports2.unstable_act = X3;
+    exports2.useCallback = function(a2, b4) {
       return U5.current.useCallback(a2, b4);
     };
-    exports.useContext = function(a2) {
+    exports2.useContext = function(a2) {
       return U5.current.useContext(a2);
     };
-    exports.useDebugValue = function() {
+    exports2.useDebugValue = function() {
     };
-    exports.useDeferredValue = function(a2) {
+    exports2.useDeferredValue = function(a2) {
       return U5.current.useDeferredValue(a2);
     };
-    exports.useEffect = function(a2, b4) {
+    exports2.useEffect = function(a2, b4) {
       return U5.current.useEffect(a2, b4);
     };
-    exports.useId = function() {
+    exports2.useId = function() {
       return U5.current.useId();
     };
-    exports.useImperativeHandle = function(a2, b4, e2) {
+    exports2.useImperativeHandle = function(a2, b4, e2) {
       return U5.current.useImperativeHandle(a2, b4, e2);
     };
-    exports.useInsertionEffect = function(a2, b4) {
+    exports2.useInsertionEffect = function(a2, b4) {
       return U5.current.useInsertionEffect(a2, b4);
     };
-    exports.useLayoutEffect = function(a2, b4) {
+    exports2.useLayoutEffect = function(a2, b4) {
       return U5.current.useLayoutEffect(a2, b4);
     };
-    exports.useMemo = function(a2, b4) {
+    exports2.useMemo = function(a2, b4) {
       return U5.current.useMemo(a2, b4);
     };
-    exports.useReducer = function(a2, b4, e2) {
+    exports2.useReducer = function(a2, b4, e2) {
       return U5.current.useReducer(a2, b4, e2);
     };
-    exports.useRef = function(a2) {
+    exports2.useRef = function(a2) {
       return U5.current.useRef(a2);
     };
-    exports.useState = function(a2) {
+    exports2.useState = function(a2) {
       return U5.current.useState(a2);
     };
-    exports.useSyncExternalStore = function(a2, b4, e2) {
+    exports2.useSyncExternalStore = function(a2, b4, e2) {
       return U5.current.useSyncExternalStore(a2, b4, e2);
     };
-    exports.useTransition = function() {
+    exports2.useTransition = function() {
       return U5.current.useTransition();
     };
-    exports.version = "18.3.1";
+    exports2.version = "18.3.1";
   }
 });
 
 // node_modules/react/cjs/react.development.js
 var require_react_development = __commonJS({
-  "node_modules/react/cjs/react.development.js"(exports, module) {
+  "node_modules/react/cjs/react.development.js"(exports2, module2) {
     "use strict";
     if (process.env.NODE_ENV !== "production") {
       (function() {
@@ -7689,8 +7685,8 @@ var require_react_development = __commonJS({
           if (enqueueTaskImpl === null) {
             try {
               var requireString = ("require" + Math.random()).slice(0, 7);
-              var nodeRequire = module && module[requireString];
-              enqueueTaskImpl = nodeRequire.call(module, "timers").setImmediate;
+              var nodeRequire = module2 && module2[requireString];
+              enqueueTaskImpl = nodeRequire.call(module2, "timers").setImmediate;
             } catch (_err) {
               enqueueTaskImpl = function(callback) {
                 {
@@ -7861,42 +7857,42 @@ var require_react_development = __commonJS({
           toArray,
           only: onlyChild
         };
-        exports.Children = Children;
-        exports.Component = Component;
-        exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.Profiler = REACT_PROFILER_TYPE;
-        exports.PureComponent = PureComponent;
-        exports.StrictMode = REACT_STRICT_MODE_TYPE;
-        exports.Suspense = REACT_SUSPENSE_TYPE;
-        exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactSharedInternals;
-        exports.act = act;
-        exports.cloneElement = cloneElement$1;
-        exports.createContext = createContext;
-        exports.createElement = createElement$1;
-        exports.createFactory = createFactory;
-        exports.createRef = createRef;
-        exports.forwardRef = forwardRef;
-        exports.isValidElement = isValidElement;
-        exports.lazy = lazy;
-        exports.memo = memo;
-        exports.startTransition = startTransition;
-        exports.unstable_act = act;
-        exports.useCallback = useCallback;
-        exports.useContext = useContext;
-        exports.useDebugValue = useDebugValue;
-        exports.useDeferredValue = useDeferredValue;
-        exports.useEffect = useEffect;
-        exports.useId = useId;
-        exports.useImperativeHandle = useImperativeHandle;
-        exports.useInsertionEffect = useInsertionEffect;
-        exports.useLayoutEffect = useLayoutEffect;
-        exports.useMemo = useMemo;
-        exports.useReducer = useReducer;
-        exports.useRef = useRef;
-        exports.useState = useState;
-        exports.useSyncExternalStore = useSyncExternalStore;
-        exports.useTransition = useTransition;
-        exports.version = ReactVersion;
+        exports2.Children = Children;
+        exports2.Component = Component;
+        exports2.Fragment = REACT_FRAGMENT_TYPE;
+        exports2.Profiler = REACT_PROFILER_TYPE;
+        exports2.PureComponent = PureComponent;
+        exports2.StrictMode = REACT_STRICT_MODE_TYPE;
+        exports2.Suspense = REACT_SUSPENSE_TYPE;
+        exports2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactSharedInternals;
+        exports2.act = act;
+        exports2.cloneElement = cloneElement$1;
+        exports2.createContext = createContext;
+        exports2.createElement = createElement$1;
+        exports2.createFactory = createFactory;
+        exports2.createRef = createRef;
+        exports2.forwardRef = forwardRef;
+        exports2.isValidElement = isValidElement;
+        exports2.lazy = lazy;
+        exports2.memo = memo;
+        exports2.startTransition = startTransition;
+        exports2.unstable_act = act;
+        exports2.useCallback = useCallback;
+        exports2.useContext = useContext;
+        exports2.useDebugValue = useDebugValue;
+        exports2.useDeferredValue = useDeferredValue;
+        exports2.useEffect = useEffect;
+        exports2.useId = useId;
+        exports2.useImperativeHandle = useImperativeHandle;
+        exports2.useInsertionEffect = useInsertionEffect;
+        exports2.useLayoutEffect = useLayoutEffect;
+        exports2.useMemo = useMemo;
+        exports2.useReducer = useReducer;
+        exports2.useRef = useRef;
+        exports2.useState = useState;
+        exports2.useSyncExternalStore = useSyncExternalStore;
+        exports2.useTransition = useTransition;
+        exports2.version = ReactVersion;
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
         }
@@ -7907,12 +7903,12 @@ var require_react_development = __commonJS({
 
 // node_modules/react/index.js
 var require_react = __commonJS({
-  "node_modules/react/index.js"(exports, module) {
+  "node_modules/react/index.js"(exports2, module2) {
     "use strict";
     if (process.env.NODE_ENV === "production") {
-      module.exports = require_react_production_min();
+      module2.exports = require_react_production_min();
     } else {
-      module.exports = require_react_development();
+      module2.exports = require_react_development();
     }
   }
 });
@@ -13523,7 +13519,7 @@ The range will extend backwards to the start of the first line containing the se
 
 // node_modules/react/cjs/react-jsx-runtime.production.min.js
 var require_react_jsx_runtime_production_min = __commonJS({
-  "node_modules/react/cjs/react-jsx-runtime.production.min.js"(exports) {
+  "node_modules/react/cjs/react-jsx-runtime.production.min.js"(exports2) {
     "use strict";
     var f3 = require_react();
     var k3 = /* @__PURE__ */ Symbol.for("react.element");
@@ -13540,15 +13536,15 @@ var require_react_jsx_runtime_production_min = __commonJS({
       if (c3 && c3.defaultProps) for (b4 in a2 = c3.defaultProps, a2) void 0 === d[b4] && (d[b4] = a2[b4]);
       return { $$typeof: k3, type: c3, key: e2, ref: h2, props: d, _owner: n2.current };
     }
-    exports.Fragment = l3;
-    exports.jsx = q3;
-    exports.jsxs = q3;
+    exports2.Fragment = l3;
+    exports2.jsx = q3;
+    exports2.jsxs = q3;
   }
 });
 
 // node_modules/react/cjs/react-jsx-runtime.development.js
 var require_react_jsx_runtime_development = __commonJS({
-  "node_modules/react/cjs/react-jsx-runtime.development.js"(exports) {
+  "node_modules/react/cjs/react-jsx-runtime.development.js"(exports2) {
     "use strict";
     if (process.env.NODE_ENV !== "production") {
       (function() {
@@ -14431,9 +14427,9 @@ var require_react_jsx_runtime_development = __commonJS({
         }
         var jsx2 = jsxWithValidationDynamic;
         var jsxs = jsxWithValidationStatic;
-        exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.jsx = jsx2;
-        exports.jsxs = jsxs;
+        exports2.Fragment = REACT_FRAGMENT_TYPE;
+        exports2.jsx = jsx2;
+        exports2.jsxs = jsxs;
       })();
     }
   }
@@ -14441,22 +14437,22 @@ var require_react_jsx_runtime_development = __commonJS({
 
 // node_modules/react/jsx-runtime.js
 var require_jsx_runtime = __commonJS({
-  "node_modules/react/jsx-runtime.js"(exports, module) {
+  "node_modules/react/jsx-runtime.js"(exports2, module2) {
     "use strict";
     if (process.env.NODE_ENV === "production") {
-      module.exports = require_react_jsx_runtime_production_min();
+      module2.exports = require_react_jsx_runtime_production_min();
     } else {
-      module.exports = require_react_jsx_runtime_development();
+      module2.exports = require_react_jsx_runtime_development();
     }
   }
 });
 
 // node_modules/react-dom/cjs/react-dom-server-legacy.node.production.min.js
 var require_react_dom_server_legacy_node_production_min = __commonJS({
-  "node_modules/react-dom/cjs/react-dom-server-legacy.node.production.min.js"(exports) {
+  "node_modules/react-dom/cjs/react-dom-server-legacy.node.production.min.js"(exports2) {
     "use strict";
     var ea3 = require_react();
-    var fa3 = __require("stream");
+    var fa3 = require("stream");
     var n2 = Object.prototype.hasOwnProperty;
     var ha3 = /^[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*$/;
     var ia3 = {};
@@ -15991,27 +15987,27 @@ var require_react_dom_server_legacy_node_production_min = __commonJS({
       Eb(d);
       return c3;
     }
-    exports.renderToNodeStream = function(a2, b4) {
+    exports2.renderToNodeStream = function(a2, b4) {
       return Zb(a2, b4);
     };
-    exports.renderToStaticMarkup = function(a2, b4) {
+    exports2.renderToStaticMarkup = function(a2, b4) {
       return Vb(a2, b4, true, 'The server used "renderToStaticMarkup" which does not support Suspense. If you intended to have the server wait for the suspended component please switch to "renderToPipeableStream" which supports Suspense on the server');
     };
-    exports.renderToStaticNodeStream = function(a2, b4) {
+    exports2.renderToStaticNodeStream = function(a2, b4) {
       return Zb(a2, b4);
     };
-    exports.renderToString = function(a2, b4) {
+    exports2.renderToString = function(a2, b4) {
       return Vb(a2, b4, false, 'The server used "renderToString" which does not support Suspense. If you intended for this Suspense boundary to render the fallback content on the server consider throwing an Error somewhere within the Suspense boundary. If you intended to have the server wait for the suspended component please switch to "renderToPipeableStream" which supports Suspense on the server');
     };
-    exports.version = "18.3.1";
+    exports2.version = "18.3.1";
   }
 });
 
 // node_modules/react-dom/cjs/react-dom-server.node.production.min.js
 var require_react_dom_server_node_production_min = __commonJS({
-  "node_modules/react-dom/cjs/react-dom-server.node.production.min.js"(exports) {
+  "node_modules/react-dom/cjs/react-dom-server.node.production.min.js"(exports2) {
     "use strict";
-    var aa2 = __require("util");
+    var aa2 = require("util");
     var ba3 = require_react();
     var k3 = null;
     var l3 = 0;
@@ -17668,7 +17664,7 @@ var require_react_dom_server_node_production_min = __commonJS({
       b4.push(a2);
       return g;
     }
-    exports.renderToPipeableStream = function(a2, b4) {
+    exports2.renderToPipeableStream = function(a2, b4) {
       var c3 = od(a2, b4), d = false;
       jd(c3);
       return { pipe: function(a3) {
@@ -17683,19 +17679,19 @@ var require_react_dom_server_node_production_min = __commonJS({
         ld(c3, a3);
       } };
     };
-    exports.version = "18.3.1";
+    exports2.version = "18.3.1";
   }
 });
 
 // node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js
 var require_react_dom_server_legacy_node_development = __commonJS({
-  "node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js"(exports) {
+  "node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js"(exports2) {
     "use strict";
     if (process.env.NODE_ENV !== "production") {
       (function() {
         "use strict";
         var React = require_react();
-        var stream = __require("stream");
+        var stream = require("stream");
         var ReactVersion = "18.3.1";
         var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function warn(format2) {
@@ -23123,11 +23119,11 @@ var require_react_dom_server_legacy_node_development = __commonJS({
         function renderToStaticMarkup(children, options) {
           return renderToStringImpl(children, options, true, 'The server used "renderToStaticMarkup" which does not support Suspense. If you intended to have the server wait for the suspended component please switch to "renderToPipeableStream" which supports Suspense on the server');
         }
-        exports.renderToNodeStream = renderToNodeStream;
-        exports.renderToStaticMarkup = renderToStaticMarkup;
-        exports.renderToStaticNodeStream = renderToStaticNodeStream;
-        exports.renderToString = renderToString;
-        exports.version = ReactVersion;
+        exports2.renderToNodeStream = renderToNodeStream;
+        exports2.renderToStaticMarkup = renderToStaticMarkup;
+        exports2.renderToStaticNodeStream = renderToStaticNodeStream;
+        exports2.renderToString = renderToString;
+        exports2.version = ReactVersion;
       })();
     }
   }
@@ -23135,13 +23131,13 @@ var require_react_dom_server_legacy_node_development = __commonJS({
 
 // node_modules/react-dom/cjs/react-dom-server.node.development.js
 var require_react_dom_server_node_development = __commonJS({
-  "node_modules/react-dom/cjs/react-dom-server.node.development.js"(exports) {
+  "node_modules/react-dom/cjs/react-dom-server.node.development.js"(exports2) {
     "use strict";
     if (process.env.NODE_ENV !== "production") {
       (function() {
         "use strict";
         var React = require_react();
-        var util2 = __require("util");
+        var util2 = require("util");
         var ReactVersion = "18.3.1";
         var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function warn(format2) {
@@ -28556,8 +28552,8 @@ var require_react_dom_server_node_development = __commonJS({
             }
           };
         }
-        exports.renderToPipeableStream = renderToPipeableStream;
-        exports.version = ReactVersion;
+        exports2.renderToPipeableStream = renderToPipeableStream;
+        exports2.version = ReactVersion;
       })();
     }
   }
@@ -28565,7 +28561,7 @@ var require_react_dom_server_node_development = __commonJS({
 
 // node_modules/react-dom/server.node.js
 var require_server_node = __commonJS({
-  "node_modules/react-dom/server.node.js"(exports) {
+  "node_modules/react-dom/server.node.js"(exports2) {
     "use strict";
     var l3;
     var s3;
@@ -28576,12 +28572,12 @@ var require_server_node = __commonJS({
       l3 = require_react_dom_server_legacy_node_development();
       s3 = require_react_dom_server_node_development();
     }
-    exports.version = l3.version;
-    exports.renderToString = l3.renderToString;
-    exports.renderToStaticMarkup = l3.renderToStaticMarkup;
-    exports.renderToNodeStream = l3.renderToNodeStream;
-    exports.renderToStaticNodeStream = l3.renderToStaticNodeStream;
-    exports.renderToPipeableStream = s3.renderToPipeableStream;
+    exports2.version = l3.version;
+    exports2.renderToString = l3.renderToString;
+    exports2.renderToStaticMarkup = l3.renderToStaticMarkup;
+    exports2.renderToNodeStream = l3.renderToNodeStream;
+    exports2.renderToStaticNodeStream = l3.renderToStaticNodeStream;
+    exports2.renderToPipeableStream = s3.renderToPipeableStream;
   }
 });
 
@@ -28593,7 +28589,6 @@ __export(node_exports, {
   render: () => render2,
   renderAsync: () => renderAsync
 });
-import { Writable } from "node:stream";
 function recursivelyMapDoc(doc, callback) {
   if (Array.isArray(doc)) {
     return doc.map((innerDoc) => recursivelyMapDoc(innerDoc, callback));
@@ -28627,7 +28622,7 @@ function recursivelyMapDoc(doc, callback) {
   }
   return callback(doc);
 }
-var import_react, import_jsx_runtime, __defProp3, __defProps, __getOwnPropDescs, __getOwnPropSymbols, __hasOwnProp3, __propIsEnum, __defNormalProp, __spreadValues, __spreadProps, __async, plainTextSelectors, modifiedHtml, defaults, pretty, decoder, readStream, render2, renderAsync;
+var import_react, import_node_stream, import_jsx_runtime, __defProp3, __defProps, __getOwnPropDescs, __getOwnPropSymbols, __hasOwnProp3, __propIsEnum, __defNormalProp, __spreadValues, __spreadProps, __async, plainTextSelectors, modifiedHtml, defaults, pretty, decoder, readStream, render2, renderAsync;
 var init_node2 = __esm({
   "node_modules/@react-email/render/dist/node/index.mjs"() {
     "use strict";
@@ -28635,6 +28630,7 @@ var init_node2 = __esm({
     import_react = __toESM(require_react(), 1);
     init_html();
     init_standalone();
+    import_node_stream = require("node:stream");
     import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
     __defProp3 = Object.defineProperty;
     __defProps = Object.defineProperties;
@@ -28722,7 +28718,7 @@ var init_node2 = __esm({
         });
         yield stream.pipeTo(writableStream);
       } else {
-        const writable = new Writable({
+        const writable = new import_node_stream.Writable({
           write(chunk, _encoding, callback) {
             result += decoder.decode(chunk);
             callback();
@@ -28784,7 +28780,7 @@ var init_node2 = __esm({
 
 // node_modules/@upstash/core-analytics/dist/index.js
 var require_dist2 = __commonJS({
-  "node_modules/@upstash/core-analytics/dist/index.js"(exports, module) {
+  "node_modules/@upstash/core-analytics/dist/index.js"(exports2, module2) {
     "use strict";
     var g = Object.defineProperty;
     var k3 = Object.getOwnPropertyDescriptor;
@@ -28800,7 +28796,7 @@ var require_dist2 = __commonJS({
     var x4 = (l3) => A2(g({}, "__esModule", { value: true }), l3);
     var S4 = {};
     w4(S4, { Analytics: () => b4 });
-    module.exports = x4(S4);
+    module2.exports = x4(S4);
     var p3 = `
 local key = KEYS[1]
 local field = ARGV[1]
@@ -28995,7 +28991,7 @@ return result
 
 // node_modules/@upstash/ratelimit/dist/index.js
 var require_dist3 = __commonJS({
-  "node_modules/@upstash/ratelimit/dist/index.js"(exports, module) {
+  "node_modules/@upstash/ratelimit/dist/index.js"(exports2, module2) {
     "use strict";
     var __defProp6 = Object.defineProperty;
     var __getOwnPropDesc3 = Object.getOwnPropertyDescriptor;
@@ -29013,7 +29009,7 @@ var require_dist3 = __commonJS({
       }
       return to4;
     };
-    var __toCommonJS = (mod) => __copyProps3(__defProp6({}, "__esModule", { value: true }), mod);
+    var __toCommonJS2 = (mod) => __copyProps3(__defProp6({}, "__esModule", { value: true }), mod);
     var src_exports = {};
     __export3(src_exports, {
       Analytics: () => Analytics2,
@@ -29021,7 +29017,7 @@ var require_dist3 = __commonJS({
       MultiRegionRatelimit: () => MultiRegionRatelimit,
       Ratelimit: () => RegionRatelimit
     });
-    module.exports = __toCommonJS(src_exports);
+    module2.exports = __toCommonJS2(src_exports);
     var import_core_analytics = require_dist2();
     var Analytics2 = class {
       analytics;
@@ -30817,23 +30813,23 @@ var require_dist3 = __commonJS({
 
 // node_modules/es-errors/type.js
 var require_type = __commonJS({
-  "node_modules/es-errors/type.js"(exports, module) {
+  "node_modules/es-errors/type.js"(exports2, module2) {
     "use strict";
-    module.exports = TypeError;
+    module2.exports = TypeError;
   }
 });
 
 // node_modules/object-inspect/util.inspect.js
 var require_util_inspect = __commonJS({
-  "node_modules/object-inspect/util.inspect.js"(exports, module) {
+  "node_modules/object-inspect/util.inspect.js"(exports2, module2) {
     "use strict";
-    module.exports = __require("util").inspect;
+    module2.exports = require("util").inspect;
   }
 });
 
 // node_modules/object-inspect/index.js
 var require_object_inspect = __commonJS({
-  "node_modules/object-inspect/index.js"(exports, module) {
+  "node_modules/object-inspect/index.js"(exports2, module2) {
     "use strict";
     var hasMap = typeof Map === "function" && Map.prototype;
     var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, "size") : null;
@@ -30899,7 +30895,7 @@ var require_object_inspect = __commonJS({
       "double": /(["\\])/g,
       single: /(['\\])/g
     };
-    module.exports = function inspect_(obj, options, depth, seen) {
+    module2.exports = function inspect_(obj, options, depth, seen) {
       var opts = options || {};
       if (has(opts, "quoteStyle") && !has(quotes, opts.quoteStyle)) {
         throw new TypeError('option "quoteStyle" must be "single" or "double"');
@@ -31365,7 +31361,7 @@ var require_object_inspect = __commonJS({
 
 // node_modules/side-channel-list/index.js
 var require_side_channel_list = __commonJS({
-  "node_modules/side-channel-list/index.js"(exports, module) {
+  "node_modules/side-channel-list/index.js"(exports2, module2) {
     "use strict";
     var inspect = require_object_inspect();
     var $TypeError = require_type();
@@ -31416,7 +31412,7 @@ var require_side_channel_list = __commonJS({
         return listGetNode(objects, key, true);
       }
     };
-    module.exports = function getSideChannelList() {
+    module2.exports = function getSideChannelList() {
       var $o2;
       var channel = {
         assert: function(key) {
@@ -31458,113 +31454,113 @@ var require_side_channel_list = __commonJS({
 
 // node_modules/es-object-atoms/index.js
 var require_es_object_atoms = __commonJS({
-  "node_modules/es-object-atoms/index.js"(exports, module) {
+  "node_modules/es-object-atoms/index.js"(exports2, module2) {
     "use strict";
-    module.exports = Object;
+    module2.exports = Object;
   }
 });
 
 // node_modules/es-errors/index.js
 var require_es_errors = __commonJS({
-  "node_modules/es-errors/index.js"(exports, module) {
+  "node_modules/es-errors/index.js"(exports2, module2) {
     "use strict";
-    module.exports = Error;
+    module2.exports = Error;
   }
 });
 
 // node_modules/es-errors/eval.js
 var require_eval = __commonJS({
-  "node_modules/es-errors/eval.js"(exports, module) {
+  "node_modules/es-errors/eval.js"(exports2, module2) {
     "use strict";
-    module.exports = EvalError;
+    module2.exports = EvalError;
   }
 });
 
 // node_modules/es-errors/range.js
 var require_range = __commonJS({
-  "node_modules/es-errors/range.js"(exports, module) {
+  "node_modules/es-errors/range.js"(exports2, module2) {
     "use strict";
-    module.exports = RangeError;
+    module2.exports = RangeError;
   }
 });
 
 // node_modules/es-errors/ref.js
 var require_ref = __commonJS({
-  "node_modules/es-errors/ref.js"(exports, module) {
+  "node_modules/es-errors/ref.js"(exports2, module2) {
     "use strict";
-    module.exports = ReferenceError;
+    module2.exports = ReferenceError;
   }
 });
 
 // node_modules/es-errors/syntax.js
 var require_syntax = __commonJS({
-  "node_modules/es-errors/syntax.js"(exports, module) {
+  "node_modules/es-errors/syntax.js"(exports2, module2) {
     "use strict";
-    module.exports = SyntaxError;
+    module2.exports = SyntaxError;
   }
 });
 
 // node_modules/es-errors/uri.js
 var require_uri = __commonJS({
-  "node_modules/es-errors/uri.js"(exports, module) {
+  "node_modules/es-errors/uri.js"(exports2, module2) {
     "use strict";
-    module.exports = URIError;
+    module2.exports = URIError;
   }
 });
 
 // node_modules/math-intrinsics/abs.js
 var require_abs = __commonJS({
-  "node_modules/math-intrinsics/abs.js"(exports, module) {
+  "node_modules/math-intrinsics/abs.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.abs;
+    module2.exports = Math.abs;
   }
 });
 
 // node_modules/math-intrinsics/floor.js
 var require_floor = __commonJS({
-  "node_modules/math-intrinsics/floor.js"(exports, module) {
+  "node_modules/math-intrinsics/floor.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.floor;
+    module2.exports = Math.floor;
   }
 });
 
 // node_modules/math-intrinsics/max.js
 var require_max = __commonJS({
-  "node_modules/math-intrinsics/max.js"(exports, module) {
+  "node_modules/math-intrinsics/max.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.max;
+    module2.exports = Math.max;
   }
 });
 
 // node_modules/math-intrinsics/min.js
 var require_min = __commonJS({
-  "node_modules/math-intrinsics/min.js"(exports, module) {
+  "node_modules/math-intrinsics/min.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.min;
+    module2.exports = Math.min;
   }
 });
 
 // node_modules/math-intrinsics/pow.js
 var require_pow = __commonJS({
-  "node_modules/math-intrinsics/pow.js"(exports, module) {
+  "node_modules/math-intrinsics/pow.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.pow;
+    module2.exports = Math.pow;
   }
 });
 
 // node_modules/math-intrinsics/round.js
 var require_round = __commonJS({
-  "node_modules/math-intrinsics/round.js"(exports, module) {
+  "node_modules/math-intrinsics/round.js"(exports2, module2) {
     "use strict";
-    module.exports = Math.round;
+    module2.exports = Math.round;
   }
 });
 
 // node_modules/math-intrinsics/isNaN.js
 var require_isNaN = __commonJS({
-  "node_modules/math-intrinsics/isNaN.js"(exports, module) {
+  "node_modules/math-intrinsics/isNaN.js"(exports2, module2) {
     "use strict";
-    module.exports = Number.isNaN || function isNaN2(a2) {
+    module2.exports = Number.isNaN || function isNaN2(a2) {
       return a2 !== a2;
     };
   }
@@ -31572,10 +31568,10 @@ var require_isNaN = __commonJS({
 
 // node_modules/math-intrinsics/sign.js
 var require_sign = __commonJS({
-  "node_modules/math-intrinsics/sign.js"(exports, module) {
+  "node_modules/math-intrinsics/sign.js"(exports2, module2) {
     "use strict";
     var $isNaN = require_isNaN();
-    module.exports = function sign(number) {
+    module2.exports = function sign(number) {
       if ($isNaN(number) || number === 0) {
         return number;
       }
@@ -31586,15 +31582,15 @@ var require_sign = __commonJS({
 
 // node_modules/gopd/gOPD.js
 var require_gOPD = __commonJS({
-  "node_modules/gopd/gOPD.js"(exports, module) {
+  "node_modules/gopd/gOPD.js"(exports2, module2) {
     "use strict";
-    module.exports = Object.getOwnPropertyDescriptor;
+    module2.exports = Object.getOwnPropertyDescriptor;
   }
 });
 
 // node_modules/gopd/index.js
 var require_gopd = __commonJS({
-  "node_modules/gopd/index.js"(exports, module) {
+  "node_modules/gopd/index.js"(exports2, module2) {
     "use strict";
     var $gOPD = require_gOPD();
     if ($gOPD) {
@@ -31604,13 +31600,13 @@ var require_gopd = __commonJS({
         $gOPD = null;
       }
     }
-    module.exports = $gOPD;
+    module2.exports = $gOPD;
   }
 });
 
 // node_modules/es-define-property/index.js
 var require_es_define_property = __commonJS({
-  "node_modules/es-define-property/index.js"(exports, module) {
+  "node_modules/es-define-property/index.js"(exports2, module2) {
     "use strict";
     var $defineProperty = Object.defineProperty || false;
     if ($defineProperty) {
@@ -31620,15 +31616,15 @@ var require_es_define_property = __commonJS({
         $defineProperty = false;
       }
     }
-    module.exports = $defineProperty;
+    module2.exports = $defineProperty;
   }
 });
 
 // node_modules/has-symbols/shams.js
 var require_shams = __commonJS({
-  "node_modules/has-symbols/shams.js"(exports, module) {
+  "node_modules/has-symbols/shams.js"(exports2, module2) {
     "use strict";
-    module.exports = function hasSymbols() {
+    module2.exports = function hasSymbols() {
       if (typeof Symbol !== "function" || typeof Object.getOwnPropertySymbols !== "function") {
         return false;
       }
@@ -31681,11 +31677,11 @@ var require_shams = __commonJS({
 
 // node_modules/has-symbols/index.js
 var require_has_symbols = __commonJS({
-  "node_modules/has-symbols/index.js"(exports, module) {
+  "node_modules/has-symbols/index.js"(exports2, module2) {
     "use strict";
     var origSymbol = typeof Symbol !== "undefined" && Symbol;
     var hasSymbolSham = require_shams();
-    module.exports = function hasNativeSymbols() {
+    module2.exports = function hasNativeSymbols() {
       if (typeof origSymbol !== "function") {
         return false;
       }
@@ -31705,24 +31701,24 @@ var require_has_symbols = __commonJS({
 
 // node_modules/get-proto/Reflect.getPrototypeOf.js
 var require_Reflect_getPrototypeOf = __commonJS({
-  "node_modules/get-proto/Reflect.getPrototypeOf.js"(exports, module) {
+  "node_modules/get-proto/Reflect.getPrototypeOf.js"(exports2, module2) {
     "use strict";
-    module.exports = typeof Reflect !== "undefined" && Reflect.getPrototypeOf || null;
+    module2.exports = typeof Reflect !== "undefined" && Reflect.getPrototypeOf || null;
   }
 });
 
 // node_modules/get-proto/Object.getPrototypeOf.js
 var require_Object_getPrototypeOf = __commonJS({
-  "node_modules/get-proto/Object.getPrototypeOf.js"(exports, module) {
+  "node_modules/get-proto/Object.getPrototypeOf.js"(exports2, module2) {
     "use strict";
     var $Object = require_es_object_atoms();
-    module.exports = $Object.getPrototypeOf || null;
+    module2.exports = $Object.getPrototypeOf || null;
   }
 });
 
 // node_modules/function-bind/implementation.js
 var require_implementation = __commonJS({
-  "node_modules/function-bind/implementation.js"(exports, module) {
+  "node_modules/function-bind/implementation.js"(exports2, module2) {
     "use strict";
     var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
     var toStr = Object.prototype.toString;
@@ -31755,7 +31751,7 @@ var require_implementation = __commonJS({
       }
       return str;
     };
-    module.exports = function bind(that) {
+    module2.exports = function bind(that) {
       var target = this;
       if (typeof target !== "function" || toStr.apply(target) !== funcType) {
         throw new TypeError(ERROR_MESSAGE + target);
@@ -31798,58 +31794,58 @@ var require_implementation = __commonJS({
 
 // node_modules/function-bind/index.js
 var require_function_bind = __commonJS({
-  "node_modules/function-bind/index.js"(exports, module) {
+  "node_modules/function-bind/index.js"(exports2, module2) {
     "use strict";
     var implementation = require_implementation();
-    module.exports = Function.prototype.bind || implementation;
+    module2.exports = Function.prototype.bind || implementation;
   }
 });
 
 // node_modules/call-bind-apply-helpers/functionCall.js
 var require_functionCall = __commonJS({
-  "node_modules/call-bind-apply-helpers/functionCall.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/functionCall.js"(exports2, module2) {
     "use strict";
-    module.exports = Function.prototype.call;
+    module2.exports = Function.prototype.call;
   }
 });
 
 // node_modules/call-bind-apply-helpers/functionApply.js
 var require_functionApply = __commonJS({
-  "node_modules/call-bind-apply-helpers/functionApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/functionApply.js"(exports2, module2) {
     "use strict";
-    module.exports = Function.prototype.apply;
+    module2.exports = Function.prototype.apply;
   }
 });
 
 // node_modules/call-bind-apply-helpers/reflectApply.js
 var require_reflectApply = __commonJS({
-  "node_modules/call-bind-apply-helpers/reflectApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/reflectApply.js"(exports2, module2) {
     "use strict";
-    module.exports = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
+    module2.exports = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
   }
 });
 
 // node_modules/call-bind-apply-helpers/actualApply.js
 var require_actualApply = __commonJS({
-  "node_modules/call-bind-apply-helpers/actualApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/actualApply.js"(exports2, module2) {
     "use strict";
     var bind = require_function_bind();
     var $apply = require_functionApply();
     var $call = require_functionCall();
     var $reflectApply = require_reflectApply();
-    module.exports = $reflectApply || bind.call($call, $apply);
+    module2.exports = $reflectApply || bind.call($call, $apply);
   }
 });
 
 // node_modules/call-bind-apply-helpers/index.js
 var require_call_bind_apply_helpers = __commonJS({
-  "node_modules/call-bind-apply-helpers/index.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/index.js"(exports2, module2) {
     "use strict";
     var bind = require_function_bind();
     var $TypeError = require_type();
     var $call = require_functionCall();
     var $actualApply = require_actualApply();
-    module.exports = function callBindBasic(args) {
+    module2.exports = function callBindBasic(args) {
       if (args.length < 1 || typeof args[0] !== "function") {
         throw new $TypeError("a function is required");
       }
@@ -31860,7 +31856,7 @@ var require_call_bind_apply_helpers = __commonJS({
 
 // node_modules/dunder-proto/get.js
 var require_get = __commonJS({
-  "node_modules/dunder-proto/get.js"(exports, module) {
+  "node_modules/dunder-proto/get.js"(exports2, module2) {
     "use strict";
     var callBind = require_call_bind_apply_helpers();
     var gOPD = require_gopd();
@@ -31880,7 +31876,7 @@ var require_get = __commonJS({
     );
     var $Object = Object;
     var $getPrototypeOf = $Object.getPrototypeOf;
-    module.exports = desc2 && typeof desc2.get === "function" ? callBind([desc2.get]) : typeof $getPrototypeOf === "function" ? (
+    module2.exports = desc2 && typeof desc2.get === "function" ? callBind([desc2.get]) : typeof $getPrototypeOf === "function" ? (
       /** @type {import('./get')} */
       function getDunder(value) {
         return $getPrototypeOf(value == null ? value : $Object(value));
@@ -31891,12 +31887,12 @@ var require_get = __commonJS({
 
 // node_modules/get-proto/index.js
 var require_get_proto = __commonJS({
-  "node_modules/get-proto/index.js"(exports, module) {
+  "node_modules/get-proto/index.js"(exports2, module2) {
     "use strict";
     var reflectGetProto = require_Reflect_getPrototypeOf();
     var originalGetProto = require_Object_getPrototypeOf();
     var getDunderProto = require_get();
-    module.exports = reflectGetProto ? function getProto(O4) {
+    module2.exports = reflectGetProto ? function getProto(O4) {
       return reflectGetProto(O4);
     } : originalGetProto ? function getProto(O4) {
       if (!O4 || typeof O4 !== "object" && typeof O4 !== "function") {
@@ -31911,18 +31907,18 @@ var require_get_proto = __commonJS({
 
 // node_modules/hasown/index.js
 var require_hasown = __commonJS({
-  "node_modules/hasown/index.js"(exports, module) {
+  "node_modules/hasown/index.js"(exports2, module2) {
     "use strict";
     var call = Function.prototype.call;
     var $hasOwn = Object.prototype.hasOwnProperty;
     var bind = require_function_bind();
-    module.exports = bind.call(call, $hasOwn);
+    module2.exports = bind.call(call, $hasOwn);
   }
 });
 
 // node_modules/get-intrinsic/index.js
 var require_get_intrinsic = __commonJS({
-  "node_modules/get-intrinsic/index.js"(exports, module) {
+  "node_modules/get-intrinsic/index.js"(exports2, module2) {
     "use strict";
     var undefined2;
     var $Object = require_es_object_atoms();
@@ -32187,7 +32183,7 @@ var require_get_intrinsic = __commonJS({
       }
       throw new $SyntaxError("intrinsic " + name2 + " does not exist!");
     };
-    module.exports = function GetIntrinsic(name2, allowMissing) {
+    module2.exports = function GetIntrinsic(name2, allowMissing) {
       if (typeof name2 !== "string" || name2.length === 0) {
         throw new $TypeError("intrinsic name must be a non-empty string");
       }
@@ -32253,12 +32249,12 @@ var require_get_intrinsic = __commonJS({
 
 // node_modules/call-bound/index.js
 var require_call_bound = __commonJS({
-  "node_modules/call-bound/index.js"(exports, module) {
+  "node_modules/call-bound/index.js"(exports2, module2) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBindBasic = require_call_bind_apply_helpers();
     var $indexOf = callBindBasic([GetIntrinsic("%String.prototype.indexOf%")]);
-    module.exports = function callBoundIntrinsic(name2, allowMissing) {
+    module2.exports = function callBoundIntrinsic(name2, allowMissing) {
       var intrinsic = (
         /** @type {(this: unknown, ...args: unknown[]) => unknown} */
         GetIntrinsic(name2, !!allowMissing)
@@ -32276,7 +32272,7 @@ var require_call_bound = __commonJS({
 
 // node_modules/side-channel-map/index.js
 var require_side_channel_map = __commonJS({
-  "node_modules/side-channel-map/index.js"(exports, module) {
+  "node_modules/side-channel-map/index.js"(exports2, module2) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBound = require_call_bound();
@@ -32288,7 +32284,7 @@ var require_side_channel_map = __commonJS({
     var $mapHas = callBound("Map.prototype.has", true);
     var $mapDelete = callBound("Map.prototype.delete", true);
     var $mapSize = callBound("Map.prototype.size", true);
-    module.exports = !!$Map && /** @type {Exclude<import('.'), false>} */
+    module2.exports = !!$Map && /** @type {Exclude<import('.'), false>} */
     function getSideChannelMap() {
       var $m;
       var channel = {
@@ -32332,7 +32328,7 @@ var require_side_channel_map = __commonJS({
 
 // node_modules/side-channel-weakmap/index.js
 var require_side_channel_weakmap = __commonJS({
-  "node_modules/side-channel-weakmap/index.js"(exports, module) {
+  "node_modules/side-channel-weakmap/index.js"(exports2, module2) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBound = require_call_bound();
@@ -32344,7 +32340,7 @@ var require_side_channel_weakmap = __commonJS({
     var $weakMapSet = callBound("WeakMap.prototype.set", true);
     var $weakMapHas = callBound("WeakMap.prototype.has", true);
     var $weakMapDelete = callBound("WeakMap.prototype.delete", true);
-    module.exports = $WeakMap ? (
+    module2.exports = $WeakMap ? (
       /** @type {Exclude<import('.'), false>} */
       function getSideChannelWeakMap() {
         var $wm;
@@ -32405,7 +32401,7 @@ var require_side_channel_weakmap = __commonJS({
 
 // node_modules/side-channel/index.js
 var require_side_channel = __commonJS({
-  "node_modules/side-channel/index.js"(exports, module) {
+  "node_modules/side-channel/index.js"(exports2, module2) {
     "use strict";
     var $TypeError = require_type();
     var inspect = require_object_inspect();
@@ -32413,7 +32409,7 @@ var require_side_channel = __commonJS({
     var getSideChannelMap = require_side_channel_map();
     var getSideChannelWeakMap = require_side_channel_weakmap();
     var makeChannel = getSideChannelWeakMap || getSideChannelMap || getSideChannelList;
-    module.exports = function getSideChannel() {
+    module2.exports = function getSideChannel() {
       var $channelData;
       var channel = {
         assert: function(key) {
@@ -32444,7 +32440,7 @@ var require_side_channel = __commonJS({
 
 // node_modules/qs/lib/formats.js
 var require_formats = __commonJS({
-  "node_modules/qs/lib/formats.js"(exports, module) {
+  "node_modules/qs/lib/formats.js"(exports2, module2) {
     "use strict";
     var replace = String.prototype.replace;
     var percentTwenties = /%20/g;
@@ -32452,7 +32448,7 @@ var require_formats = __commonJS({
       RFC1738: "RFC1738",
       RFC3986: "RFC3986"
     };
-    module.exports = {
+    module2.exports = {
       "default": Format.RFC3986,
       formatters: {
         RFC1738: function(value) {
@@ -32470,7 +32466,7 @@ var require_formats = __commonJS({
 
 // node_modules/qs/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/qs/lib/utils.js"(exports, module) {
+  "node_modules/qs/lib/utils.js"(exports2, module2) {
     "use strict";
     var formats = require_formats();
     var getSideChannel = require_side_channel();
@@ -32715,7 +32711,7 @@ var require_utils = __commonJS({
       }
       return fn2(val);
     };
-    module.exports = {
+    module2.exports = {
       arrayToObject,
       assign,
       combine: combine2,
@@ -32734,7 +32730,7 @@ var require_utils = __commonJS({
 
 // node_modules/qs/lib/stringify.js
 var require_stringify = __commonJS({
-  "node_modules/qs/lib/stringify.js"(exports, module) {
+  "node_modules/qs/lib/stringify.js"(exports2, module2) {
     "use strict";
     var getSideChannel = require_side_channel();
     var utils = require_utils();
@@ -32949,7 +32945,7 @@ var require_stringify = __commonJS({
         strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
       };
     };
-    module.exports = function(object, opts) {
+    module2.exports = function(object, opts) {
       var obj = object;
       var options = normalizeStringifyOptions(opts);
       var objKeys;
@@ -33017,7 +33013,7 @@ var require_stringify = __commonJS({
 
 // node_modules/qs/lib/parse.js
 var require_parse = __commonJS({
-  "node_modules/qs/lib/parse.js"(exports, module) {
+  "node_modules/qs/lib/parse.js"(exports2, module2) {
     "use strict";
     var utils = require_utils();
     var has = Object.prototype.hasOwnProperty;
@@ -33293,7 +33289,7 @@ var require_parse = __commonJS({
         throwOnLimitExceeded: typeof opts.throwOnLimitExceeded === "boolean" ? opts.throwOnLimitExceeded : false
       };
     };
-    module.exports = function(str, opts) {
+    module2.exports = function(str, opts) {
       var options = normalizeParseOptions(opts);
       if (str === "" || str === null || typeof str === "undefined") {
         return options.plainObjects ? { __proto__: null } : {};
@@ -33316,18 +33312,26 @@ var require_parse = __commonJS({
 
 // node_modules/qs/lib/index.js
 var require_lib = __commonJS({
-  "node_modules/qs/lib/index.js"(exports, module) {
+  "node_modules/qs/lib/index.js"(exports2, module2) {
     "use strict";
     var stringify3 = require_stringify();
     var parse4 = require_parse();
     var formats = require_formats();
-    module.exports = {
+    module2.exports = {
       formats,
       parse: parse4,
       stringify: stringify3
     };
   }
 });
+
+// src/api/index.ts
+var index_exports = {};
+__export(index_exports, {
+  config: () => config,
+  default: () => handler
+});
+module.exports = __toCommonJS(index_exports);
 
 // node_modules/hono/dist/compose.js
 var compose = (middleware, onError, onNotFound) => {
@@ -35967,12 +35971,12 @@ _MachineTokenVerificationError.kind = "MachineTokenVerificationError";
 var MachineTokenVerificationError = _MachineTokenVerificationError;
 
 // node_modules/@clerk/backend/dist/runtime/node/crypto.mjs
-import { webcrypto } from "node:crypto";
+var import_node_crypto = require("node:crypto");
 
 // node_modules/@clerk/backend/dist/chunk-HVNR6UQP.mjs
 var globalFetch = fetch.bind(globalThis);
 var runtime = {
-  crypto: webcrypto,
+  crypto: import_node_crypto.webcrypto,
   get fetch() {
     return process.env.NODE_ENV === "test" ? fetch : globalFetch;
   },
@@ -36347,7 +36351,7 @@ var __hasOwnProp2 = Object.prototype.hasOwnProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
-var __commonJS2 = (cb, mod) => function __require2() {
+var __commonJS2 = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames2(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __copyProps2 = (to4, from, except2, desc2) => {
@@ -36857,11 +36861,11 @@ ${e2.message}`);
 
 // node_modules/@clerk/backend/dist/chunk-ZNXT7ZQM.mjs
 var require_dist = __commonJS2({
-  "../../node_modules/.pnpm/cookie@1.0.2/node_modules/cookie/dist/index.js"(exports) {
+  "../../node_modules/.pnpm/cookie@1.0.2/node_modules/cookie/dist/index.js"(exports2) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parse = parse22;
-    exports.serialize = serialize3;
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.parse = parse22;
+    exports2.serialize = serialize3;
     var cookieNameRegExp = /^[\u0021-\u003A\u003C\u003E-\u007E]+$/;
     var cookieValueRegExp = /^[\u0021-\u003A\u003C-\u007E]*$/;
     var domainValueRegExp = /^([.]?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
@@ -62157,8 +62161,8 @@ function buildTipEmailHtml(data) {
 }
 
 // node_modules/uncrypto/dist/crypto.node.mjs
-import nodeCrypto from "node:crypto";
-var subtle = nodeCrypto.webcrypto?.subtle || {};
+var import_node_crypto2 = __toESM(require("node:crypto"), 1);
+var subtle = import_node_crypto2.default.webcrypto?.subtle || {};
 
 // node_modules/@upstash/redis/chunk-IH7W44G6.mjs
 var __defProp5 = Object.defineProperty;
@@ -67935,11 +67939,11 @@ barcodeRoutes.post("/products", zValidator("json", RegisterProductSchema), async
 });
 
 // src/api/middleware/rateLimit.ts
-import { createHmac } from "crypto";
+var import_crypto3 = require("crypto");
 function hashIp(ip) {
   const secret = process.env["IP_HASH_SECRET"];
   if (!secret) throw new Error("IP_HASH_SECRET is required");
-  return createHmac("sha256", secret).update(ip).digest("hex");
+  return (0, import_crypto3.createHmac)("sha256", secret).update(ip).digest("hex");
 }
 function rateLimitMiddleware(limiter, getIdentifier) {
   return createMiddleware(async (c3, next) => {
@@ -67997,11 +68001,11 @@ ${message}`,
 );
 
 // node_modules/stripe/esm/platform/NodePlatformFunctions.js
-import * as crypto3 from "crypto";
-import { EventEmitter } from "events";
+var crypto3 = __toESM(require("crypto"), 1);
+var import_events = require("events");
 
 // node_modules/stripe/esm/crypto/NodeCryptoProvider.js
-import * as crypto2 from "crypto";
+var crypto2 = __toESM(require("crypto"), 1);
 
 // node_modules/stripe/esm/crypto/CryptoProvider.js
 var CryptoProvider = class {
@@ -68058,8 +68062,8 @@ var NodeCryptoProvider = class extends CryptoProvider {
 };
 
 // node_modules/stripe/esm/net/NodeHttpClient.js
-import * as http_ from "http";
-import * as https_ from "https";
+var http_ = __toESM(require("http"), 1);
+var https_ = __toESM(require("https"), 1);
 
 // node_modules/stripe/esm/net/HttpClient.js
 var HttpClient2 = class _HttpClient {
@@ -68804,13 +68808,13 @@ function getAPIMode(path) {
 }
 
 // node_modules/stripe/esm/platform/NodePlatformFunctions.js
-import { exec } from "child_process";
+var import_child_process = require("child_process");
 var StreamProcessingError = class extends StripeError {
 };
 var NodePlatformFunctions = class extends PlatformFunctions {
   constructor() {
     super();
-    this._exec = exec;
+    this._exec = import_child_process.exec;
     this._UNAME_CACHE = null;
   }
   /** @override */
@@ -68866,11 +68870,11 @@ var NodePlatformFunctions = class extends PlatformFunctions {
     return super.secureCompare(a2, b4);
   }
   createEmitter() {
-    return new EventEmitter();
+    return new import_events.EventEmitter();
   }
   /** @override */
   tryBufferData(data) {
-    if (!(data.file.data instanceof EventEmitter)) {
+    if (!(data.file.data instanceof import_events.EventEmitter)) {
       return Promise.resolve(data);
     }
     const bufferArray = [];
@@ -75502,10 +75506,10 @@ async function handler(req, res) {
 function header(v4) {
   return Array.isArray(v4) ? v4[0] : v4;
 }
-export {
-  config,
-  handler as default
-};
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  config
+});
 /*! Bundled license information:
 
 react/cjs/react.production.min.js:

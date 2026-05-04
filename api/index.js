@@ -75364,38 +75364,46 @@ var app = createApiApp();
 console.log("[api] module init done");
 async function handler(req, res) {
   console.log(`[api] handler called method=${req.method} url=${req.url}`);
-  const proto = header(req.headers["x-forwarded-proto"]) ?? "https";
-  const host = header(req.headers["x-forwarded-host"]) ?? header(req.headers["host"]) ?? "localhost";
-  const url = `${proto}://${host}${req.url ?? "/"}`;
-  const webHeaders = new Headers();
-  for (const [k3, v4] of Object.entries(req.headers)) {
-    if (typeof v4 === "string") webHeaders.set(k3, v4);
-    else if (Array.isArray(v4)) v4.forEach((s3) => webHeaders.append(k3, s3));
+  try {
+    const proto = header(req.headers["x-forwarded-proto"]) ?? "https";
+    const host = header(req.headers["x-forwarded-host"]) ?? header(req.headers["host"]) ?? "localhost";
+    const url = `${proto}://${host}${req.url ?? "/"}`;
+    const webHeaders = new Headers();
+    for (const [k3, v4] of Object.entries(req.headers)) {
+      if (typeof v4 === "string") webHeaders.set(k3, v4);
+      else if (Array.isArray(v4)) v4.forEach((s3) => webHeaders.append(k3, s3));
+    }
+    let body;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      const chunks = [];
+      await new Promise((resolve, reject) => {
+        if (req.readableEnded) {
+          resolve();
+          return;
+        }
+        req.on("data", (c3) => chunks.push(c3));
+        req.on("end", resolve);
+        req.on("error", reject);
+      });
+      if (chunks.length > 0) body = Buffer.concat(chunks);
+    }
+    const response = await app.fetch(
+      new Request(url, {
+        method: req.method ?? "GET",
+        headers: webHeaders,
+        ...body && { body }
+      })
+    );
+    res.statusCode = response.status;
+    response.headers.forEach((v4, k3) => res.setHeader(k3, v4));
+    res.end(Buffer.from(await response.arrayBuffer()));
+  } catch (err) {
+    console.error("[api] handler crash:", err instanceof Error ? err.stack : String(err));
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: "Internal server error" }));
+    }
   }
-  let body;
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    const chunks = [];
-    await new Promise((resolve, reject) => {
-      if (req.readableEnded) {
-        resolve();
-        return;
-      }
-      req.on("data", (c3) => chunks.push(c3));
-      req.on("end", resolve);
-      req.on("error", reject);
-    });
-    if (chunks.length > 0) body = Buffer.concat(chunks);
-  }
-  const response = await app.fetch(
-    new Request(url, {
-      method: req.method ?? "GET",
-      headers: webHeaders,
-      ...body && { body }
-    })
-  );
-  res.statusCode = response.status;
-  response.headers.forEach((v4, k3) => res.setHeader(k3, v4));
-  res.end(Buffer.from(await response.arrayBuffer()));
 }
 function header(v4) {
   return Array.isArray(v4) ? v4[0] : v4;

@@ -16,45 +16,51 @@ console.log('[api] module init done');
 // never reads in legacy mode, leaving the connection open until timeout.
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
   console.log(`[api] handler called method=${req.method} url=${req.url}`);
-  const proto = header(req.headers['x-forwarded-proto']) ?? 'https';
-  const host =
-    header(req.headers['x-forwarded-host']) ?? header(req.headers['host']) ?? 'localhost';
-  const url = `${proto}://${host}${req.url ?? '/'}`;
+  try {
+    const proto = header(req.headers['x-forwarded-proto']) ?? 'https';
+    const host =
+      header(req.headers['x-forwarded-host']) ?? header(req.headers['host']) ?? 'localhost';
+    const url = `${proto}://${host}${req.url ?? '/'}`;
 
-  const webHeaders = new Headers();
-  for (const [k, v] of Object.entries(req.headers)) {
-    if (typeof v === 'string') webHeaders.set(k, v);
-    else if (Array.isArray(v)) v.forEach((s) => webHeaders.append(k, s));
+    const webHeaders = new Headers();
+    for (const [k, v] of Object.entries(req.headers)) {
+      if (typeof v === 'string') webHeaders.set(k, v);
+      else if (Array.isArray(v)) v.forEach((s) => webHeaders.append(k, s));
+    }
+
+    let body: Buffer | undefined;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      const chunks: Buffer[] = [];
+      await new Promise<void>((resolve, reject) => {
+        if (req.readableEnded) {
+          resolve();
+          return;
+        }
+        req.on('data', (c: Buffer) => chunks.push(c));
+        req.on('end', resolve);
+        req.on('error', reject);
+      });
+      if (chunks.length > 0) body = Buffer.concat(chunks);
+    }
+
+    const response = await app.fetch(
+      new Request(url, {
+        method: req.method ?? 'GET',
+        headers: webHeaders,
+        ...(body && { body: body as BodyInit }),
+      }),
+    );
+
+    res.statusCode = response.status;
+    response.headers.forEach((v, k) => res.setHeader(k, v));
+    res.end(Buffer.from(await response.arrayBuffer()));
+  } catch (err) {
+    console.error('[api] handler crash:', err instanceof Error ? err.stack : String(err));
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+    }
   }
-
-  let body: Buffer | undefined;
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    const chunks: Buffer[] = [];
-    await new Promise<void>((resolve, reject) => {
-      // Guard: if Vercel already consumed the stream, resolve immediately.
-      // Normally prevented by bodyParser:false in api/index.ts config export.
-      if (req.readableEnded) {
-        resolve();
-        return;
-      }
-      req.on('data', (c: Buffer) => chunks.push(c));
-      req.on('end', resolve);
-      req.on('error', reject);
-    });
-    if (chunks.length > 0) body = Buffer.concat(chunks);
-  }
-
-  const response = await app.fetch(
-    new Request(url, {
-      method: req.method ?? 'GET',
-      headers: webHeaders,
-      ...(body && { body: body as BodyInit }),
-    }),
-  );
-
-  res.statusCode = response.status;
-  response.headers.forEach((v, k) => res.setHeader(k, v));
-  res.end(Buffer.from(await response.arrayBuffer()));
 }
 
 function header(v: string | string[] | undefined): string | undefined {

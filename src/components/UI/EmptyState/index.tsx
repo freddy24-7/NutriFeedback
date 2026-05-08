@@ -1,12 +1,22 @@
 import { cn } from '@/utils/cn';
 import type { EmptyStateProps } from '@/types/components';
 
-export function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
+export function EmptyState({ icon, image, title, subtitle, action }: EmptyStateProps) {
   return (
     <div
       role="status"
       className="flex flex-col items-center justify-center gap-3 py-12 text-center"
     >
+      {image !== undefined && (
+        <div className="mb-2 w-full max-w-sm overflow-hidden rounded-card">
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="h-44 w-full object-cover sm:h-52"
+            loading="lazy"
+          />
+        </div>
+      )}
       {icon !== undefined && (
         <div className="text-5xl text-warm-300 dark:text-warm-600" aria-hidden="true">
           {icon}

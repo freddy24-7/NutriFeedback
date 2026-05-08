@@ -124,6 +124,7 @@ export type ErrorBoundaryProps = {
 
 export type EmptyStateProps = {
   icon?: ReactNode;
+  image?: { src: string; alt: string };
   title: string;
   subtitle?: string;
   action?: {

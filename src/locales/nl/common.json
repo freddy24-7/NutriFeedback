@@ -35,6 +35,7 @@
     "terms": "Voorwaarden",
     "privacy": "Privacy",
     "account": "Account",
+    "nutrition": "Voeding",
     "openMenu": "Menu openen",
     "closeMenu": "Menu sluiten",
     "toggleTheme": "Thema wisselen",
@@ -149,7 +150,7 @@
     "source": {
       "manual": "Handmatig",
       "barcode": "Barcode",
-      "ai_parsed": "AI verwerkt",
+      "ai_parsed": "Automatisch verwerkt",
       "imported": "Geïmporteerd"
     }
   },
@@ -196,7 +197,7 @@
     "subtitle": "Beheer je gegevens en account.",
     "export": {
       "title": "Gegevens exporteren",
-      "description": "Download een kopie van al je voedingsvermeldingen, AI-tips en accountgegevens als JSON-bestand.",
+      "description": "Download een kopie van al je voedingsvermeldingen, voedingstips en accountgegevens als JSON-bestand.",
       "button": "Mijn gegevens downloaden",
       "downloading": "Download voorbereiden...",
       "success": "Je download is gestart."
@@ -208,7 +209,7 @@
       "button": "Mijn account verwijderen",
       "areYouSure": "Weet je het zeker? Dit kan niet ongedaan worden gemaakt.",
       "warningFoodLog": "Al je voedingsvermeldingen worden permanent verwijderd.",
-      "warningTips": "Al je AI-tips worden permanent verwijderd.",
+      "warningTips": "Al je voedingstips worden permanent verwijderd.",
       "warningNoUndo": "Deze actie kan niet worden teruggedraaid.",
       "confirmPrompt": "Typ DELETE ter bevestiging:",
       "confirmPlaceholder": "DELETE",
@@ -256,7 +257,7 @@
       "expired": "Je proefperiode is afgelopen"
     },
     "body": {
-      "no_credits": "Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en AI-tips.",
+      "no_credits": "Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en persoonlijke voedingstips.",
       "expired": "Je proefperiode van 30 dagen is voorbij. Heb je een kortingscode? Voer hem hieronder in."
     },
     "upgrade": "Upgrade naar Pro",
@@ -265,10 +266,10 @@
   },
   "pricing": {
     "planName": "NutriApp Pro",
-    "description": "Begin met 50 gratis credits — geen creditcard vereist. Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en AI-voedingstips.",
+    "description": "Begin met 50 gratis credits — geen creditcard vereist. Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en persoonlijke voedingstips.",
     "feature": {
       "unlimited": "Onbeperkt voedsel bijhouden",
-      "aiTips": "Persoonlijke AI-voedingstips",
+      "aiTips": "Persoonlijke voedingstips",
       "barcode": "Barcodescanner met 3M+ producten"
     },
     "alreadyActive": "Je bent klaar ✓",
@@ -276,7 +277,7 @@
   },
   "ai": {
     "parseFood": {
-      "button": "Analyseer met AI",
+      "button": "Analyseer voedingswaarden",
       "loading": "Aan het analyseren...",
       "success": "Voedingswaarden gevonden",
       "error": "Kon niet analyseren — invoer opgeslagen als tekst",
@@ -314,16 +315,16 @@
     "lookupError": "Product kon niet worden opgezocht — probeer opnieuw",
     "processingLevel": "Bewerkingsniveau",
     "checkProduct": "Product controleren",
-    "checkProductDescription": "Scan de barcode van een verpakt product en ontvang direct AI-advies over of het bij je dieet past — suikergehalte, bewerkingsgraad en praktische tips.",
+    "checkProductDescription": "Scan de barcode van een verpakt product en ontvang direct advies over of het bij je dieet past — suikergehalte, bewerkingsgraad en praktische tips.",
     "startScanning": "Begin met scannen",
     "generatingAdvice": "Advies genereren…",
-    "adviceUnavailable": "AI-advies is tijdelijk niet beschikbaar.",
+    "adviceUnavailable": "Voedingsadvies is tijdelijk niet beschikbaar.",
     "scanAgain": "Opnieuw scannen",
     "scanAnother": "Ander product scannen",
     "source": {
       "open_food_facts": "Open Food Facts",
       "usda": "USDA",
-      "ai_estimated": "AI-schatting",
+      "ai_estimated": "Schatting",
       "user": "Door gebruiker toegevoegd"
     }
   },
@@ -351,7 +352,7 @@
   "home": {
     "hero": {
       "title": "Voedingstracking die werkt zoals jij wilt",
-      "subtitle": "Log wat je eet, ontvang AI-tips en volg je voeding in de loop van de tijd — zo nauwkeurig of losjes als jij wilt.",
+      "subtitle": "Log wat je eet, ontvang praktische voedingstips en volg je eetpatroon in de loop van de tijd — zo nauwkeurig of losjes als jij wilt.",
       "cta": "Gratis beginnen",
       "signIn": "Heb je al een account? Inloggen"
     },
@@ -362,12 +363,12 @@
         "description": "Typ 'eieren en toast' of scan een barcode. Meer detail betekent betere feedback — maar losse invoer telt ook."
       },
       "ai": {
-        "title": "AI-aangedreven tips",
+        "title": "Praktische voedingstips",
         "description": "Ontvang praktische voedingsinzichten op basis van je daadwerkelijke eetgewoonten, geen generiek advies."
       },
       "bilingual": {
         "title": "Engels & Nederlands",
-        "description": "Volledige ondersteuning voor Engels en Nederlands — inclusief AI-tips en chatbotreacties."
+        "description": "Volledige ondersteuning voor Engels en Nederlands — inclusief voedingstips en chatbotreacties."
       }
     },
     "freeCredits": "Begin met 50 gratis credits — geen creditcard vereist"
@@ -381,7 +382,7 @@
     "error": "Er is iets misgegaan. Probeer het opnieuw.",
     "source": {
       "faq": "Uit FAQ",
-      "ai": "AI-antwoord"
+      "ai": "Slim antwoord"
     },
     "greeting": "Hoi! Ik help je graag met vragen over NutriApp. Wat wil je weten?",
     "open": "Chat openen",
@@ -392,8 +393,59 @@
       "whatIsApp": "Wat is NutriApp?",
       "isItFree": "Is het gratis?",
       "barcodeScanning": "Hoe werkt barcode scannen?",
-      "aiTips": "Wanneer krijg ik AI-tips?",
+      "aiTips": "Wanneer krijg ik voedingstips?",
       "dataSafety": "Zijn mijn gegevens veilig?"
+    }
+  },
+  "nutritionPage": {
+    "title": "Onze voedingsfilosofie",
+    "subtitle": "Hoe NutriApp denkt over voeding, balans en langdurige gezondheid",
+    "intro": "NutriApp draait niet om perfectie, maar om bewustwording. De wetenschap achter deze app put uit tientallen jaren voedingsonderzoek om je een raamwerk te bieden dat zowel praktisch als duurzaam is — zonder obsessie of schuldgevoel.",
+    "section1": {
+      "title": "Echte voeding op de eerste plaats",
+      "body": "De meest consistente bevinding in de voedingswetenschap is eenvoudig: diëten die zijn opgebouwd rond minimaal bewerkte volwaardige voedingsmiddelen — groenten, peulvruchten, volle granen, vis, noten en fruit — hangen samen met lagere percentages chronische ziekten, meer energie en een gezonder lichaamsgewicht. Dit geldt voor alle culturen, klimaten en eetstijlen. NutriApp is gebouwd rond dit principe. We schrijven geen enkel dieet voor, maar al onze feedback is gegrond in het bevorderen van echte voeding boven ultrabewerkte alternatieven."
+    },
+    "section2": {
+      "title": "Het probleem met ultrabewerkt voedsel",
+      "body": "Ultrabewerkte voedingsmiddelen (UBV's) — denk aan verpakte snacks, kant-en-klaarmaaltijden, gezoete dranken en de meeste fastfood — zijn ontworpen om hyperaantrekkelijk te zijn, goedkoop te produceren en gemakkelijk te overeten. Onderzoek koppelt hoge UBV-inname consistent aan obesitas, diabetes type 2, hart- en vaatziekten en zelfs depressie. Het gaat niet alleen om calorieën: het is de combinatie van geraffineerde ingrediënten, additieven en de verdringing van voedzame volwaardige voedingsmiddelen. Wanneer NutriApp het bewerkingsniveau van een product markeert, put het uit deze wetenschappelijke basis — niet om te moraliseren, maar om te informeren.",
+      "imageCaption": "Volwaardige voeding vs. ultrabewerkt: het verschil gaat verder dan calorieën"
+    },
+    "section3": {
+      "title": "Calorieën: nuttig maar onvolledig",
+      "body": "Calorieën zijn belangrijk — maar ze vertellen niet het hele verhaal. 500 kcal linzen en groenten heeft een heel ander effect op je lichaam dan 500 kcal witbrood en margarine. Eiwitten en vezels bevorderen verzadiging. Geraffineerde koolhydraten veroorzaken bloedsuikerpieken. Vetsamenstelling speelt een rol. NutriApp telt calorieën omdat ze een nuttig referentiepunt bieden, maar we volgen ook eiwitten, vezels en macronutriëntenbalans zodat je het volledige beeld kunt zien. Het doel is niet minder eten — het is beter eten.",
+      "imageCaption": "Calorieaantallen kunnen gelijk zijn; voedingskwaliteit zelden"
+    },
+    "section4": {
+      "title": "Eiwitten: het onderschatte anker",
+      "body": "Voldoende eiwitten zijn een van de meest consistente hefbomen voor lichaamssamenstelling, verzadiging en metabole gezondheid. De meeste volwassenen hebben baat bij 1,2–2,0 g eiwit per kg lichaamsgewicht per dag, maar veel mensen komen hier ver onder zonder het te beseffen. Goede bronnen zijn eieren, vis, gevogelte, peulvruchten, zuivel en tofu. NutriApp markeert je dagelijkse eiwitinname juist omdat het makkelijk over het hoofd wordt gezien — en omdat het op orde krijgen ervan alles gemakkelijker maakt."
+    },
+    "section5": {
+      "title": "Gezonde balans boven strakke regels",
+      "body": "Geen enkel voedingsmiddel is van nature goed of slecht. Chronische patronen zijn veel belangrijker dan afzonderlijke maaltijden. Een pizza op vrijdag maakt een week van bewust eten niet ongedaan. NutriApp is ontworpen om je die patronen in de loop van de tijd te laten zien — niet om individuele keuzes te bestraffen. Onderzoek ondersteunt sterk een flexibele eetaanpak: mensen die af en toe iets lekkers toestaan, behouden op de lange termijn gezondere gewoonten dan mensen die strikte eliminatieregels volgen. Log eerlijk, merk patronen op en pas geleidelijk aan.",
+      "imageCaption": "Consistentie over weken is veel belangrijker dan welke maaltijd dan ook"
+    },
+    "section6": {
+      "title": "Waarom we meerdere diëten ondersteunen",
+      "body": "Mediterraan, DASH, plantaardig, ketogeen, flexitarisch — de wetenschappelijke onderbouwing achter elk van deze benaderingen heeft waarde, en de juiste keuze hangt af van je gezondheidsdoelen, voorkeuren, culturele achtergrond en medische geschiedenis. In plaats van er één te kiezen en te pushen, laat NutriApp jou je voorkeurskader kiezen en stem je feedback hierop af. Wat alle goed onderzochte diëten gemeen hebben, is een nadruk op volwaardige voeding, voldoende eiwitten en het beperken van ultrabewerkte producten."
+    },
+    "section7": {
+      "title": "Intermitterend vasten en maaltijdtiming",
+      "body": "Tijdgebonden eten — eten binnen een vastgesteld dagelijks venster — heeft substantiële onderzoeksondersteuning gekregen voor metabole gezondheid, insulinegevoeligheid en gewichtsbeheersing. Het meest bestudeerde patroon is 16:8: een vastenvenster van 16 uur en een eetvenster van 8 uur. Belangrijk is dat intermitterend vasten geen vrijbrief is om slecht te eten binnen het venster; voedingskwaliteit blijft tellen. NutriApp ondersteunt IF-patronen via zijn flexibele logging — je kunt bijhouden wat je eet zonder gestraft te worden voor wanneer je eet."
+    },
+    "section8": {
+      "title": "Producten checken met je telefoon",
+      "body": "De barcodescanner in NutriApp is een functie die is ontworpen voor de telefoon. Open het menu op je telefoon, tik op \"Product controleren\" en richt je camera op de barcode van een verpakt product. NutriApp zoekt het op in een database van meer dan 3 miljoen producten en geeft direct een overzicht — calorieën, eiwitten, koolhydraten, vetten, vezels, suiker en natrium — samen met een bewerkingsniveauscore.",
+      "novaTitle": "Wat de bewerkingsniveauscore betekent",
+      "novaBody": "De score is gebaseerd op het NOVA-classificatiesysteem, een onderzoekskader ontwikkeld door voedingsepidemiologen om voedingsmiddelen in te delen naar de mate en het doel van bewerking. Het loopt van 1 tot 4, weergegeven als gekleurde vakjes:",
+      "nova1": "NOVA 1 — Onbewerkt of minimaal bewerkt (vers fruit, puur vlees, eieren, pure yoghurt). Vier groene vakjes.",
+      "nova2": "NOVA 2 — Bewerkte culinaire ingrediënten (olijfolie, bloem, suiker, boter, zout). Deze worden niet los gegeten maar gebruikt bij het bereiden van voedsel. Twee groene vakjes.",
+      "nova3": "NOVA 3 — Bewerkte voedingsmiddelen (groenten in blik, kaas, gezouten vlees, vers gebakken brood). Drie oranje vakjes.",
+      "nova4": "NOVA 4 — Ultrabewerkt (frisdranken, verpakte snacks, instantnoedels, kant-en-klaarproducten). Vier rode vakjes.",
+      "novaConclusion": "Een NOVA 4-resultaat is geen verbod — het is informatie. Gebruik het samen met de voedingswaarden om te bepalen of een product past bij je doelen en hoe vaak je het in je dieet wilt opnemen."
+    },
+    "closing": {
+      "title": "De kern",
+      "body": "Eet voornamelijk volwaardige voedingsmiddelen. Zorg voor voldoende eiwitten en vezels. Beperk ultrabewerkte producten. Vind een patroon dat je kunt volhouden. Log wat je eet — niet om te obsesseren, maar om te begrijpen. Dat is de filosofie achter elke functie in NutriApp."
     }
   },
   "howToUse": {
@@ -406,15 +458,15 @@
     "gotIt": "Begrepen",
     "step1": {
       "title": "Log je maaltijden",
-      "description": "Typ wat je hebt gegeten in gewone taal — 'pasta gegeten voor de lunch' werkt prima. De AI vult de voedingsinformatie in."
+      "description": "Typ wat je hebt gegeten in gewone taal — 'pasta gegeten voor de lunch' werkt prima. NutriApp vult de voedingsinformatie in."
     },
     "step2": {
-      "title": "Scan barcodes",
-      "description": "Tik voor verpakt voedsel op de barcodeknop en richt je camera. We zoeken het op in een database van meer dan 3 miljoen producten."
+      "title": "Scan barcodes (alleen telefoon)",
+      "description": "Open op je telefoon het menu en tik op de barcodeknop. Richt je camera op een verpakt product en we zoeken het op in een database van meer dan 3 miljoen producten — inclusief bewerkingsniveau en voedingswaarden. De scanner is ontworpen voor mobiel gebruik en is niet beschikbaar op desktop."
     },
     "step3": {
-      "title": "Ontvang AI-tips",
-      "description": "Na je eerste maaltijdinvoer kan de AI je al een persoonlijke tip geven. Hoe meer je logt, hoe beter de inzichten."
+      "title": "Ontvang praktische tips",
+      "description": "Na je eerste maaltijdinvoer ontvang je al een persoonlijke voedingstip. Hoe meer je logt, hoe beter de inzichten."
     },
     "step4": {
       "title": "Volg in de loop van de tijd",

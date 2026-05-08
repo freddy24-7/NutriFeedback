@@ -97,5 +97,22 @@
     "cons": ["Complex to follow", "Not meant as permanent diet"],
     "evidence_level": "High (for IBS)",
     "macronutrient_split": { "carbs": "40-55%", "fat": "25-35%", "protein": "15-25%" }
+  },
+  {
+    "name": "Intermittent Fasting",
+    "category": "Eating pattern / Time-restricted",
+    "description": "Cycles between defined periods of eating and fasting — common patterns include 16:8 (16-hour fast, 8-hour eating window) and 5:2 (normal eating 5 days, restricted calories 2 days).",
+    "pros": [
+      "May support weight management",
+      "Can simplify meal planning",
+      "Growing evidence for metabolic benefits"
+    ],
+    "cons": [
+      "Can increase hunger initially",
+      "Not suitable for all health conditions",
+      "Social eating can be harder to manage"
+    ],
+    "evidence_level": "Moderate to High",
+    "macronutrient_split": { "carbs": "varies", "fat": "varies", "protein": "varies" }
   }
 ]

@@ -23,6 +23,10 @@ export function DailyView({ date, onAddEntry }: DailyViewProps) {
   if (entries === undefined || entries.length === 0) {
     return (
       <EmptyState
+        image={{
+          src: `${import.meta.env['VITE_CLOUDINARY_BASE_URL']}/v1778248505/dashboard-empty_zineeg.jpg`,
+          alt: 'A clean kitchen table ready for a meal',
+        }}
         title={t('dashboard.noEntries')}
         subtitle={t('dashboard.noEntriesSubtitle')}
         action={

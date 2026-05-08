@@ -38,6 +38,9 @@ const SSOCallbackPage = lazy(() =>
 const ProvisionPage = lazy(() =>
   import('./pages/Provision').then((m) => ({ default: m.ProvisionPage })),
 );
+const NutritionPage = lazy(() =>
+  import('./pages/Nutrition').then((m) => ({ default: m.NutritionPage })),
+);
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,7 @@ const router = createBrowserRouter([
       { path: '/privacy', element: <PrivacyPage /> },
       { path: '/contact', element: <ContactPage /> },
       { path: '/pricing', element: <PricingPage /> },
+      { path: '/nutrition', element: <NutritionPage /> },
       {
         element: <ProtectedRoute />,
         children: [

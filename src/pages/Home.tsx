@@ -78,6 +78,16 @@ export function HomePage() {
             {t('home.hero.signIn')}
           </Link>
         </div>
+
+        {/* Hero image */}
+        <div className="mt-12 overflow-hidden rounded-card shadow-card dark:shadow-card-dark">
+          <img
+            src={`${import.meta.env['VITE_CLOUDINARY_BASE_URL']}/v1778248505/home-hero_j4xqkw.jpg`}
+            alt="A person enjoying a colourful, wholesome meal at a sunlit table"
+            className="h-64 w-full object-cover sm:h-80 md:h-96"
+            loading="eager"
+          />
+        </div>
       </section>
 
       {/* Features */}

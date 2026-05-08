@@ -26,6 +26,14 @@ export function PricingPage() {
       </Helmet>
 
       <div className="flex min-h-[60vh] flex-col items-center justify-center py-12">
+        <div className="mb-8 w-full max-w-md overflow-hidden rounded-card shadow-card dark:shadow-card-dark">
+          <img
+            src={`${import.meta.env['VITE_CLOUDINARY_BASE_URL']}/v1778248509/pricing-lifestyle_wqluct.jpg`}
+            alt="Someone tracking their nutrition on a phone next to a healthy meal"
+            className="h-48 w-full object-cover sm:h-56"
+            loading="eager"
+          />
+        </div>
         <h1 className="mb-8 font-display text-3xl font-bold text-warm-900 dark:text-warm-100">
           {t('pricing.planName')}
         </h1>

@@ -62,7 +62,11 @@
       "Bash(npx esbuild *)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'{k}: {v}'\\) for k,v in d.get\\('barcode',{}\\).items\\(\\)]\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'{k}: {json.dumps\\(v\\)}'\\) for k,v in d.get\\('barcode',{}\\).items\\(\\)]\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'{k}: {json.dumps\\(v\\)}'\\) for k,v in d.get\\('nav',{}\\).items\\(\\)]\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'{k}: {json.dumps\\(v\\)}'\\) for k,v in d.get\\('nav',{}\\).items\\(\\)]\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/images/nutrition-hero.jpg)",
+      "Bash(curl -s http://localhost:5173/nutrition)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://res.cloudinary.com/dovirgnnx/image/upload/v1778248509/NutriApp/nutrition-fasting_gqtivs.jpg\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://res.cloudinary.com/dovirgnnx/image/upload/NutriApp/nutrition-fasting.jpg\")"
     ]
   }
 }

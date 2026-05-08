@@ -69,6 +69,13 @@ export function AppLayout() {
           {/* ── Desktop nav ── */}
           <div className="hidden md:flex items-center gap-3">
             <DietsDropdown />
+            <Link
+              to="/nutrition"
+              className="text-sm font-medium"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {t('nav.nutrition')}
+            </Link>
             {isSignedIn ? (
               <>
                 <Link
@@ -78,30 +85,6 @@ export function AppLayout() {
                 >
                   {t('nav.dashboard')}
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => setIsProductCheckOpen(true)}
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-pill px-3 py-1.5 text-sm font-medium transition-colors duration-150',
-                    'border border-brand-600 text-brand-700 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-300 dark:hover:bg-brand-950',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
-                  )}
-                >
-                  <svg
-                    className="h-3.5 w-3.5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M3 5v4M3 5h4M21 5v4M21 5h-4M3 19v-4M3 19h4M21 19v-4M21 19h-4" />
-                    <rect x="7" y="7" width="10" height="10" rx="1" />
-                  </svg>
-                  {t('barcode.checkProduct')}
-                </button>
                 {sub !== undefined && (
                   <CreditCounter
                     creditsRemaining={sub.creditsRemaining}
@@ -196,6 +179,14 @@ export function AppLayout() {
             style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
           >
             <DietsDropdown />
+            <Link
+              to="/nutrition"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium py-1"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {t('nav.nutrition')}
+            </Link>
             {isSignedIn ? (
               <>
                 <Link

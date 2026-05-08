@@ -35,6 +35,7 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "account": "Account",
+    "nutrition": "Nutrition",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "toggleTheme": "Toggle theme",
@@ -149,7 +150,7 @@
     "source": {
       "manual": "Manual",
       "barcode": "Barcode",
-      "ai_parsed": "AI parsed",
+      "ai_parsed": "Auto-parsed",
       "imported": "Imported"
     }
   },
@@ -196,7 +197,7 @@
     "subtitle": "Manage your data and account.",
     "export": {
       "title": "Export your data",
-      "description": "Download a copy of all your food log entries, AI tips, and account data as a JSON file.",
+      "description": "Download a copy of all your food log entries, nutrition tips, and account data as a JSON file.",
       "button": "Download my data",
       "downloading": "Preparing download...",
       "success": "Your download has started."
@@ -208,7 +209,7 @@
       "button": "Delete my account",
       "areYouSure": "Are you sure? This cannot be undone.",
       "warningFoodLog": "All your food log entries will be permanently deleted.",
-      "warningTips": "All your AI tips will be permanently deleted.",
+      "warningTips": "All your nutrition tips will be permanently deleted.",
       "warningNoUndo": "This action cannot be reversed.",
       "confirmPrompt": "Type DELETE to confirm:",
       "confirmPlaceholder": "DELETE",
@@ -256,7 +257,7 @@
       "expired": "Your free trial has ended"
     },
     "body": {
-      "no_credits": "Upgrade to NutriApp Pro for unlimited food tracking and AI tips.",
+      "no_credits": "Upgrade to NutriApp Pro for unlimited food tracking and personalised nutrition tips.",
       "expired": "Your 30-day trial is over. Have a discount code? Enter it below."
     },
     "upgrade": "Upgrade to Pro",
@@ -265,10 +266,10 @@
   },
   "pricing": {
     "planName": "NutriApp Pro",
-    "description": "Start with 50 free credits — no card required. Upgrade to NutriApp Pro for unlimited food tracking and AI-powered nutrition tips.",
+    "description": "Start with 50 free credits — no card required. Upgrade to NutriApp Pro for unlimited food tracking and personalised nutrition tips.",
     "feature": {
       "unlimited": "Unlimited food tracking",
-      "aiTips": "Personalised AI nutrition tips",
+      "aiTips": "Personalised nutrition tips",
       "barcode": "Barcode scanner with 3M+ products"
     },
     "alreadyActive": "You're all set ✓",
@@ -276,7 +277,7 @@
   },
   "ai": {
     "parseFood": {
-      "button": "Parse with AI",
+      "button": "Analyse nutrients",
       "loading": "Analysing...",
       "success": "Nutrients detected",
       "error": "Could not parse — entry saved as text",
@@ -314,16 +315,16 @@
     "lookupError": "Could not look up product — please try again",
     "processingLevel": "Processing level",
     "checkProduct": "Check product",
-    "checkProductDescription": "Scan any packaged product's barcode and get instant AI advice on whether it fits your diet — sugar content, processing level, and practical tips.",
+    "checkProductDescription": "Scan any packaged product's barcode and get instant advice on whether it fits your diet — sugar content, processing level, and practical tips.",
     "startScanning": "Start scanning",
     "generatingAdvice": "Generating advice…",
-    "adviceUnavailable": "AI advice is temporarily unavailable.",
+    "adviceUnavailable": "Nutritional advice is temporarily unavailable.",
     "scanAgain": "Scan again",
     "scanAnother": "Scan another product",
     "source": {
       "open_food_facts": "Open Food Facts",
       "usda": "USDA",
-      "ai_estimated": "AI estimate",
+      "ai_estimated": "Estimated",
       "user": "User registered"
     }
   },
@@ -351,7 +352,7 @@
   "home": {
     "hero": {
       "title": "Nutrition tracking that works your way",
-      "subtitle": "Log what you eat, get AI-powered tips, and track your nutrition over time — as accurately or loosely as you like.",
+      "subtitle": "Log what you eat, get practical nutrition tips, and track your eating over time — as accurately or loosely as you like.",
       "cta": "Get started free",
       "signIn": "Already have an account? Sign in"
     },
@@ -362,12 +363,12 @@
         "description": "Type 'eggs and toast' or scan a barcode. More detail means better feedback — but loose entries still count."
       },
       "ai": {
-        "title": "AI-powered tips",
+        "title": "Practical nutrition tips",
         "description": "Get practical nutrition insights based on your actual eating patterns, not generic advice."
       },
       "bilingual": {
         "title": "English & Dutch",
-        "description": "Full support for English and Dutch — including AI tips and chatbot responses."
+        "description": "Full support for English and Dutch — including nutrition tips and chatbot responses."
       }
     },
     "freeCredits": "Start with 50 free credits — no card required"
@@ -381,7 +382,7 @@
     "error": "Something went wrong. Please try again.",
     "source": {
       "faq": "From FAQ",
-      "ai": "AI response"
+      "ai": "Smart response"
     },
     "greeting": "Hi! I'm here to help with questions about NutriApp. What would you like to know?",
     "open": "Open chat",
@@ -392,8 +393,59 @@
       "whatIsApp": "What is NutriApp?",
       "isItFree": "Is it free?",
       "barcodeScanning": "How does barcode scanning work?",
-      "aiTips": "When do I get AI tips?",
+      "aiTips": "When do I get nutrition tips?",
       "dataSafety": "Is my data safe?"
+    }
+  },
+  "nutritionPage": {
+    "title": "Our Nutritional Philosophy",
+    "subtitle": "How NutriApp thinks about food, balance, and long-term health",
+    "intro": "NutriApp isn't about perfection. It's about awareness. The science behind this app draws from decades of nutritional research to give you a framework that is both practical and sustainable — without obsession or guilt.",
+    "section1": {
+      "title": "Real food first",
+      "body": "The most consistent finding in nutritional science is simple: diets built around minimally processed whole foods — vegetables, legumes, whole grains, fish, nuts, and fruit — are associated with lower rates of chronic disease, better energy, and healthier body weight. This holds across cultures, climates, and eating styles. NutriApp is built around this principle. We don't prescribe a single diet, but all our feedback is grounded in favouring real food over ultra-processed alternatives."
+    },
+    "section2": {
+      "title": "The problem with ultra-processed foods",
+      "body": "Ultra-processed foods (UPFs) — think packaged snacks, reconstituted meat products, sweetened beverages, and most fast food — are engineered to be hyper-palatable, cheap to produce, and easy to overconsume. Research consistently links high UPF intake to obesity, type 2 diabetes, cardiovascular disease, and even depression. The issue isn't just calories: it's the combination of refined ingredients, additives, and the displacement of nutritious whole foods. When NutriApp flags a product's processing level, it's drawing on this evidence base — not moralising, but informing.",
+      "imageCaption": "Whole foods vs. ultra-processed: the difference goes beyond calories"
+    },
+    "section3": {
+      "title": "Calories: useful but incomplete",
+      "body": "Calories matter — but they are not the whole story. 500 kcal of lentils and vegetables affects your body very differently than 500 kcal of white bread and margarine. Protein and fibre promote satiety. Refined carbohydrates spike blood sugar. Fat composition matters. NutriApp tracks calories because they provide a useful reference point, but we also track protein, fibre, and macronutrient balance so you can see the full picture. The goal is not to eat less — it is to eat better.",
+      "imageCaption": "Calorie counts can be equal; nutritional quality rarely is"
+    },
+    "section4": {
+      "title": "Protein: the underrated anchor",
+      "body": "Adequate protein is one of the most consistent levers for body composition, satiety, and metabolic health. Most adults benefit from 1.2–2.0 g of protein per kg of body weight per day, yet many people fall well short of this without realising it. Good sources include eggs, fish, poultry, legumes, dairy, and tofu. NutriApp highlights your daily protein intake precisely because it is easy to overlook — and because getting it right makes everything else easier."
+    },
+    "section5": {
+      "title": "Healthy balance over rigid rules",
+      "body": "No single food is inherently good or bad. Chronic patterns matter far more than individual meals. A pizza on Friday doesn't undo a week of thoughtful eating. NutriApp is designed to help you see those patterns over time — not to punish single choices. The research strongly supports dietary flexibility: people who allow occasional indulgences maintain healthier habits long-term than those who follow strict elimination rules. Log honestly, notice patterns, and adjust gradually.",
+      "imageCaption": "Consistency over weeks matters far more than any single meal"
+    },
+    "section6": {
+      "title": "Why we support multiple diets",
+      "body": "Mediterranean, DASH, plant-based, ketogenic, flexitarian — the evidence base behind each of these approaches has merit, and the right choice depends on your health goals, preferences, cultural background, and medical history. Rather than picking one and pushing it, NutriApp lets you select your preferred dietary framework and tailors feedback to it. What all well-researched diets share is an emphasis on whole foods, adequate protein, and limiting ultra-processed products."
+    },
+    "section7": {
+      "title": "Intermittent fasting and meal timing",
+      "body": "Time-restricted eating — eating within a defined daily window — has gained substantial research support for metabolic health, insulin sensitivity, and weight management. The most studied pattern is 16:8: a 16-hour fasting window and an 8-hour eating window. Importantly, intermittent fasting is not a licence to eat poorly within the window; food quality still matters. NutriApp supports IF patterns through its flexible logging — you can track what you eat without being penalised for when you eat."
+    },
+    "section8": {
+      "title": "Checking products on your phone",
+      "body": "The barcode scanner in NutriApp is a phone-first feature. Open the menu on your phone, tap \"Check product\", and point your camera at the barcode of any packaged food. NutriApp looks it up in a database of over 3 million products and returns an instant breakdown — calories, protein, carbs, fat, fibre, sugar, and sodium — alongside a processing level score.",
+      "novaTitle": "What the processing level score means",
+      "novaBody": "The score is based on the NOVA classification system, a research framework developed by nutritional epidemiologists to categorise foods by the degree and purpose of processing. It runs from 1 to 4, shown as coloured squares:",
+      "nova1": "NOVA 1 — Unprocessed or minimally processed (fresh fruit, plain meat, eggs, plain yoghurt). Four green squares.",
+      "nova2": "NOVA 2 — Processed culinary ingredients (olive oil, flour, sugar, butter, salt). These are not eaten alone but used to prepare food. Two green squares.",
+      "nova3": "NOVA 3 — Processed foods (canned vegetables, cheese, cured meat, freshly baked bread). Three amber squares.",
+      "nova4": "NOVA 4 — Ultra-processed (soft drinks, packaged snacks, instant noodles, reconstituted meat products). Four red squares.",
+      "novaConclusion": "A NOVA 4 result is not a ban — it is information. Use it alongside the nutritional breakdown to decide whether a product fits your goals and how often you want it in your diet."
+    },
+    "closing": {
+      "title": "The bottom line",
+      "body": "Eat mostly whole foods. Include plenty of protein and fibre. Limit ultra-processed products. Find a pattern you can sustain. Log what you eat — not to obsess, but to understand. That is the philosophy behind every feature in NutriApp."
     }
   },
   "howToUse": {
@@ -406,15 +458,15 @@
     "gotIt": "Got it",
     "step1": {
       "title": "Log your meals",
-      "description": "Type what you ate in plain language — 'had pasta for lunch' works fine. The AI fills in the nutrition details."
+      "description": "Type what you ate in plain language — 'had pasta for lunch' works fine. NutriApp fills in the nutrition details."
     },
     "step2": {
-      "title": "Scan barcodes",
-      "description": "For packaged food, tap the barcode button and point your camera. We look it up in a database of 3 million+ products."
+      "title": "Scan barcodes (phone only)",
+      "description": "On your phone, tap the barcode button in the menu and point your camera at any packaged product. We look it up in a database of 3 million+ products and show you its processing level and nutritional breakdown. The scanner is designed for mobile — it is not available on desktop."
     },
     "step3": {
-      "title": "Get AI tips",
-      "description": "After your first meal log, the AI can give you a personalised tip. The more you log, the better the insights."
+      "title": "Get practical tips",
+      "description": "After your first meal log, you'll get a personalised nutrition tip. The more you log, the better the insights."
     },
     "step4": {
       "title": "Track over time",

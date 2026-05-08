@@ -1,28 +1,16 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { NewFoodEntrySchema, type NewFoodEntryInput } from '@/types/api';
 import { useAddFoodEntry } from '@/hooks/useFoodLog';
-import { useParseFood } from '@/hooks/useParseFood';
-import { useUIStore } from '@/store/uiStore';
 import { sanitiseText } from '@/utils/sanitise';
 import { todayISO } from '@/utils/date';
 import { cn } from '@/utils/cn';
 import type { FoodEntryFormProps } from '@/types/components';
 
-type SubmitMode = 'manual' | 'ai';
-
 export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   const { t } = useTranslation();
-  const language = useUIStore((s) => s.language);
-  const [submitMode, setSubmitMode] = useState<SubmitMode>('manual');
-  const [aiError, setAiError] = useState<string | null>(null);
-
-  const { mutate: addEntry, isPending: isAdding, error: addError } = useAddFoodEntry();
-  const { mutate: parseFood, isPending: isParsing } = useParseFood();
-
-  const isPending = isAdding || isParsing;
+  const { mutate: addEntry, isPending, error: addError } = useAddFoodEntry();
 
   const {
     register,
@@ -35,36 +23,15 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
   });
 
   const onSubmit = (data: NewFoodEntryInput) => {
-    setAiError(null);
-    const clean = sanitiseText(data.description);
-
-    if (submitMode === 'ai') {
-      parseFood(
-        { description: clean, mealType: data.mealType, date: data.date, language },
-        {
-          onSuccess: () => {
-            reset({ date: data.date });
-            onSuccess?.();
-          },
-          onError: (err) => {
-            const msg = err instanceof Error ? err.message : 'parse_failed';
-            if (msg === 'insufficient_credits') setAiError(t('ai.parseFood.insufficientCredits'));
-            else if (msg === 'rate_limited') setAiError(t('ai.parseFood.rateLimited'));
-            else setAiError(t('ai.parseFood.error'));
-          },
+    addEntry(
+      { ...data, description: sanitiseText(data.description) },
+      {
+        onSuccess: () => {
+          reset({ date: data.date });
+          onSuccess?.();
         },
-      );
-    } else {
-      addEntry(
-        { ...data, description: clean },
-        {
-          onSuccess: () => {
-            reset({ date: data.date });
-            onSuccess?.();
-          },
-        },
-      );
-    }
+      },
+    );
   };
 
   const inputClass = cn(
@@ -77,8 +44,6 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
     borderColor: hasError ? 'var(--color-error)' : 'var(--color-border)',
     color: 'var(--color-text-primary)',
   });
-
-  const errorMessage = aiError ?? (addError !== null ? t('foodLog.error') : null);
 
   return (
     <form
@@ -182,46 +147,26 @@ export function FoodEntryForm({ onSuccess, defaultDate }: FoodEntryFormProps) {
         </div>
       </div>
 
-      {errorMessage !== null && (
+      {addError !== null && (
         <p
           role="alert"
           className="rounded-lg p-3 text-sm"
           style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-error)' }}
         >
-          {errorMessage}
+          {t('foodLog.error')}
         </p>
       )}
 
-      <div className="flex items-center justify-end gap-2">
-        {/* AI parse button — secondary action */}
+      <div className="flex justify-end">
         <button
           type="submit"
           disabled={isPending}
-          onClick={() => {
-            setSubmitMode('ai');
-          }}
-          className={cn(
-            'rounded-pill px-4 py-2 text-sm font-medium transition-colors duration-150',
-            'border border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
-            'disabled:opacity-60',
-          )}
-        >
-          {isParsing ? t('ai.parseFood.loading') : t('ai.parseFood.button')}
-        </button>
-
-        {/* Manual save — primary action */}
-        <button
-          type="submit"
-          disabled={isPending}
-          onClick={() => {
-            setSubmitMode('manual');
-          }}
           className={cn(
             'rounded-pill px-6 py-2 font-display font-semibold text-white transition-colors duration-150',
             'bg-brand-700 hover:bg-brand-800 disabled:opacity-60',
           )}
         >
-          {isAdding ? t('common.saving') : t('foodLog.submit')}
+          {isPending ? t('common.saving') : t('foodLog.submit')}
         </button>
       </div>
     </form>

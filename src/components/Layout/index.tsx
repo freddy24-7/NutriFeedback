@@ -26,21 +26,13 @@ export function AppLayout() {
   const [isHowToOpen, setIsHowToOpen] = useState(false);
   const [isProductCheckOpen, setIsProductCheckOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
+  // Keep useRegisterSW so the PWA still registers — we just don't show the button
+  useRegisterSW();
 
   const handleSignOut = async () => {
     await signOut();
     void navigate('/');
-  };
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    void updateServiceWorker(true);
   };
 
   return (
@@ -110,34 +102,12 @@ export function AppLayout() {
                   </svg>
                   {t('barcode.checkProduct')}
                 </button>
-                <Link
-                  to="/pricing"
-                  className="text-sm font-medium"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {t('nav.pricing')}
-                </Link>
                 {sub !== undefined && (
                   <CreditCounter
                     creditsRemaining={sub.creditsRemaining}
                     creditsExpiresAt={sub.creditsExpiresAt}
                   />
                 )}
-                <Link
-                  to="/account"
-                  className="text-sm font-medium"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {t('nav.account')}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => void handleSignOut()}
-                  className="text-sm font-medium"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {t('nav.signOut')}
-                </button>
               </>
             ) : (
               <>
@@ -161,20 +131,21 @@ export function AppLayout() {
             )}
             <LanguageToggle />
             <ThemeToggle />
-            <RefreshButton
-              needRefresh={needRefresh}
-              isRefreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
+            {/* Sign out sits at far right for signed-in users */}
+            {isSignedIn && (
+              <button
+                type="button"
+                onClick={() => void handleSignOut()}
+                className="text-sm font-medium"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                {t('nav.signOut')}
+              </button>
+            )}
           </div>
 
           {/* ── Mobile right side ── */}
           <div className="flex md:hidden items-center gap-2">
-            <RefreshButton
-              needRefresh={needRefresh}
-              isRefreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
             <ThemeToggle />
             <button
               type="button"
@@ -259,28 +230,12 @@ export function AppLayout() {
                   </svg>
                   {t('barcode.checkProduct')}
                 </button>
-                <Link
-                  to="/pricing"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm font-medium py-1"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {t('nav.pricing')}
-                </Link>
                 {sub !== undefined && (
                   <CreditCounter
                     creditsRemaining={sub.creditsRemaining}
                     creditsExpiresAt={sub.creditsExpiresAt}
                   />
                 )}
-                <Link
-                  to="/account"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm font-medium py-1"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {t('nav.account')}
-                </Link>
                 <button
                   type="button"
                   onClick={() => {
@@ -335,13 +290,17 @@ export function AppLayout() {
           <Link to="/privacy">{t('nav.privacy')}</Link>
           <Link to="/contact">{t('nav.contact')}</Link>
           {isSignedIn && (
-            <button
-              type="button"
-              onClick={() => setIsHowToOpen(true)}
-              className="underline-offset-2 hover:underline"
-            >
-              {t('howToUse.open')}
-            </button>
+            <>
+              <Link to="/pricing">{t('nav.pricing')}</Link>
+              <Link to="/account">{t('nav.account')}</Link>
+              <button
+                type="button"
+                onClick={() => setIsHowToOpen(true)}
+                className="underline-offset-2 hover:underline"
+              >
+                {t('howToUse.open')}
+              </button>
+            </>
           )}
         </div>
         <p className="mt-2">© {new Date().getFullYear()} NutriApp</p>
@@ -387,72 +346,5 @@ export function AppLayout() {
         </>
       )}
     </div>
-  );
-}
-
-function RefreshButton({
-  needRefresh,
-  isRefreshing,
-  onRefresh,
-}: {
-  needRefresh: boolean;
-  isRefreshing: boolean;
-  onRefresh: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onRefresh}
-      disabled={isRefreshing}
-      title={needRefresh ? 'Update available' : 'App up to date'}
-      className={cn(
-        'flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
-        needRefresh
-          ? 'bg-brand-500 text-white hover:bg-brand-600'
-          : 'bg-warm-100 text-warm-500 hover:bg-warm-200 dark:bg-warm-700 dark:text-warm-300 dark:hover:bg-warm-600',
-        isRefreshing && 'opacity-70 cursor-not-allowed',
-      )}
-    >
-      {isRefreshing ? (
-        <svg
-          className="h-3.5 w-3.5 animate-spin"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="3"
-            className="opacity-25"
-          />
-          <path
-            d="M4 12a8 8 0 018-8"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            className="opacity-75"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="h-3.5 w-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M23 4v6h-6" />
-          <path d="M1 20v-6h6" />
-          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
-        </svg>
-      )}
-      {needRefresh ? 'Update' : 'Up to date'}
-    </button>
   );
 }

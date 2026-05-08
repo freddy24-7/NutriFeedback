@@ -313,6 +313,13 @@
     "notFound": "Product not found — try entering it manually",
     "lookupError": "Could not look up product — please try again",
     "processingLevel": "Processing level",
+    "checkProduct": "Check product",
+    "checkProductDescription": "Scan any packaged product's barcode and get instant AI advice on whether it fits your diet — sugar content, processing level, and practical tips.",
+    "startScanning": "Start scanning",
+    "generatingAdvice": "Generating advice…",
+    "adviceUnavailable": "AI advice is temporarily unavailable.",
+    "scanAgain": "Scan again",
+    "scanAnother": "Scan another product",
     "source": {
       "open_food_facts": "Open Food Facts",
       "usda": "USDA",

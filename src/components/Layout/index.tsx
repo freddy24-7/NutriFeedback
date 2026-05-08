@@ -9,6 +9,7 @@ import { DietsDropdown } from '@/components/Layout/DietsDropdown';
 import { CreditCounter } from '@/components/Payments/CreditCounter';
 import { ChatbotDrawer } from '@/components/Chatbot/ChatbotDrawer';
 import { HowToUseModal } from '@/components/HowToUse/HowToUseModal';
+import { ProductCheckModal } from '@/components/Barcode/ProductCheckModal';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/utils/cn';
@@ -23,6 +24,7 @@ export function AppLayout() {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHowToOpen, setIsHowToOpen] = useState(false);
+  const [isProductCheckOpen, setIsProductCheckOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -84,6 +86,30 @@ export function AppLayout() {
                 >
                   {t('nav.dashboard')}
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsProductCheckOpen(true)}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-pill px-3 py-1.5 text-sm font-medium transition-colors duration-150',
+                    'border border-brand-600 text-brand-700 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-300 dark:hover:bg-brand-950',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
+                  )}
+                >
+                  <svg
+                    className="h-3.5 w-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 5v4M3 5h4M21 5v4M21 5h-4M3 19v-4M3 19h4M21 19v-4M21 19h-4" />
+                    <rect x="7" y="7" width="10" height="10" rx="1" />
+                  </svg>
+                  {t('barcode.checkProduct')}
+                </button>
                 <Link
                   to="/pricing"
                   className="text-sm font-medium"
@@ -209,6 +235,30 @@ export function AppLayout() {
                 >
                   {t('nav.dashboard')}
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsProductCheckOpen(true);
+                  }}
+                  className="flex items-center gap-2 py-1 text-left text-sm font-medium"
+                  style={{ color: 'var(--color-brand)' }}
+                >
+                  <svg
+                    className="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 5v4M3 5h4M21 5v4M21 5h-4M3 19v-4M3 19h4M21 19v-4M21 19h-4" />
+                    <rect x="7" y="7" width="10" height="10" rx="1" />
+                  </svg>
+                  {t('barcode.checkProduct')}
+                </button>
                 <Link
                   to="/pricing"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -332,6 +382,8 @@ export function AppLayout() {
           />
 
           <HowToUseModal isOpen={isHowToOpen} onClose={() => setIsHowToOpen(false)} />
+
+          {isProductCheckOpen && <ProductCheckModal onClose={() => setIsProductCheckOpen(false)} />}
         </>
       )}
     </div>

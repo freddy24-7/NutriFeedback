@@ -6,7 +6,13 @@ import { products } from '@/lib/db/schema';
 import { lookupProduct } from '@/lib/barcode/lookup';
 import { assessProcessingLevel } from '@/lib/barcode/processingLevel';
 import { generateAIResponse } from '@/lib/ai/client';
-import { BARCODE_ESTIMATE_SYSTEM, BARCODE_ESTIMATE_PROMPT } from '@/lib/ai/prompts';
+import {
+  BARCODE_ESTIMATE_SYSTEM,
+  BARCODE_ESTIMATE_PROMPT,
+  PRODUCT_ADVICE_SYSTEM,
+  PRODUCT_ADVICE_PROMPT,
+  type ProductAdviceContext,
+} from '@/lib/ai/prompts';
 import { rateLimits } from '@/lib/redis/client';
 import { RegisterProductSchema, NutritionalPer100gSchema } from '@/types/api';
 import { authMiddleware, type AuthVariables } from '../middleware/auth';
@@ -161,6 +167,54 @@ barcodeRoutes.get('/:barcode', async (c) => {
     source: 'ai_estimated',
     confidence: 0.4,
   });
+});
+
+// ─── GET /api/barcode/:barcode/advice ────────────────────────────────────────
+// Returns AI advice for a product that has already been looked up.
+
+barcodeRoutes.get('/:barcode/advice', async (c) => {
+  const user = c.get('user')!;
+  const barcode = c.req.param('barcode');
+  const lang = (c.req.query('lang') ?? 'en') as 'en' | 'nl';
+
+  const { success: withinLimit } = await rateLimits.barcodeLookup.limit(`advice:${user.id}`);
+  if (!withinLimit) {
+    return c.json({ error: 'Rate limit exceeded — try again in a minute' }, 429);
+  }
+
+  const [product] = await db.select().from(products).where(eq(products.barcode, barcode)).limit(1);
+  if (product === undefined) {
+    return c.json({ error: 'Product not found' }, 404);
+  }
+
+  const ctx: ProductAdviceContext = {
+    name: product.name,
+    brand: product.brand,
+    processingLevel: product.processingLevel,
+    nutritionalPer100g: (product.nutritionalPer100g ??
+      {}) as ProductAdviceContext['nutritionalPer100g'],
+  };
+
+  type AdviceResult = { headline: string; body: string; verdict: 'good' | 'moderate' | 'caution' };
+
+  try {
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('AI timeout')), 12000),
+    );
+    const { text } = await Promise.race([
+      generateAIResponse({
+        prompt: PRODUCT_ADVICE_PROMPT(ctx),
+        systemPrompt: PRODUCT_ADVICE_SYSTEM(lang),
+        language: lang,
+      }),
+      timeout,
+    ]);
+    const advice = JSON.parse(text) as AdviceResult;
+    return c.json(advice);
+  } catch (err) {
+    console.error('[barcode/advice] AI error:', err instanceof Error ? err.message : String(err));
+    return c.json({ error: 'Could not generate advice' }, 500);
+  }
 });
 
 // ─── POST /api/barcode/products ───────────────────────────────────────────────

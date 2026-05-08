@@ -313,6 +313,13 @@
     "notFound": "Product niet gevonden — voer het handmatig in",
     "lookupError": "Product kon niet worden opgezocht — probeer opnieuw",
     "processingLevel": "Bewerkingsniveau",
+    "checkProduct": "Product controleren",
+    "checkProductDescription": "Scan de barcode van een verpakt product en ontvang direct AI-advies over of het bij je dieet past — suikergehalte, bewerkingsgraad en praktische tips.",
+    "startScanning": "Begin met scannen",
+    "generatingAdvice": "Advies genereren…",
+    "adviceUnavailable": "AI-advies is tijdelijk niet beschikbaar.",
+    "scanAgain": "Opnieuw scannen",
+    "scanAnother": "Ander product scannen",
     "source": {
       "open_food_facts": "Open Food Facts",
       "usda": "USDA",

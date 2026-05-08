@@ -63,7 +63,7 @@ export type BarcodeScannerProps = {
 
 export type ProductCardProps = {
   product: ProductResponse;
-  onConfirm: (product: ProductResponse) => void;
+  onConfirm?: (product: ProductResponse) => void;
   onDismiss: () => void;
 };
 

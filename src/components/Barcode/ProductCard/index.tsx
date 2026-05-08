@@ -121,17 +121,19 @@ export function ProductCard({ product, onConfirm, onDismiss }: ProductCardProps)
         >
           {t('barcode.dismiss')}
         </button>
-        <button
-          type="button"
-          onClick={() => onConfirm(product)}
-          aria-label={t('barcode.confirmAdd')}
-          className={cn(
-            'rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-800',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
-          )}
-        >
-          {t('barcode.confirmAdd')}
-        </button>
+        {onConfirm !== undefined && (
+          <button
+            type="button"
+            onClick={() => onConfirm(product)}
+            aria-label={t('barcode.confirmAdd')}
+            className={cn(
+              'rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-800',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
+            )}
+          >
+            {t('barcode.confirmAdd')}
+          </button>
+        )}
       </div>
     </article>
   );

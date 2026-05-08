@@ -3,6 +3,12 @@ import { useAuth } from '@clerk/clerk-react';
 import type { ProductResponse, RegisterProductSchema } from '@/types/api';
 import type { z } from 'zod';
 
+export type ProductAdvice = {
+  headline: string;
+  body: string;
+  verdict: 'good' | 'moderate' | 'caution';
+};
+
 type RegisterProductInput = z.infer<typeof RegisterProductSchema>;
 
 async function apiFetch<T>(
@@ -36,6 +42,18 @@ export function useProduct(barcode: string | null) {
     queryFn: () => apiFetch<ProductResponse>(`/api/barcode/${barcode!}`, getToken),
     enabled: barcode !== null && barcode.length > 0,
     staleTime: 7 * 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+}
+
+export function useProductAdvice(barcode: string | null, language: 'en' | 'nl') {
+  const { getToken } = useAuth();
+  return useQuery<ProductAdvice>({
+    queryKey: ['productAdvice', barcode, language],
+    queryFn: () =>
+      apiFetch<ProductAdvice>(`/api/barcode/${barcode!}/advice?lang=${language}`, getToken),
+    enabled: barcode !== null && barcode.length > 0,
+    staleTime: 24 * 60 * 60 * 1000,
     retry: false,
   });
 }

@@ -329,6 +329,7 @@
     }
   },
   "nutrients": {
+    "water": "Water",
     "calories": "Calorieën",
     "protein": "Eiwitten",
     "carbs": "Koolhydraten",
@@ -396,6 +397,41 @@
       "aiTips": "Wanneer krijg ik voedingstips?",
       "dataSafety": "Zijn mijn gegevens veilig?"
     }
+  },
+  "diets": {
+    "label": "Diëten",
+    "guides": "Dieetgidsen",
+    "evidence": "Bewijs",
+    "carbs": "Koolhydraten",
+    "fat": "Vetten",
+    "protein": "Eiwitten",
+    "pros": "Voordelen",
+    "cons": "Nadelen",
+    "chooseDiet": "Volg je een specifiek dieet?",
+    "feedbackLabel": "Dieetfeedback",
+    "clearSelection": "Dieetkeuze wissen"
+  },
+  "tipCard": {
+    "dailyTargets": "Dagelijkse doelen — meest recente dag",
+    "dailyLimits": "Dagelijkse limieten",
+    "overview30day": "Overzicht van 30 dagen",
+    "consistency": "Consistentie (28 dagen)",
+    "ofDailyGoal": "{{pct}}% van dagdoel",
+    "inRange": "✓ Binnen bereik",
+    "belowGoal": "Onder doel",
+    "overTarget": "Boven doel",
+    "goal": "doel: {{min}}–{{max}} {{unit}}",
+    "thisLogPeriod": "deze logperiode",
+    "whole": "Volledig",
+    "mixed": "Gemengd",
+    "processed": "Bewerkt",
+    "greenWeek_one": "🟢 {{count}} groene week",
+    "greenWeek_other": "🟢 {{count}} groene weken",
+    "factory": "Fabriek",
+    "farm": "Natuur",
+    "warnLowFiber": "Weinig vezels met veel koolhydraten — kies volkoren",
+    "warnHighCarbs": "Veel koolhydraten, weinig vezels — lage kwaliteit energie",
+    "warnSodiumWater": "Veel natrium → drink meer"
   },
   "nutritionPage": {
     "title": "Onze voedingsfilosofie",

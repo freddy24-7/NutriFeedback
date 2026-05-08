@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
 import diets from '@/data/diets.json';
 
@@ -9,12 +10,13 @@ type Props = {
 };
 
 export function DietPickerModal({ selected, onSelect, onClose }: Props) {
+  const { t } = useTranslation();
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
       role="dialog"
       aria-modal="true"
-      aria-label="Choose your diet"
+      aria-label={t('diets.chooseDiet')}
     >
       {/* Backdrop */}
       <button
@@ -29,10 +31,10 @@ export function DietPickerModal({ selected, onSelect, onClose }: Props) {
         <div className="flex items-center justify-between border-b border-warm-100 px-5 py-4 dark:border-warm-700">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-brand-500">
-              Diet Feedback
+              {t('diets.feedbackLabel')}
             </p>
             <h2 className="mt-0.5 text-base font-bold text-warm-900 dark:text-warm-50">
-              Are you on a specific diet?
+              {t('diets.chooseDiet')}
             </h2>
           </div>
           <button
@@ -85,7 +87,7 @@ export function DietPickerModal({ selected, onSelect, onClose }: Props) {
                 </svg>
               </span>
               <span className="text-sm font-medium text-warm-500 dark:text-warm-400">
-                Clear diet selection
+                {t('diets.clearSelection')}
               </span>
             </button>
           )}

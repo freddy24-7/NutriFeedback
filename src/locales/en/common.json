@@ -329,6 +329,7 @@
     }
   },
   "nutrients": {
+    "water": "Water",
     "calories": "Calories",
     "protein": "Protein",
     "carbs": "Carbs",
@@ -396,6 +397,41 @@
       "aiTips": "When do I get nutrition tips?",
       "dataSafety": "Is my data safe?"
     }
+  },
+  "diets": {
+    "label": "Diets",
+    "guides": "Diet Guides",
+    "evidence": "Evidence",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "protein": "Protein",
+    "pros": "Pros",
+    "cons": "Cons",
+    "chooseDiet": "Are you on a specific diet?",
+    "feedbackLabel": "Diet Feedback",
+    "clearSelection": "Clear diet selection"
+  },
+  "tipCard": {
+    "dailyTargets": "Daily targets — most recent day",
+    "dailyLimits": "Daily limits",
+    "overview30day": "30-day overview",
+    "consistency": "Consistency (28 days)",
+    "ofDailyGoal": "{{pct}}% of daily goal",
+    "inRange": "✓ In range",
+    "belowGoal": "Below goal",
+    "overTarget": "Over target",
+    "goal": "goal: {{min}}–{{max}} {{unit}}",
+    "thisLogPeriod": "this log period",
+    "whole": "Whole",
+    "mixed": "Mixed",
+    "processed": "Processed",
+    "greenWeek_one": "🟢 {{count}} green week",
+    "greenWeek_other": "🟢 {{count}} green weeks",
+    "factory": "Factory",
+    "farm": "Farm",
+    "warnLowFiber": "Low fiber with high carbs — choose whole grains",
+    "warnHighCarbs": "High carbs, low fiber — low-quality energy",
+    "warnSodiumWater": "High sodium → drink more"
   },
   "nutritionPage": {
     "title": "Our Nutritional Philosophy",

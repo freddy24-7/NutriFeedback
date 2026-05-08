@@ -151,6 +151,7 @@ function PowerUpBar({
   unit,
   warn,
 }: AnalysisDailyMetric & { warn?: string }) {
+  const { t } = useTranslation();
   const raw = target > 0 ? (estimated / target) * 100 : 0;
   const fillPct = Math.min(raw, 100);
   const displayPct = Math.round(raw);
@@ -199,7 +200,7 @@ function PowerUpBar({
       </div>
       <div className="mt-0.5 flex items-center justify-between text-xs">
         {warn ? <span className="font-medium text-amber-500">{warn}</span> : <span />}
-        <span className="text-warm-400">{displayPct}% of daily goal</span>
+        <span className="text-warm-400">{t('tipCard.ofDailyGoal', { pct: displayPct })}</span>
       </div>
     </div>
   );
@@ -215,6 +216,7 @@ function RangeBar({
   unit,
   warn,
 }: AnalysisDailyMetric & { warn?: string }) {
+  const { t } = useTranslation();
   const min = targetMin ?? 0;
   const max = targetMax ?? (estimated * 1.5 || 200);
   const displayMax = max * 1.25;
@@ -253,14 +255,16 @@ function RangeBar({
       </div>
       <div className="mt-0.5 flex items-center justify-between text-xs">
         <span style={{ color: barColor }}>
-          {inRange ? '✓ In range' : underMin ? 'Below goal' : 'Over target'}
+          {inRange
+            ? t('tipCard.inRange')
+            : underMin
+              ? t('tipCard.belowGoal')
+              : t('tipCard.overTarget')}
         </span>
         {warn ? (
           <span className="font-medium text-amber-500">{warn}</span>
         ) : (
-          <span className="text-warm-400">
-            goal: {min}–{max} {unit}
-          </span>
+          <span className="text-warm-400">{t('tipCard.goal', { min, max, unit })}</span>
         )}
       </div>
     </div>
@@ -270,6 +274,7 @@ function RangeBar({
 // ─── Water drop ───────────────────────────────────────────────────────────────
 
 function WaterDrop({ estimated, target, unit, pulse }: AnalysisDailyMetric & { pulse?: boolean }) {
+  const { t } = useTranslation();
   const uid = useId();
   const pct = Math.min(target > 0 ? (estimated / target) * 100 : 0, 100);
   const fillY = 3 + (1 - pct / 100) * 49;
@@ -306,13 +311,15 @@ function WaterDrop({ estimated, target, unit, pulse }: AnalysisDailyMetric & { p
       <span className="text-sm font-bold tabular-nums" style={{ color }}>
         {displayPct}%
       </span>
-      <span className="text-xs font-medium text-warm-700 dark:text-warm-200">Water</span>
+      <span className="text-xs font-medium text-warm-700 dark:text-warm-200">
+        {t('nutrients.water')}
+      </span>
       <span className="text-xs tabular-nums text-warm-400">
         {displayVol} / {targetVol}
       </span>
       {pulse && (
         <span className="mt-0.5 text-center text-xs font-medium text-amber-500">
-          High sodium → drink more
+          {t('tipCard.warnSodiumWater')}
         </span>
       )}
     </div>
@@ -670,6 +677,7 @@ function ProcessingDial({
   processingPercent: number | null;
   processingLevel: 'minimal' | 'moderate' | 'high';
 }) {
+  const { t } = useTranslation();
   // wholePct: 0 = all processed (left/red), 100 = all whole (right/green)
   const rawWhole =
     processingPercent !== null
@@ -756,16 +764,16 @@ function ProcessingDial({
         <circle cx={cx} cy={cy} r="3" fill="#374151" />
         {/* Labels */}
         <text x="18" y="68" fontSize="7" fill="#ef4444" textAnchor="middle">
-          Factory
+          {t('tipCard.factory')}
         </text>
         <text x="110" y="68" fontSize="7" fill="#10b981" textAnchor="middle">
-          Farm
+          {t('tipCard.farm')}
         </text>
       </svg>
       <p className="mt-0.5 text-sm font-bold" style={{ color: grade.color }}>
         {grade.label}
       </p>
-      <p className="text-xs text-warm-400">this log period</p>
+      <p className="text-xs text-warm-400">{t('tipCard.thisLogPeriod')}</p>
     </div>
   );
 }
@@ -773,6 +781,7 @@ function ProcessingDial({
 // ─── Processing heat map ──────────────────────────────────────────────────────
 
 function ProcessingHeatMap({ dailyProcessing }: { dailyProcessing?: DailyProcessingEntry[] }) {
+  const { t } = useTranslation();
   const today = new Date();
   const grid = Array.from({ length: 28 }, (_, i) => {
     const d = new Date(today);
@@ -830,20 +839,20 @@ function ProcessingHeatMap({ dailyProcessing }: { dailyProcessing?: DailyProcess
         <div className="flex gap-3">
           <span className="flex items-center gap-1">
             <span className="inline-block h-3 w-3 flex-none rounded-sm bg-green-400" />
-            Whole
+            {t('tipCard.whole')}
           </span>
           <span className="flex items-center gap-1">
             <span className="inline-block h-3 w-3 flex-none rounded-sm bg-yellow-400" />
-            Mixed
+            {t('tipCard.mixed')}
           </span>
           <span className="flex items-center gap-1">
             <span className="inline-block h-3 w-3 flex-none rounded-sm bg-red-400" />
-            Processed
+            {t('tipCard.processed')}
           </span>
         </div>
         {greenWeeks > 0 && (
           <span className="font-medium text-green-500">
-            🟢 {greenWeeks} green {greenWeeks === 1 ? 'week' : 'weeks'}
+            {t('tipCard.greenWeek', { count: greenWeeks })}
           </span>
         )}
       </div>
@@ -958,7 +967,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
       {analysis && (
         <div className="mt-5">
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-warm-500 dark:text-warm-400">
-            Daily targets — most recent day
+            {t('tipCard.dailyTargets')}
           </p>
 
           {/* A: Essential intake bars */}
@@ -970,7 +979,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
                   {...m}
                   warn={
                     m.label === 'Fiber' && alerts?.lowQualityCarbs
-                      ? 'Low fiber with high carbs — choose whole grains'
+                      ? t('tipCard.warnLowFiber')
                       : undefined
                   }
                 />
@@ -981,7 +990,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
                   {...m}
                   warn={
                     m.label === 'Net Carbs' && alerts?.lowQualityCarbs
-                      ? 'High carbs, low fiber — low-quality energy'
+                      ? t('tipCard.warnHighCarbs')
                       : undefined
                   }
                 />
@@ -1000,7 +1009,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
           {gaugeMetrics.length > 0 && (
             <div className="mt-5">
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-warm-500 dark:text-warm-400">
-                Daily limits
+                {t('tipCard.dailyLimits')}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {gaugeMetrics.map((m) => (
@@ -1016,7 +1025,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
       {analysis && (
         <div className="mt-5 space-y-5 border-t border-warm-100 pt-4 dark:border-warm-700">
           <p className="text-xs font-medium uppercase tracking-wide text-warm-500 dark:text-warm-400">
-            30-day overview
+            {t('tipCard.overview30day')}
           </p>
 
           {/* Pattern insight */}
@@ -1034,7 +1043,7 @@ export function AiTipCard({ tip, language, onDismiss, isDismissing = false }: Ai
           {/* Processing heat map */}
           <div>
             <p className="mb-2 text-xs font-medium uppercase tracking-wide text-warm-500 dark:text-warm-400">
-              Consistency (28 days)
+              {t('tipCard.consistency')}
             </p>
             <ProcessingHeatMap dailyProcessing={analysis.dailyProcessing} />
           </div>

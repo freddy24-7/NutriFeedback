@@ -168,21 +168,72 @@ export function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
-              }}
-              max={todayISO()}
-              aria-label={t('dashboard.viewDate')}
-              className="rounded-lg border px-2 py-1 text-sm outline-none focus:border-brand-500"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const d = new Date(date);
+                  d.setDate(d.getDate() - 1);
+                  setDate(d.toISOString().slice(0, 10));
+                }}
+                aria-label="Previous day"
+                className="rounded-md p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => {
+                  if (e.target.value) setDate(e.target.value);
+                }}
+                max={todayISO()}
+                aria-label={t('dashboard.viewDate')}
+                className="rounded-lg border px-2 py-1 text-sm outline-none focus:border-brand-500"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text-primary)',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const d = new Date(date);
+                  d.setDate(d.getDate() + 1);
+                  setDate(d.toISOString().slice(0, 10));
+                }}
+                disabled={date >= todayISO()}
+                aria-label="Next day"
+                className="rounded-md p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-default"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
             <button
               onClick={() => setShowForm((v) => !v)}
               className="rounded-pill bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800 transition-colors"

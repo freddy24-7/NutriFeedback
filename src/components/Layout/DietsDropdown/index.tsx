@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
 import diets from '@/data/diets.json';
 
@@ -17,6 +18,7 @@ function evidenceColor(level: string): string {
 }
 
 function DietAccordionItem({ diet }: { diet: Diet }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -63,7 +65,7 @@ function DietAccordionItem({ diet }: { diet: Diet }) {
               evidenceColor(diet.evidence_level),
             )}
           >
-            Evidence: {diet.evidence_level}
+            {t('diets.evidence')}: {diet.evidence_level}
           </span>
 
           {/* Macros */}
@@ -71,17 +73,17 @@ function DietAccordionItem({ diet }: { diet: Diet }) {
             {(
               [
                 {
-                  label: 'Carbs',
+                  label: t('diets.carbs'),
                   value: diet.macronutrient_split.carbs,
                   color: 'bg-amber-100 dark:bg-amber-900/40',
                 },
                 {
-                  label: 'Fat',
+                  label: t('diets.fat'),
                   value: diet.macronutrient_split.fat,
                   color: 'bg-purple-100 dark:bg-purple-900/40',
                 },
                 {
-                  label: 'Protein',
+                  label: t('diets.protein'),
                   value: diet.macronutrient_split.protein,
                   color: 'bg-red-100 dark:bg-red-900/40',
                 },
@@ -100,7 +102,7 @@ function DietAccordionItem({ diet }: { diet: Diet }) {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-green-600 dark:text-green-400">
-                Pros
+                {t('diets.pros')}
               </p>
               <ul className="space-y-0.5">
                 {diet.pros.map((p) => (
@@ -115,7 +117,7 @@ function DietAccordionItem({ diet }: { diet: Diet }) {
             </div>
             <div>
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-red-500 dark:text-red-400">
-                Cons
+                {t('diets.cons')}
               </p>
               <ul className="space-y-0.5">
                 {diet.cons.map((c) => (
@@ -136,6 +138,7 @@ function DietAccordionItem({ diet }: { diet: Diet }) {
 }
 
 export function DietsDropdown() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -169,7 +172,7 @@ export function DietsDropdown() {
         className="flex items-center gap-1 text-sm font-medium transition-colors"
         style={{ color: 'var(--color-text-secondary)' }}
       >
-        Diets
+        {t('diets.label')}
         <svg
           className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')}
           viewBox="0 0 24 24"
@@ -188,11 +191,11 @@ export function DietsDropdown() {
         <div
           className="absolute left-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-warm-200 bg-white shadow-xl dark:border-warm-700 dark:bg-warm-800"
           role="region"
-          aria-label="Diet guides"
+          aria-label={t('diets.guides')}
         >
           <div className="border-b border-warm-100 px-4 py-2.5 dark:border-warm-700">
             <p className="text-xs font-semibold uppercase tracking-wide text-warm-500 dark:text-warm-400">
-              Diet Guides
+              {t('diets.guides')}
             </p>
           </div>
           <div className="max-h-[70vh] overflow-y-auto">

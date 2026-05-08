@@ -12,6 +12,7 @@ import { HowToUseModal } from '@/components/HowToUse/HowToUseModal';
 import { ProductCheckModal } from '@/components/Barcode/ProductCheckModal';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useUIStore } from '@/store/uiStore';
+import { usePWAStore } from '@/store/pwaStore';
 import { cn } from '@/utils/cn';
 
 export function AppLayout() {
@@ -21,6 +22,9 @@ export function AppLayout() {
   const navigate = useNavigate();
   const { data: sub } = useSubscription();
   const language = useUIStore((s) => s.language);
+
+  const { deferredPrompt, isInstalled, triggerInstall } = usePWAStore();
+  const canInstall = deferredPrompt !== null && !isInstalled;
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHowToOpen, setIsHowToOpen] = useState(false);
@@ -129,6 +133,28 @@ export function AppLayout() {
 
           {/* ── Mobile right side ── */}
           <div className="flex md:hidden items-center gap-2">
+            {canInstall && (
+              <button
+                type="button"
+                onClick={() => void triggerInstall()}
+                aria-label={t('pwa.addToHomeScreen')}
+                className="flex items-center gap-1.5 rounded-pill border border-brand-600 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-950"
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
+                {t('pwa.install')}
+              </button>
+            )}
             <ThemeToggle />
             <button
               type="button"

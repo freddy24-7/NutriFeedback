@@ -65,15 +65,9 @@ Fix: replace the internal COPY object with `useTranslation` and move strings to 
 
 ## Other pre-launch items (non-i18n)
 
-### Admin credit management
+### Admin dashboard ✓
 
-Currently there is no way to adjust user credits in production other than running SQL directly in the Neon dashboard. Before scaling, add a minimal protected admin endpoint:
-
-```
-POST /api/admin/credits  { userId, amount }
-```
-
-Protect with `userId === process.env.ADMIN_USER_ID` check.
+Built at `/admin` — shows all users with signup date, last login, subscription status, food log count, API call count, and inline credit adjustment for free/trial users. Protected by `VITE_ADMIN_USER_ID` (client) and `ADMIN_USER_ID` (server).
 
 ### Terms & Privacy legal review
 

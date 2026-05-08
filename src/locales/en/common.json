@@ -508,5 +508,9 @@
       "title": "Track over time",
       "description": "Use the date picker to review past days. The more you log, the better the insights."
     }
+  },
+  "pwa": {
+    "install": "Install",
+    "addToHomeScreen": "Add to home screen"
   }
 }

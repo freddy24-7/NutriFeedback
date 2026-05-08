@@ -1,14 +1,13 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useUIStore } from './store/uiStore';
+import { usePWAStore } from './store/pwaStore';
 import { AppLayout } from './components/Layout';
 import { AuthLayout } from './components/Layout/AuthLayout';
 import { ProtectedRoute } from './components/Layout/ProtectedRoute';
 import { PWAInstallPrompt } from './components/UI/PWAInstallPrompt';
 
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-};
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void> };
 
 const HomePage = lazy(() => import('./pages/Home').then((m) => ({ default: m.HomePage })));
 const DashboardPage = lazy(() =>
@@ -41,6 +40,7 @@ const ProvisionPage = lazy(() =>
 const NutritionPage = lazy(() =>
   import('./pages/Nutrition').then((m) => ({ default: m.NutritionPage })),
 );
+const AdminPage = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminPage })));
 
 const router = createBrowserRouter([
   {
@@ -57,6 +57,7 @@ const router = createBrowserRouter([
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
           { path: '/account', element: <AccountSettingsPage /> },
+          { path: '/admin', element: <AdminPage /> },
         ],
       },
     ],
@@ -77,8 +78,7 @@ const router = createBrowserRouter([
 
 export function App() {
   const theme = useUIStore((s) => s.theme);
-  const deferredInstallRef = useRef<BeforeInstallPromptEvent | null>(null);
-  const [installPromptVisible, setInstallPromptVisible] = useState(false);
+  const { deferredPrompt, setDeferredPrompt, setInstalled, triggerInstall } = usePWAStore();
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -87,12 +87,17 @@ export function App() {
   useEffect(() => {
     const onBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      deferredInstallRef.current = e as BeforeInstallPromptEvent;
-      setInstallPromptVisible(true);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
+    const onAppInstalled = () => setInstalled();
+
     window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-  }, []);
+    window.addEventListener('appinstalled', onAppInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', onAppInstalled);
+    };
+  }, [setDeferredPrompt, setInstalled]);
 
   return (
     <>
@@ -100,21 +105,9 @@ export function App() {
         <RouterProvider router={router} />
       </Suspense>
       <PWAInstallPrompt
-        isVisible={installPromptVisible}
-        onAccept={() => {
-          void (async () => {
-            const ev = deferredInstallRef.current;
-            deferredInstallRef.current = null;
-            if (ev !== null && typeof ev.prompt === 'function') {
-              await ev.prompt();
-            }
-            setInstallPromptVisible(false);
-          })();
-        }}
-        onDismiss={() => {
-          deferredInstallRef.current = null;
-          setInstallPromptVisible(false);
-        }}
+        isVisible={deferredPrompt !== null}
+        onAccept={() => void triggerInstall()}
+        onDismiss={() => setDeferredPrompt(null)}
       />
     </>
   );

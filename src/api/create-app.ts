@@ -9,6 +9,7 @@ import { paymentsRoutes } from './routes/payments';
 import { chatRoutes } from './routes/chat';
 import { authRoutes } from './routes/auth';
 import { userRoutes } from './routes/user';
+import { adminRoutes } from './routes/admin';
 import { corsAllowedOrigins } from './origins';
 
 export function createApiApp() {
@@ -23,6 +24,7 @@ export function createApiApp() {
   app.route('/ai', aiRoutes);
   app.route('/barcode', barcodeRoutes);
   app.route('/payments', paymentsRoutes);
+  app.route('/admin', adminRoutes);
 
   app.use('/chat', optionalAuthMiddleware);
   app.route('/chat', chatRoutes);

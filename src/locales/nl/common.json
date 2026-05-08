@@ -508,5 +508,9 @@
       "title": "Volg in de loop van de tijd",
       "description": "Gebruik de datumkiezer om eerdere dagen te bekijken. Hoe meer je logt, hoe beter de inzichten."
     }
+  },
+  "pwa": {
+    "install": "Installeer",
+    "addToHomeScreen": "Voeg toe aan beginscherm"
   }
 }

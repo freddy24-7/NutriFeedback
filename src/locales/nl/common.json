@@ -53,7 +53,7 @@
   "auth": {
     "signUp": {
       "title": "Account aanmaken",
-      "subtitle": "Begin vandaag met het bijhouden van je voeding — 50 gratis credits inbegrepen",
+      "subtitle": "Begin vandaag met het bijhouden van je voeding — 25 gratis credits om alles uit te proberen",
       "emailLabel": "E-mailadres",
       "emailPlaceholder": "jij@voorbeeld.nl",
       "passwordLabel": "Wachtwoord",
@@ -257,23 +257,23 @@
       "expired": "Je proefperiode is afgelopen"
     },
     "body": {
-      "no_credits": "Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en persoonlijke voedingstips.",
+      "no_credits": "Je hebt je 50 gratis credits gebruikt. Upgrade om te blijven loggen, scannen en voedingstips te ontvangen — alles werkt precies hetzelfde, zonder limiet.",
       "expired": "Je proefperiode van 30 dagen is voorbij. Heb je een kortingscode? Voer hem hieronder in."
     },
-    "upgrade": "Upgrade naar Pro",
+    "upgrade": "Doorgaan met Pro",
     "skip": "Misschien later",
     "or": "— of —"
   },
   "pricing": {
     "planName": "NutriApp Pro",
-    "description": "Begin met 50 gratis credits — geen creditcard vereist. Upgrade naar NutriApp Pro voor onbeperkt voedsel bijhouden en persoonlijke voedingstips.",
+    "description": "Begin met 25 gratis credits — geen creditcard vereist. Als die op zijn, upgrade je om alles zonder limiet te blijven gebruiken.",
     "feature": {
-      "unlimited": "Onbeperkt voedsel bijhouden",
-      "aiTips": "Persoonlijke voedingstips",
-      "barcode": "Barcodescanner met 3M+ producten"
+      "unlimited": "Geen creditlimiet — log zoveel je wilt",
+      "aiTips": "Voedingstips blijven komen naarmate je logt",
+      "barcode": "Barcodescanner blijft volledig actief"
     },
     "alreadyActive": "Je bent klaar ✓",
-    "upgrade": "Upgrade naar Pro"
+    "upgrade": "Doorgaan met Pro"
   },
   "ai": {
     "parseFood": {
@@ -371,7 +371,7 @@
         "description": "Volledige ondersteuning voor Engels en Nederlands — inclusief voedingstips en chatbotreacties."
       }
     },
-    "freeCredits": "Begin met 50 gratis credits — geen creditcard vereist"
+    "freeCredits": "Begin met 25 gratis credits — geen creditcard vereist"
   },
   "chatbot": {
     "title": "Hulp nodig?",

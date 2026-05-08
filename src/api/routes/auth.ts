@@ -20,7 +20,7 @@ authRoutes.post('/on-signup', authMiddleware, async (c) => {
     .insert(userCredits)
     .values({
       userId: user.id,
-      creditsRemaining: 200,
+      creditsRemaining: 25,
       creditsUsed: 0,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     })

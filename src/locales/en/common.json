@@ -53,7 +53,7 @@
   "auth": {
     "signUp": {
       "title": "Create your account",
-      "subtitle": "Start tracking your nutrition today — 50 free credits included",
+      "subtitle": "Start tracking your nutrition today — 25 free credits to try everything",
       "emailLabel": "Email address",
       "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
@@ -257,23 +257,23 @@
       "expired": "Your free trial has ended"
     },
     "body": {
-      "no_credits": "Upgrade to NutriApp Pro for unlimited food tracking and personalised nutrition tips.",
+      "no_credits": "You've used your 50 free credits. Upgrade to keep logging, scanning, and getting nutrition tips — everything works exactly the same, without the limit.",
       "expired": "Your 30-day trial is over. Have a discount code? Enter it below."
     },
-    "upgrade": "Upgrade to Pro",
+    "upgrade": "Continue with Pro",
     "skip": "Maybe later",
     "or": "— or —"
   },
   "pricing": {
     "planName": "NutriApp Pro",
-    "description": "Start with 50 free credits — no card required. Upgrade to NutriApp Pro for unlimited food tracking and personalised nutrition tips.",
+    "description": "Start with 25 free credits — no card required. Once you've used them, upgrade to keep everything working without limits.",
     "feature": {
-      "unlimited": "Unlimited food tracking",
-      "aiTips": "Personalised nutrition tips",
-      "barcode": "Barcode scanner with 3M+ products"
+      "unlimited": "No credit limit — log as much as you like",
+      "aiTips": "Nutrition tips keep coming as you log",
+      "barcode": "Barcode scanner stays fully active"
     },
     "alreadyActive": "You're all set ✓",
-    "upgrade": "Upgrade to Pro"
+    "upgrade": "Continue with Pro"
   },
   "ai": {
     "parseFood": {
@@ -371,7 +371,7 @@
         "description": "Full support for English and Dutch — including nutrition tips and chatbot responses."
       }
     },
-    "freeCredits": "Start with 50 free credits — no card required"
+    "freeCredits": "Start with 25 free credits — no card required"
   },
   "chatbot": {
     "title": "Need help?",

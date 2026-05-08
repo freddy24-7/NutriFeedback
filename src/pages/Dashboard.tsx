@@ -276,6 +276,25 @@ export function DashboardPage() {
           </section>
         )}
 
+        {/* Low-credit warning — shown when ≤5 credits remain on a trial account */}
+        {sub !== undefined &&
+          sub.status === 'trial' &&
+          sub.creditsRemaining > 0 &&
+          sub.creditsRemaining <= 5 && (
+            <div className="flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 dark:border-amber-700 dark:bg-amber-950/40">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                {t('credits.remaining_one', { count: sub.creditsRemaining })} —{' '}
+                {t('credits.low').toLowerCase()}
+              </p>
+              <a
+                href="/pricing"
+                className="ml-4 shrink-0 text-sm font-medium text-amber-900 underline underline-offset-2 hover:text-amber-700 dark:text-amber-300 dark:hover:text-amber-100"
+              >
+                {t('credits.upgrade')}
+              </a>
+            </div>
+          )}
+
         {/* Generate tip + diet buttons */}
         {tips !== undefined && tips.length === 0 && (
           <div className="flex flex-col items-start gap-2">

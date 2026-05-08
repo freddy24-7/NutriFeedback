@@ -76,3 +76,15 @@ Both pages show a "pending legal review" notice. These need to be replaced with 
 ### Stripe price IDs (yearly)
 
 `STRIPE_PRICE_ID_YEARLY` is configured but no yearly plan UI exists yet. Either wire it up or remove the env var to avoid confusion.
+
+### Manual food log entries still work at zero credits
+
+The paywall middleware only guards AI routes. Users can still log meals manually at zero credits, which is intentional. However, the dashboard empty state and generate-tip area give no explanation for why the tip buttons will fail. Consider adding a note like "Log your meals — tips require credits" when `creditsRemaining === 0` and no tips exist.
+
+### Paywall dismissal is session-only
+
+When the paywall modal is dismissed it won't reappear until the next page load (`paywallDismissed` is local state). This is acceptable UX but means a user who dismisses and then uses their last credit will not see the paywall again until they refresh. Consider persisting the dismissed state to `sessionStorage` so it survives soft navigations but resets on a new tab/session.
+
+### Low-credit email notification
+
+When a user's credits drop to zero, no email is sent. Resend is already wired up. A triggered email at zero credits (or at a low threshold like 3 remaining) would bring users back to upgrade rather than silently losing them. Implement as a post-deduction check in `src/api/routes/ai.ts` after each credit deduction — if `creditsRemaining` hits the threshold, enqueue a Resend email.

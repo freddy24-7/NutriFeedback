@@ -107,7 +107,7 @@ test.describe('Chatbot drawer', () => {
     await dialog.getByRole('button', { name: /^send$/i }).click();
 
     await expect(page.getByText('This is an AI-generated response.')).toBeVisible();
-    await expect(page.getByText(/AI response/i)).toBeVisible();
+    await expect(page.getByText(/Smart response/i)).toBeVisible();
   });
 
   test('shows rate limit message and disables input on 429', async ({ page }) => {
@@ -163,7 +163,7 @@ test.describe('How to Use modal', () => {
 
     await expect(page.getByText('Log your meals')).toBeVisible();
     await expect(page.getByText('Scan barcodes')).toBeVisible();
-    await expect(page.getByText('Get AI tips')).toBeVisible();
+    await expect(page.getByText('Get practical tips')).toBeVisible();
     await expect(page.getByText('Track over time')).toBeVisible();
   });
 

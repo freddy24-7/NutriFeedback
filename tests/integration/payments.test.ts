@@ -432,7 +432,6 @@ describe('POST /api/payments/webhook', () => {
   });
 
   it('returns 400 when stripe-signature header is missing', async () => {
-    // Don't mock constructEvent — let it hit the real missing-sig path
     const app = createTestApp(TEST_USER.id);
     const res = await app.request('/api/payments/webhook', {
       method: 'POST',
@@ -441,5 +440,172 @@ describe('POST /api/payments/webhook', () => {
     });
 
     expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when Stripe signature verification fails', async () => {
+    mockConstructEvent.mockImplementation(() => {
+      throw new Error('No signatures found matching the expected signature for payload');
+    });
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'bad-sig' },
+      body: '{"type":"checkout.session.completed"}',
+    });
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.error).toMatch(/signature/i);
+  });
+
+  it('returns 200 and does nothing for an unhandled event type', async () => {
+    const event = { type: 'payment_intent.created', data: { object: {} } };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.received).toBe(true);
+    // No subscription row should have been created
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub).toBeUndefined();
+  });
+
+  it('checkout.session.completed with missing userId in metadata is silently skipped', async () => {
+    const event = {
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          metadata: {}, // no userId
+          customer: 'cus_test123',
+          subscription: 'sub_test123',
+        },
+      },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub).toBeUndefined();
+  });
+
+  it('customer.subscription.deleted with missing userId in metadata is silently skipped', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeCustomerId: 'cus_test123',
+    });
+
+    const event = {
+      type: 'customer.subscription.deleted',
+      data: { object: { metadata: {} } }, // no userId
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    // Status must be unchanged — still active
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.status).toBe('active');
+  });
+
+  it('invoice.paid updates currentPeriodEnd', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeSubscriptionId: 'sub_invoice123',
+    });
+
+    const futureTs = Math.floor(Date.now() / 1000) + 30 * 86400;
+    mockSubRetrieve.mockResolvedValue({
+      metadata: { userId: TEST_USER.id },
+      current_period_end: futureTs,
+      status: 'active',
+      items: { data: [{ price: { id: 'price_test123' } }] },
+    } as never);
+
+    const event = {
+      type: 'invoice.paid',
+      data: { object: { subscription: 'sub_invoice123' } },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.currentPeriodEnd).not.toBeNull();
+    expect(sub!.currentPeriodEnd!.getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it('customer.subscription.updated to cancelled sets status correctly', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeSubscriptionId: 'sub_upd123',
+    });
+
+    const event = {
+      type: 'customer.subscription.updated',
+      data: {
+        object: {
+          metadata: { userId: TEST_USER.id },
+          status: 'canceled',
+          current_period_end: null,
+        },
+      },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.status).toBe('cancelled');
   });
 });

@@ -17,6 +17,7 @@ export function CreditCounter({ creditsRemaining, creditsExpiresAt }: CreditCoun
   if (creditsExpiresAt === null) {
     return (
       <span
+        role="img"
         aria-label={t('credits.unlimited')}
         title={t('credits.unlimited')}
         className="inline-flex items-center text-brand-700 dark:text-brand-400"
@@ -53,6 +54,7 @@ export function CreditCounter({ creditsRemaining, creditsExpiresAt }: CreditCoun
 
   return (
     <span
+      role="img"
       aria-label={ariaLabel}
       title={ariaLabel}
       className="inline-flex flex-col items-end gap-0.5"

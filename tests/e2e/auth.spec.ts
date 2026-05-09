@@ -99,12 +99,23 @@ test.describe('Auth flows', () => {
 });
 
 test.describe('Theme + language toggles', () => {
-  test('language toggle switches from EN to NL and persists after reload', async ({ page }) => {
+  test('language toggle switches from EN to NL and persists after reload', async ({
+    page,
+    isMobile,
+  }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // EN is active by default — click the NL button (aria-pressed=false)
-    await page.getByRole('button', { name: 'NL' }).click();
+    if (isMobile) {
+      // On mobile the LanguageToggle is inside the hamburger dropdown — open it first
+      await page.getByRole('button', { name: /toggle menu/i }).click();
+      // Wait for the mobile nav panel to appear (contains the language button)
+      await expect(page.getByRole('button', { name: /language/i })).toBeVisible({ timeout: 5000 });
+    }
+
+    // Open the globe dropdown, then select Nederlands
+    await page.getByRole('button', { name: /language/i }).click();
+    await page.getByRole('option', { name: 'Nederlands' }).click();
 
     // The hero title appears in Dutch on the home page
     await expect(page.getByText(/voedingstracking/i)).toBeVisible();

@@ -17,10 +17,9 @@ export default defineConfig({
     { name: 'Mobile Safari', use: { ...devices['iPhone 14'] } },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev:e2e',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env['CI'],
     timeout: 30_000,
-    env: { VITE_E2E_TEST_MODE: 'true' },
   },
 });

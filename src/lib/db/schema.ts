@@ -30,6 +30,7 @@ export const subscriptionStatusEnum = pgEnum('subscription_status', [
   'comped',
   'expired',
   'cancelled',
+  'past_due',
 ]);
 export const discountTypeEnum = pgEnum('discount_type', ['beta', 'influencer', 'timed']);
 export const severityEnum = pgEnum('severity', ['info', 'suggestion', 'important']);

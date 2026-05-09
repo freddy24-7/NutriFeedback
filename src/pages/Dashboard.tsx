@@ -57,7 +57,9 @@ export function DashboardPage() {
   const [dismissingId, setDismissingId] = useState<string | null>(null);
 
   const { data: sub } = useSubscription();
-  const [paywallDismissed, setPaywallDismissed] = useState(false);
+  const [paywallDismissed, setPaywallDismissed] = useState(
+    () => sessionStorage.getItem('paywallDismissed') === '1',
+  );
   const [onboardingStep, setOnboardingStep] = useState<1 | 2 | 3 | 4 | null>(
     readOnboardingInitialStep,
   );
@@ -142,7 +144,10 @@ export function DashboardPage() {
     <>
       <PaywallModal
         isOpen={shouldShowPaywall}
-        onClose={() => setPaywallDismissed(true)}
+        onClose={() => {
+          sessionStorage.setItem('paywallDismissed', '1');
+          setPaywallDismissed(true);
+        }}
         reason={paywallReason}
       />
 

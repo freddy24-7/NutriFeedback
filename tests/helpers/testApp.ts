@@ -75,6 +75,7 @@ export function createUnauthApp() {
   app.use('/payments/checkout', reject401);
   app.use('/payments/discount', reject401);
   app.use('/payments/status', reject401);
+  app.use('/payments/portal', reject401);
   app.route('/payments', paymentsRoutes);
 
   // Chat is public — set user to undefined (anonymous) without calling Clerk.

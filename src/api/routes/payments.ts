@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { and, eq, gt, sql } from 'drizzle-orm';
+import { Resend } from 'resend';
 import { db } from '@/lib/db/client';
 import { subscriptions, discountCodes, userCredits } from '@/lib/db/schema';
 import { rateLimits } from '@/lib/redis/client';
@@ -82,12 +83,7 @@ paymentsRoutes.post('/webhook', async (c) => {
       const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
       const priceId = stripeSub.items.data[0]?.price.id ?? null;
 
-      const plan =
-        priceId === process.env['STRIPE_PRICE_ID_MONTHLY']
-          ? 'pro-monthly'
-          : priceId === process.env['STRIPE_PRICE_ID_YEARLY']
-            ? 'pro-yearly'
-            : 'pro-monthly';
+      const plan = 'pro-monthly';
 
       await db
         .insert(subscriptions)
@@ -165,12 +161,68 @@ paymentsRoutes.post('/webhook', async (c) => {
 
       const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000) : null;
       const status =
-        sub.status === 'active' ? 'active' : sub.status === 'canceled' ? 'cancelled' : 'expired';
+        sub.status === 'active'
+          ? 'active'
+          : sub.status === 'canceled'
+            ? 'cancelled'
+            : sub.status === 'past_due'
+              ? 'past_due'
+              : 'expired';
 
       await db
         .update(subscriptions)
         .set({ status, currentPeriodEnd: periodEnd, updatedAt: new Date() })
         .where(eq(subscriptions.userId, userId));
+      break;
+    }
+
+    case 'invoice.payment_failed': {
+      const invoice = event.data.object as Stripe.Invoice;
+      const subId = invoice.subscription as string | null;
+      if (!subId) break;
+
+      const stripe = getStripe();
+      const stripeSub = await stripe.subscriptions.retrieve(subId);
+      const userId = stripeSub.metadata?.userId;
+      if (!userId) break;
+
+      await db
+        .update(subscriptions)
+        .set({ status: 'past_due', updatedAt: new Date() })
+        .where(eq(subscriptions.userId, userId));
+
+      // Email the user so they can update their payment method
+      const resendKey = process.env['RESEND_API_KEY'];
+      const fromEmail = process.env['RESEND_FROM_EMAIL'];
+      if (resendKey && fromEmail) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
+          const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+          if (userEmail) {
+            const resend = new Resend(resendKey);
+            await resend.emails.send({
+              from: fromEmail,
+              to: userEmail,
+              subject: 'Action required: payment failed for NutriApp Pro',
+              text: [
+                `Hi${clerkUser.firstName ? ` ${clerkUser.firstName}` : ''},`,
+                '',
+                'Your last payment for NutriApp Pro failed. Your subscription is now past due.',
+                '',
+                'Please update your payment method to keep your Pro access:',
+                `${process.env['VITE_APP_URL'] ?? 'https://nutriapp.vercel.app'}/account`,
+                '',
+                'If you need help, reply to this email.',
+                '',
+                '— The NutriApp team',
+              ].join('\n'),
+            });
+          }
+        } catch (err) {
+          // Email failure must not affect the webhook response
+          console.error('[webhook] payment_failed email error:', (err as Error).message);
+        }
+      }
       break;
     }
   }
@@ -257,6 +309,40 @@ paymentsRoutes.post(
     return c.json({ granted: true, type: discountRow.type });
   },
 );
+
+// ─── POST /api/payments/portal ───────────────────────────────────────────────
+// Creates a Stripe Customer Portal session for active/past_due subscribers.
+// The portal lets users cancel, update payment method, or change plan.
+
+paymentsRoutes.post('/portal', authMiddleware, async (c) => {
+  const user = c.get('user')!;
+
+  const [sub] = await db
+    .select({ stripeCustomerId: subscriptions.stripeCustomerId, status: subscriptions.status })
+    .from(subscriptions)
+    .where(eq(subscriptions.userId, user.id));
+
+  if (!sub?.stripeCustomerId) {
+    return c.json({ error: 'No active subscription found' }, 404);
+  }
+
+  if (sub.status !== 'active' && sub.status !== 'past_due') {
+    return c.json(
+      { error: 'Subscription management is only available for active subscribers' },
+      403,
+    );
+  }
+
+  const appUrl = process.env['VITE_APP_URL'] ?? 'http://localhost:5173';
+  const stripe = getStripe();
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: sub.stripeCustomerId,
+    return_url: `${appUrl}/account`,
+  });
+
+  return c.json({ url: session.url });
+});
 
 // ─── GET /api/payments/status ─────────────────────────────────────────────────
 

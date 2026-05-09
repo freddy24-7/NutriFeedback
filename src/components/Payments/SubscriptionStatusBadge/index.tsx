@@ -9,6 +9,7 @@ const STATUS_CLASSES: Record<SubscriptionStatus, string> = {
   comped: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
   expired: 'bg-warm-200 text-warm-500 dark:bg-warm-700 dark:text-warm-400',
   cancelled: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+  past_due: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
 };
 
 export function SubscriptionStatusBadge({ status }: SubscriptionStatusBadgeProps) {

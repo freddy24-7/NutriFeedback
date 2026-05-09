@@ -3,19 +3,9 @@ import { verifyToken } from '@clerk/backend';
 
 export type AuthVariables = { user: { id: string } | undefined };
 
-// Clerk's RSA public key — allows JWT verification without any network calls.
-// Derived from https://shining-aphid-30.clerk.accounts.dev/.well-known/jwks.json
-// If Clerk rotates keys, update this from the JWKS endpoint above.
-const CLERK_JWT_KEY = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsE8UXLvd/n7rq4wFiv/E
-LTKpavdwSIBw/RZOw8vzofRJWlAp0I4Nejs4ggkRHgt9+yqXALdXQIK1aCGlhsVQ
-KLNdYH3dv9vNbG3YCTETwr6bgsyyuEMM+39aHK3QWDbynXNMN9UupbJ4S2BVtq26
-ToyoDHFIqChf/hzd78njoX4cSSR5P2Io90TamAL4YwkwYjQM+Jo1hBnhEb+ZGSjP
-1XmeGUZ2AR4nDeHTS/5YYHk9gCimKlOaqzt2dXO9PumWf9ERYVTq5xKGrBBxgCou
-J+Volv8dh+KZ/q/SsFtmiXQV+1cIhdtyVIBgFrZJCt8YWSPfKlsUvrRI2FKQgpkr
-DwIDAQAB
------END PUBLIC KEY-----`;
-
+// Uses secretKey-only verification — no hardcoded public key.
+// verifyToken fetches Clerk's JWKS on first call and caches it, so there is
+// minimal latency overhead and zero key-rotation maintenance burden.
 async function verifyBearer(authHeader: string | undefined): Promise<string | null> {
   if (!authHeader?.startsWith('Bearer ')) return null;
   const token = authHeader.slice(7);
@@ -23,8 +13,6 @@ async function verifyBearer(authHeader: string | undefined): Promise<string | nu
 
   try {
     const payload = await verifyToken(token, {
-      jwtKey: CLERK_JWT_KEY,
-      // secretKey kept as belt-and-suspenders — verifyToken prefers jwtKey when both are set
       secretKey: process.env['CLERK_SECRET_KEY'],
     });
     return payload.sub ?? null;

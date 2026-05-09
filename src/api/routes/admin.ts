@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import { eq, sql, count } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
@@ -14,7 +14,9 @@ import { clerkClient } from '@/lib/auth/server';
 
 const adminRoutes = new Hono<{ Variables: AuthVariables }>();
 
-function requireAdmin(c: Parameters<Parameters<typeof adminRoutes.use>[0]>[0]): Response | null {
+type AdminContext = Context<{ Variables: AuthVariables }>;
+
+function requireAdmin(c: AdminContext): Response | null {
   const adminUserId = process.env['ADMIN_USER_ID'];
   if (!adminUserId) return c.json({ error: 'Admin not configured' }, 503) as Response;
   if (c.get('user')!.id !== adminUserId) return c.json({ error: 'Forbidden' }, 403) as Response;
@@ -115,7 +117,7 @@ adminRoutes.post('/credits', authMiddleware, async (c) => {
     return c.json({ error: 'User not found' }, 404);
   }
 
-  return c.json({ ok: true, userId, creditsRemaining: rows[0].creditsRemaining });
+  return c.json({ ok: true, userId, creditsRemaining: rows[0]?.creditsRemaining ?? 0 });
 });
 
 export { adminRoutes };

@@ -65,3 +65,14 @@ export function useStartCheckout() {
     },
   });
 }
+
+export function useManageSubscription() {
+  const { getToken } = useAuth();
+
+  return useMutation<{ url: string }, Error, void>({
+    mutationFn: () => authFetch('/api/payments/portal', getToken, { method: 'POST' }),
+    onSuccess: ({ url }) => {
+      window.location.href = url;
+    },
+  });
+}

@@ -195,6 +195,13 @@
   "account": {
     "title": "Account settings",
     "subtitle": "Manage your data and account.",
+    "subscription": {
+      "title": "Subscription",
+      "description": "Update your payment method, change plan, or cancel your subscription.",
+      "manage": "Manage subscription",
+      "loading": "Opening billing portal...",
+      "pastDueWarning": "Your last payment failed. Please update your payment method to keep your Pro access."
+    },
     "export": {
       "title": "Export your data",
       "description": "Download a copy of all your food log entries, nutrition tips, and account data as a JSON file.",
@@ -243,7 +250,8 @@
       "active": "Active",
       "comped": "Beta Access",
       "expired": "Expired",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "past_due": "Payment failed"
     },
     "discount": {
       "placeholder": "Discount code",

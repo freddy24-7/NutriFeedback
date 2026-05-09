@@ -22,6 +22,13 @@
       "when": 1777378054548,
       "tag": "0002_polite_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778331413474,
+      "tag": "0003_famous_gargoyle",
+      "breakpoints": true
     }
   ]
 }

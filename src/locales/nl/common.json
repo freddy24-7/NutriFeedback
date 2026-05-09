@@ -195,6 +195,13 @@
   "account": {
     "title": "Accountinstellingen",
     "subtitle": "Beheer je gegevens en account.",
+    "subscription": {
+      "title": "Abonnement",
+      "description": "Wijzig je betaalmethode, verander van plan of zeg je abonnement op.",
+      "manage": "Abonnement beheren",
+      "loading": "Betalingsportaal openen...",
+      "pastDueWarning": "Je laatste betaling is mislukt. Werk je betaalmethode bij om je Pro-toegang te behouden."
+    },
     "export": {
       "title": "Gegevens exporteren",
       "description": "Download een kopie van al je voedingsvermeldingen, voedingstips en accountgegevens als JSON-bestand.",
@@ -243,7 +250,8 @@
       "active": "Actief",
       "comped": "Betatoegang",
       "expired": "Verlopen",
-      "cancelled": "Geannuleerd"
+      "cancelled": "Geannuleerd",
+      "past_due": "Betaling mislukt"
     },
     "discount": {
       "placeholder": "Kortingscode",

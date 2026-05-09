@@ -24,17 +24,21 @@ vi.mock('@/lib/redis/client', async () => {
 
 // vi.hoisted ensures these vi.fn() instances are created before the vi.mock factory
 // runs and before any module imports execute — so all Stripe instances share them.
-const { mockSessionCreate, mockConstructEvent, mockSubRetrieve } = vi.hoisted(() => ({
-  mockSessionCreate: vi.fn(),
-  mockConstructEvent: vi.fn(),
-  mockSubRetrieve: vi.fn(),
-}));
+const { mockSessionCreate, mockConstructEvent, mockSubRetrieve, mockPortalCreate } = vi.hoisted(
+  () => ({
+    mockSessionCreate: vi.fn(),
+    mockConstructEvent: vi.fn(),
+    mockSubRetrieve: vi.fn(),
+    mockPortalCreate: vi.fn(),
+  }),
+);
 
 vi.mock('stripe', () => {
   const MockStripe = vi.fn(() => ({
     checkout: { sessions: { create: mockSessionCreate } },
     webhooks: { constructEvent: mockConstructEvent },
     subscriptions: { retrieve: mockSubRetrieve },
+    billingPortal: { sessions: { create: mockPortalCreate } },
   }));
   return { default: MockStripe };
 });
@@ -607,5 +611,215 @@ describe('POST /api/payments/webhook', () => {
       .from(subscriptions)
       .where(eq(subscriptions.userId, TEST_USER.id));
     expect(sub?.status).toBe('cancelled');
+  });
+
+  it('customer.subscription.updated to past_due sets status to past_due', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeSubscriptionId: 'sub_pastdue123',
+    });
+
+    const event = {
+      type: 'customer.subscription.updated',
+      data: {
+        object: {
+          metadata: { userId: TEST_USER.id },
+          status: 'past_due',
+          current_period_end: null,
+        },
+      },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.status).toBe('past_due');
+  });
+
+  it('invoice.payment_failed sets status to past_due', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeSubscriptionId: 'sub_fail123',
+    });
+
+    mockSubRetrieve.mockResolvedValue({
+      metadata: { userId: TEST_USER.id },
+    } as never);
+
+    const event = {
+      type: 'invoice.payment_failed',
+      data: { object: { subscription: 'sub_fail123' } },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.status).toBe('past_due');
+  });
+
+  it('invoice.payment_failed with missing subscription ID is silently skipped', async () => {
+    const event = {
+      type: 'invoice.payment_failed',
+      data: { object: { subscription: null } },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    expect(mockSubRetrieve).not.toHaveBeenCalled();
+  });
+
+  it('invoice.payment_failed with missing userId in subscription metadata is silently skipped', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeSubscriptionId: 'sub_noid123',
+    });
+
+    mockSubRetrieve.mockResolvedValue({
+      metadata: {}, // no userId
+    } as never);
+
+    const event = {
+      type: 'invoice.payment_failed',
+      data: { object: { subscription: 'sub_noid123' } },
+    };
+    mockConstructEvent.mockReturnValue(event as never);
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 'test-sig' },
+      body: JSON.stringify(event),
+    });
+
+    expect(res.status).toBe(200);
+    // Status must remain active — no userId so no update applied
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, TEST_USER.id));
+    expect(sub?.status).toBe('active');
+  });
+});
+
+// ─── POST /api/payments/portal ────────────────────────────────────────────────
+
+describe('POST /api/payments/portal', () => {
+  beforeEach(async () => {
+    await seedUser(TEST_USER, 50);
+    mockPortalCreate.mockResolvedValue({
+      url: 'https://billing.stripe.com/test-portal-session',
+    } as never);
+  });
+
+  afterEach(async () => {
+    await db.delete(subscriptions).where(eq(subscriptions.userId, TEST_USER.id));
+    await cleanupUser(TEST_USER.id);
+    vi.clearAllMocks();
+  });
+
+  it('returns portal URL for active subscriber', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'active',
+      stripeCustomerId: 'cus_portal123',
+    });
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(typeof body.url).toBe('string');
+    expect(body.url).toContain('stripe.com');
+    expect(mockPortalCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ customer: 'cus_portal123' }),
+    );
+  });
+
+  it('returns portal URL for past_due subscriber', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'past_due',
+      stripeCustomerId: 'cus_pastdue456',
+    });
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(typeof body.url).toBe('string');
+  });
+
+  it('returns 404 when user has no subscription', async () => {
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+
+    expect(res.status).toBe(404);
+    expect(mockPortalCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns 403 for trial user (no stripeCustomerId)', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'trial',
+      // no stripeCustomerId
+    });
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+
+    expect(res.status).toBe(404);
+    expect(mockPortalCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns 403 for comped user trying to access portal', async () => {
+    await db.insert(subscriptions).values({
+      userId: TEST_USER.id,
+      status: 'comped',
+      stripeCustomerId: 'cus_comped789',
+    });
+
+    const app = createTestApp(TEST_USER.id);
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+
+    expect(res.status).toBe(403);
+    expect(mockPortalCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns 401 when unauthenticated', async () => {
+    const app = createUnauthApp();
+    const res = await app.request('/api/payments/portal', { method: 'POST' });
+    expect(res.status).toBe(401);
   });
 });

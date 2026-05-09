@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useClerk } from '@clerk/clerk-react';
 import { useExportData, useDeleteAccount } from '@/hooks/useAccount';
+import { useSubscription, useManageSubscription } from '@/hooks/useSubscription';
 import { cn } from '@/utils/cn';
 
 export function AccountSettingsPage() {
@@ -11,8 +12,12 @@ export function AccountSettingsPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
 
+  const { data: sub } = useSubscription();
+  const { mutate: manageSubscription, isPending: isPortalLoading } = useManageSubscription();
   const { mutate: exportData, isPending: isExporting, isSuccess: exported } = useExportData();
   const { mutate: deleteAccount, isPending: isDeleting, error: deleteError } = useDeleteAccount();
+
+  const showSubscriptionSection = sub?.status === 'active' || sub?.status === 'past_due';
 
   const handleDelete = () => {
     deleteAccount(undefined, {
@@ -43,6 +48,39 @@ export function AccountSettingsPage() {
             {t('account.subtitle')}
           </p>
         </div>
+
+        {/* Subscription management */}
+        {showSubscriptionSection && (
+          <section className="space-y-3">
+            <h2 className="text-base font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+              {t('account.subscription.title')}
+            </h2>
+
+            {sub?.status === 'past_due' && (
+              <div className="rounded-lg border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-800 dark:border-orange-700 dark:bg-orange-950/30 dark:text-orange-300">
+                {t('account.subscription.pastDueWarning')}
+              </div>
+            )}
+
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              {t('account.subscription.description')}
+            </p>
+            <button
+              type="button"
+              onClick={() => manageSubscription()}
+              disabled={isPortalLoading}
+              className={cn(
+                'rounded-pill border px-4 py-2 text-sm font-medium transition-colors duration-150',
+                'border-brand-700 text-brand-700 hover:bg-brand-50 dark:hover:bg-brand-950',
+                'disabled:opacity-60',
+              )}
+            >
+              {isPortalLoading
+                ? t('account.subscription.loading')
+                : t('account.subscription.manage')}
+            </button>
+          </section>
+        )}
 
         {/* Export */}
         <section className="space-y-3">

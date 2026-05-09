@@ -2908,9 +2908,9 @@ var init_Parser = __esm({
           const pos = this.stack.lastIndexOf(name2);
           if (pos !== -1) {
             if (this.cbs.onclosetag) {
-              let count = this.stack.length - pos;
-              while (count--) {
-                this.cbs.onclosetag(this.stack.pop(), count !== 0);
+              let count2 = this.stack.length - pos;
+              while (count2--) {
+                this.cbs.onclosetag(this.stack.pop(), count2 !== 0);
               }
             } else
               this.stack.length = pos;
@@ -20320,23 +20320,12 @@ function createClerkClient(options) {
 }
 
 // src/api/middleware/auth.ts
-var CLERK_JWT_KEY = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsE8UXLvd/n7rq4wFiv/E
-LTKpavdwSIBw/RZOw8vzofRJWlAp0I4Nejs4ggkRHgt9+yqXALdXQIK1aCGlhsVQ
-KLNdYH3dv9vNbG3YCTETwr6bgsyyuEMM+39aHK3QWDbynXNMN9UupbJ4S2BVtq26
-ToyoDHFIqChf/hzd78njoX4cSSR5P2Io90TamAL4YwkwYjQM+Jo1hBnhEb+ZGSjP
-1XmeGUZ2AR4nDeHTS/5YYHk9gCimKlOaqzt2dXO9PumWf9ERYVTq5xKGrBBxgCou
-J+Volv8dh+KZ/q/SsFtmiXQV+1cIhdtyVIBgFrZJCt8YWSPfKlsUvrRI2FKQgpkr
-DwIDAQAB
------END PUBLIC KEY-----`;
 async function verifyBearer(authHeader) {
   if (!authHeader?.startsWith("Bearer ")) return null;
   const token2 = authHeader.slice(7);
   if (!token2) return null;
   try {
     const payload = await verifyToken2(token2, {
-      jwtKey: CLERK_JWT_KEY,
-      // secretKey kept as belt-and-suspenders — verifyToken prefers jwtKey when both are set
       secretKey: process.env["CLERK_SECRET_KEY"]
     });
     return payload.sub ?? null;
@@ -27758,6 +27747,9 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
 }
 
 // node_modules/drizzle-orm/sql/functions/aggregate.js
+function count(expression) {
+  return sql`count(${expression || sql.raw("*")})`.mapWith(Number);
+}
 function countDistinct(expression) {
   return sql`count(distinct ${expression})`.mapWith(Number);
 }
@@ -37061,7 +37053,8 @@ var subscriptionStatusEnum = pgEnum("subscription_status", [
   "active",
   "comped",
   "expired",
-  "cancelled"
+  "cancelled",
+  "past_due"
 ]);
 var discountTypeEnum = pgEnum("discount_type", ["beta", "influencer", "timed"]);
 var severityEnum = pgEnum("severity", ["info", "suggestion", "important"]);
@@ -37288,7 +37281,8 @@ var SubscriptionStatusSchema = external_exports.enum([
   "active",
   "comped",
   "expired",
-  "cancelled"
+  "cancelled",
+  "past_due"
 ]);
 var SubscriptionResponseSchema = external_exports.object({
   status: SubscriptionStatusSchema,
@@ -41110,8 +41104,8 @@ var LMoveCommand = class extends Command {
 };
 var LmPopCommand = class extends Command {
   constructor(cmd, opts) {
-    const [numkeys, keys, direction, count] = cmd;
-    super(["LMPOP", numkeys, ...keys, direction, ...count ? ["COUNT", count] : []], opts);
+    const [numkeys, keys, direction, count2] = cmd;
+    super(["LMPOP", numkeys, ...keys, direction, ...count2 ? ["COUNT", count2] : []], opts);
   }
 };
 var LPopCommand = class extends Command {
@@ -41417,19 +41411,19 @@ var SMoveCommand = class extends Command {
   }
 };
 var SPopCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["spop", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
 };
 var SRandMemberCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["srandmember", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
@@ -41640,7 +41634,7 @@ var XLenCommand = class extends Command {
   }
 };
 var XPendingCommand = class extends Command {
-  constructor([key, group, start, end, count, options], opts) {
+  constructor([key, group, start, end, count2, options], opts) {
     const consumers = options?.consumer === void 0 ? [] : Array.isArray(options.consumer) ? [...options.consumer] : [options.consumer];
     super(
       [
@@ -41650,7 +41644,7 @@ var XPendingCommand = class extends Command {
         ...options?.idleTime ? ["IDLE", options.idleTime] : [],
         start,
         end,
-        count,
+        count2,
         ...consumers
       ],
       opts
@@ -41680,10 +41674,10 @@ function deserialize6(result) {
   return obj;
 }
 var XRangeCommand = class extends Command {
-  constructor([key, start, end, count], opts) {
+  constructor([key, start, end, count2], opts) {
     const command = ["XRANGE", key, start, end];
-    if (typeof count === "number") {
-      command.push("COUNT", count);
+    if (typeof count2 === "number") {
+      command.push("COUNT", count2);
     }
     super(command, {
       deserialize: (result) => deserialize6(result),
@@ -41737,10 +41731,10 @@ var XReadGroupCommand = class extends Command {
   }
 };
 var XRevRangeCommand = class extends Command {
-  constructor([key, end, start, count], opts) {
+  constructor([key, end, start, count2], opts) {
     const command = ["XREVRANGE", key, end, start];
-    if (typeof count === "number") {
-      command.push("COUNT", count);
+    if (typeof count2 === "number") {
+      command.push("COUNT", count2);
     }
     super(command, {
       deserialize: (result) => deserialize7(result),
@@ -41844,19 +41838,19 @@ var ZLexCountCommand = class extends Command {
   }
 };
 var ZPopMaxCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["zpopmax", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
 };
 var ZPopMinCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["zpopmin", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
@@ -42287,7 +42281,7 @@ var Pipeline = class {
   /**
    * @see https://redis.io/commands/hrandfield
    */
-  hrandfield = (key, count, withValues) => this.chain(new HRandFieldCommand([key, count, withValues], this.commandOptions));
+  hrandfield = (key, count2, withValues) => this.chain(new HRandFieldCommand([key, count2, withValues], this.commandOptions));
   /**
    * @see https://redis.io/commands/hscan
    */
@@ -42371,7 +42365,7 @@ var Pipeline = class {
   /**
    * @see https://redis.io/commands/lrem
    */
-  lrem = (key, count, value) => this.chain(new LRemCommand([key, count, value], this.commandOptions));
+  lrem = (key, count2, value) => this.chain(new LRemCommand([key, count2, value], this.commandOptions));
   /**
    * @see https://redis.io/commands/lset
    */
@@ -43069,8 +43063,8 @@ var Subscriber = class extends EventTarget {
         const messageStr = messageData.slice(secondCommaIndex + 1);
         try {
           if (type === "subscribe" || type === "psubscribe" || type === "unsubscribe" || type === "punsubscribe") {
-            const count = Number.parseInt(messageStr);
-            this.dispatchToListeners(type, count);
+            const count2 = Number.parseInt(messageStr);
+            this.dispatchToListeners(type, count2);
           } else {
             const message = this.opts?.automaticDeserialization === false ? messageStr : parseWithTryCatch(messageStr);
             this.dispatchToListeners(type, { channel, message });
@@ -43783,7 +43777,7 @@ var Redis = class {
   /**
    * @see https://redis.io/commands/hrandfield
    */
-  hrandfield = (key, count, withValues) => new HRandFieldCommand([key, count, withValues], this.opts).exec(this.client);
+  hrandfield = (key, count2, withValues) => new HRandFieldCommand([key, count2, withValues], this.opts).exec(this.client);
   /**
    * @see https://redis.io/commands/hscan
    */
@@ -43867,7 +43861,7 @@ var Redis = class {
   /**
    * @see https://redis.io/commands/lrem
    */
-  lrem = (key, count, value) => new LRemCommand([key, count, value], this.opts).exec(this.client);
+  lrem = (key, count2, value) => new LRemCommand([key, count2, value], this.opts).exec(this.client);
   /**
    * @see https://redis.io/commands/lset
    */
@@ -44643,6 +44637,40 @@ var cacheKeys = {
 
 // src/api/routes/ai.ts
 var aiRoutes = new Hono2();
+async function maybeSendLowCreditEmail(userId, creditsRemaining) {
+  if (creditsRemaining !== 0) return;
+  const resendKey = process.env["RESEND_API_KEY"];
+  const fromEmail = process.env["RESEND_FROM_EMAIL"];
+  if (!resendKey || !fromEmail) return;
+  try {
+    const clerkUser = await clerkClient.users.getUser(userId);
+    const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+    if (!userEmail) return;
+    const firstName = clerkUser.firstName ?? "";
+    const appUrl = process.env["VITE_APP_URL"] ?? "https://nutriapp.vercel.app";
+    const resend = new Resend(resendKey);
+    await resend.emails.send({
+      from: fromEmail,
+      to: userEmail,
+      subject: "You've used all your free NutriApp credits",
+      text: [
+        `Hi${firstName ? ` ${firstName}` : ""},`,
+        "",
+        "You've used all 25 of your free NutriApp credits.",
+        "",
+        "Upgrade to NutriApp Pro to keep logging with AI parsing, generate nutrition tips, and use the barcode scanner without limits.",
+        "",
+        `${appUrl}/pricing`,
+        "",
+        "Have a discount code? Enter it on the pricing page.",
+        "",
+        "\u2014 The NutriApp team"
+      ].join("\n")
+    });
+  } catch (err) {
+    console.error("[ai] low-credit email error:", err.message);
+  }
+}
 aiRoutes.get("/generate-tips", (c3) => {
   const accept = c3.req.header("Accept") ?? "";
   const secFetchDest = c3.req.header("Sec-Fetch-Dest");
@@ -44705,6 +44733,7 @@ aiRoutes.post("/parse-food", zValidator("json", ParseFoodRequestSchema), async (
   if (entry === void 0) {
     return c3.json({ error: "Failed to save entry" }, 500);
   }
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
   return c3.json({ entryId: entry.id, nutrients, confidence: nutrients.confidence }, 201);
 });
 aiRoutes.post("/generate-tips", async (c3) => {
@@ -44760,6 +44789,7 @@ aiRoutes.post("/generate-tips", async (c3) => {
   if (tip === void 0) {
     return c3.json({ error: "Failed to save tip" }, 500);
   }
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
   return c3.json({
     id: tip.id,
     tipTextEn: tip.tipTextEn,
@@ -44826,6 +44856,7 @@ aiRoutes.post("/diet-feedback", async (c3) => {
     analysisData: tipJson.analysisData ?? null
   }).returning();
   if (tip === void 0) return c3.json({ error: "Failed to save tip" }, 500);
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
   return c3.json({
     id: tip.id,
     tipTextEn: tip.tipTextEn,
@@ -50304,7 +50335,6 @@ function getStripe() {
   return _stripe;
 }
 var STRIPE_PRICE_MONTHLY = process.env["STRIPE_PRICE_ID_MONTHLY"] ?? "";
-var STRIPE_PRICE_YEARLY = process.env["STRIPE_PRICE_ID_YEARLY"] ?? "";
 
 // src/api/routes/payments.ts
 var paymentsRoutes = new Hono2();
@@ -50360,7 +50390,7 @@ paymentsRoutes.post("/webhook", async (c3) => {
       const subscriptionId = session.subscription;
       const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
       const priceId = stripeSub.items.data[0]?.price.id ?? null;
-      const plan = priceId === process.env["STRIPE_PRICE_ID_MONTHLY"] ? "pro-monthly" : priceId === process.env["STRIPE_PRICE_ID_YEARLY"] ? "pro-yearly" : "pro-monthly";
+      const plan = "pro-monthly";
       await db.insert(subscriptions).values({
         userId,
         status: "active",
@@ -50413,8 +50443,49 @@ paymentsRoutes.post("/webhook", async (c3) => {
       const userId = sub.metadata?.userId;
       if (!userId) break;
       const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1e3) : null;
-      const status = sub.status === "active" ? "active" : sub.status === "canceled" ? "cancelled" : "expired";
+      const status = sub.status === "active" ? "active" : sub.status === "canceled" ? "cancelled" : sub.status === "past_due" ? "past_due" : "expired";
       await db.update(subscriptions).set({ status, currentPeriodEnd: periodEnd, updatedAt: /* @__PURE__ */ new Date() }).where(eq(subscriptions.userId, userId));
+      break;
+    }
+    case "invoice.payment_failed": {
+      const invoice = event.data.object;
+      const subId = invoice.subscription;
+      if (!subId) break;
+      const stripe2 = getStripe();
+      const stripeSub = await stripe2.subscriptions.retrieve(subId);
+      const userId = stripeSub.metadata?.userId;
+      if (!userId) break;
+      await db.update(subscriptions).set({ status: "past_due", updatedAt: /* @__PURE__ */ new Date() }).where(eq(subscriptions.userId, userId));
+      const resendKey = process.env["RESEND_API_KEY"];
+      const fromEmail = process.env["RESEND_FROM_EMAIL"];
+      if (resendKey && fromEmail) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
+          const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+          if (userEmail) {
+            const resend = new Resend(resendKey);
+            await resend.emails.send({
+              from: fromEmail,
+              to: userEmail,
+              subject: "Action required: payment failed for NutriApp Pro",
+              text: [
+                `Hi${clerkUser.firstName ? ` ${clerkUser.firstName}` : ""},`,
+                "",
+                "Your last payment for NutriApp Pro failed. Your subscription is now past due.",
+                "",
+                "Please update your payment method to keep your Pro access:",
+                `${process.env["VITE_APP_URL"] ?? "https://nutriapp.vercel.app"}/account`,
+                "",
+                "If you need help, reply to this email.",
+                "",
+                "\u2014 The NutriApp team"
+              ].join("\n")
+            });
+          }
+        } catch (err) {
+          console.error("[webhook] payment_failed email error:", err.message);
+        }
+      }
       break;
     }
   }
@@ -50465,6 +50536,23 @@ paymentsRoutes.post(
     return c3.json({ granted: true, type: discountRow.type });
   }
 );
+paymentsRoutes.post("/portal", authMiddleware, async (c3) => {
+  const user = c3.get("user");
+  const [sub] = await db.select({ stripeCustomerId: subscriptions.stripeCustomerId, status: subscriptions.status }).from(subscriptions).where(eq(subscriptions.userId, user.id));
+  if (!sub?.stripeCustomerId) {
+    return c3.json({ error: "No active subscription found" }, 404);
+  }
+  if (sub.status !== "active" && sub.status !== "past_due") {
+    return c3.json({ error: "Subscription management is only available for active subscribers" }, 403);
+  }
+  const appUrl = process.env["VITE_APP_URL"] ?? "http://localhost:5173";
+  const stripe = getStripe();
+  const session = await stripe.billingPortal.sessions.create({
+    customer: sub.stripeCustomerId,
+    return_url: `${appUrl}/account`
+  });
+  return c3.json({ url: session.url });
+});
 paymentsRoutes.get("/status", authMiddleware, async (c3) => {
   const user = c3.get("user");
   const [[sub], [credits]] = await Promise.all([
@@ -52598,7 +52686,7 @@ authRoutes.post("/on-signup", authMiddleware, async (c3) => {
   await db.insert(userProfiles).values({ id: user.id, language: "en", theme: "light" }).onConflictDoNothing();
   await db.insert(userCredits).values({
     userId: user.id,
-    creditsRemaining: 200,
+    creditsRemaining: 25,
     creditsUsed: 0,
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1e3)
   }).onConflictDoNothing();
@@ -52647,6 +52735,75 @@ userRoutes.delete("/account", authMiddleware, async (c3) => {
   return c3.json({ ok: true });
 });
 
+// src/api/routes/admin.ts
+var adminRoutes = new Hono2();
+function requireAdmin(c3) {
+  const adminUserId = process.env["ADMIN_USER_ID"];
+  if (!adminUserId) return c3.json({ error: "Admin not configured" }, 503);
+  if (c3.get("user").id !== adminUserId) return c3.json({ error: "Forbidden" }, 403);
+  return null;
+}
+adminRoutes.get("/users", authMiddleware, async (c3) => {
+  const deny = requireAdmin(c3);
+  if (deny) return deny;
+  const [profiles, credits, subs, logCounts, txCounts] = await Promise.all([
+    db.select().from(userProfiles),
+    db.select().from(userCredits),
+    db.select().from(subscriptions),
+    db.select({ userId: foodLogEntries.userId, count: count() }).from(foodLogEntries).groupBy(foodLogEntries.userId),
+    db.select({ userId: creditTransactions.userId, count: count() }).from(creditTransactions).groupBy(creditTransactions.userId)
+  ]);
+  const creditsMap = new Map(credits.map((r2) => [r2.userId, r2]));
+  const subsMap = new Map(subs.map((r2) => [r2.userId, r2]));
+  const logCountMap = new Map(logCounts.map((r2) => [r2.userId, r2.count]));
+  const txCountMap = new Map(txCounts.map((r2) => [r2.userId, r2.count]));
+  const clerkUsers = profiles.length > 0 ? await clerkClient.users.getUserList({ userId: profiles.map((p3) => p3.id), limit: 500 }) : { data: [] };
+  const clerkMap = new Map(clerkUsers.data.map((u) => [u.id, u]));
+  const rows = profiles.map((p3) => {
+    const clerk = clerkMap.get(p3.id);
+    const cred = creditsMap.get(p3.id);
+    const sub = subsMap.get(p3.id);
+    return {
+      id: p3.id,
+      email: clerk?.emailAddresses[0]?.emailAddress ?? null,
+      name: [clerk?.firstName, clerk?.lastName].filter(Boolean).join(" ") || null,
+      signedUpAt: p3.createdAt.toISOString(),
+      lastSignInAt: clerk?.lastSignInAt ? new Date(clerk.lastSignInAt).toISOString() : null,
+      language: p3.language,
+      subscriptionStatus: sub?.status ?? "trial",
+      stripeCustomerId: sub?.stripeCustomerId ?? null,
+      creditsRemaining: cred?.creditsRemaining ?? 0,
+      creditsUsed: cred?.creditsUsed ?? 0,
+      creditsExpiresAt: cred?.expiresAt?.toISOString() ?? null,
+      foodLogEntries: logCountMap.get(p3.id) ?? 0,
+      apiCalls: txCountMap.get(p3.id) ?? 0
+    };
+  });
+  rows.sort((a2, b2) => a2.signedUpAt < b2.signedUpAt ? 1 : -1);
+  return c3.json(rows);
+});
+var adjustCreditsSchema = external_exports.object({
+  userId: external_exports.string().min(1),
+  amount: external_exports.number().int()
+});
+adminRoutes.post("/credits", authMiddleware, async (c3) => {
+  const deny = requireAdmin(c3);
+  if (deny) return deny;
+  const body = await c3.req.json().catch(() => null);
+  const parsed = adjustCreditsSchema.safeParse(body);
+  if (!parsed.success) {
+    return c3.json({ error: "Invalid request", details: parsed.error.flatten() }, 400);
+  }
+  const { userId, amount } = parsed.data;
+  const rows = await db.update(userCredits).set({
+    creditsRemaining: sql`GREATEST(0, credits_remaining + ${amount})`
+  }).where(eq(userCredits.userId, userId)).returning({ creditsRemaining: userCredits.creditsRemaining });
+  if (rows.length === 0) {
+    return c3.json({ error: "User not found" }, 404);
+  }
+  return c3.json({ ok: true, userId, creditsRemaining: rows[0]?.creditsRemaining ?? 0 });
+});
+
 // src/api/origins.ts
 function devAppOrigins(primaryUrl) {
   const trimmed = primaryUrl.replace(/\/$/, "");
@@ -52691,6 +52848,7 @@ function createApiApp() {
   app2.route("/ai", aiRoutes);
   app2.route("/barcode", barcodeRoutes);
   app2.route("/payments", paymentsRoutes);
+  app2.route("/admin", adminRoutes);
   app2.use("/chat", optionalAuthMiddleware);
   app2.route("/chat", chatRoutes);
   app2.onError((err, c3) => {

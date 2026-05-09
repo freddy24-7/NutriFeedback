@@ -1,7 +1,7 @@
 import { clerkClient } from '@/lib/auth/server';
 import { getStripe } from '@/lib/stripe-config';
 
-export type SubscriptionPlan = 'free' | 'pro-monthly' | 'pro-yearly';
+export type SubscriptionPlan = 'free' | 'pro-monthly';
 
 export interface SubscriptionInfo {
   plan: SubscriptionPlan;
@@ -12,7 +12,6 @@ export interface SubscriptionInfo {
 function planFromPriceId(priceId: string | null | undefined): SubscriptionPlan {
   if (!priceId) return 'free';
   if (priceId === process.env['STRIPE_PRICE_ID_MONTHLY']) return 'pro-monthly';
-  if (priceId === process.env['STRIPE_PRICE_ID_YEARLY']) return 'pro-yearly';
   return 'free';
 }
 
@@ -64,5 +63,5 @@ export async function resolveSubscription(userId: string): Promise<SubscriptionI
 }
 
 export function hasProSubscription(plan: SubscriptionPlan): boolean {
-  return plan === 'pro-monthly' || plan === 'pro-yearly';
+  return plan === 'pro-monthly';
 }

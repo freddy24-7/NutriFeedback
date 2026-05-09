@@ -189,6 +189,7 @@ export const SubscriptionStatusSchema = z.enum([
   'comped',
   'expired',
   'cancelled',
+  'past_due',
 ]);
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 

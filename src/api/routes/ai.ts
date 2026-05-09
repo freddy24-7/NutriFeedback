@@ -24,6 +24,47 @@ import { authMiddleware, type AuthVariables } from '../middleware/auth';
 
 const aiRoutes = new Hono<{ Variables: AuthVariables }>();
 
+// Fires a one-time "you're out of credits" email when credits hit zero.
+// Called after every successful deduction — fails silently so the API response is unaffected.
+async function maybeSendLowCreditEmail(userId: string, creditsRemaining: number): Promise<void> {
+  if (creditsRemaining !== 0) return;
+
+  const resendKey = process.env['RESEND_API_KEY'];
+  const fromEmail = process.env['RESEND_FROM_EMAIL'];
+  if (!resendKey || !fromEmail) return;
+
+  try {
+    const clerkUser = await clerkClient.users.getUser(userId);
+    const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+    if (!userEmail) return;
+
+    const firstName = clerkUser.firstName ?? '';
+    const appUrl = process.env['VITE_APP_URL'] ?? 'https://nutriapp.vercel.app';
+    const resend = new Resend(resendKey);
+
+    await resend.emails.send({
+      from: fromEmail,
+      to: userEmail,
+      subject: "You've used all your free NutriApp credits",
+      text: [
+        `Hi${firstName ? ` ${firstName}` : ''},`,
+        '',
+        "You've used all 25 of your free NutriApp credits.",
+        '',
+        'Upgrade to NutriApp Pro to keep logging with AI parsing, generate nutrition tips, and use the barcode scanner without limits.',
+        '',
+        `${appUrl}/pricing`,
+        '',
+        'Have a discount code? Enter it on the pricing page.',
+        '',
+        '— The NutriApp team',
+      ].join('\n'),
+    });
+  } catch (err) {
+    console.error('[ai] low-credit email error:', (err as Error).message);
+  }
+}
+
 // GET /generate-tips — registered before auth so mistaken browser visits don’t hit 401 first.
 // HTML navigations redirect to the dashboard; non-browser clients (curl, API tools) get 405 JSON.
 aiRoutes.get('/generate-tips', (c) => {
@@ -120,6 +161,8 @@ aiRoutes.post('/parse-food', zValidator('json', ParseFoodRequestSchema), async (
   if (entry === undefined) {
     return c.json({ error: 'Failed to save entry' }, 500);
   }
+
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
 
   return c.json({ entryId: entry.id, nutrients, confidence: nutrients.confidence }, 201);
 });
@@ -228,6 +271,8 @@ aiRoutes.post('/generate-tips', async (c) => {
   if (tip === undefined) {
     return c.json({ error: 'Failed to save tip' }, 500);
   }
+
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
 
   return c.json({
     id: tip.id,
@@ -341,6 +386,8 @@ aiRoutes.post('/diet-feedback', async (c) => {
     .returning();
 
   if (tip === undefined) return c.json({ error: 'Failed to save tip' }, 500);
+
+  void maybeSendLowCreditEmail(user.id, updated.creditsRemaining);
 
   return c.json({
     id: tip.id,

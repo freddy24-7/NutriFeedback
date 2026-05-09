@@ -28,11 +28,14 @@ vi.mock('@/lib/ai/client', () => ({
   stripJsonFences: (text: string) => text,
 }));
 
+// Shared send spy so tests can assert on email calls across Resend instances.
+const { mockResendSend } = vi.hoisted(() => ({
+  mockResendSend: vi.fn().mockResolvedValue({ error: null }),
+}));
+
 vi.mock('resend', () => ({
   Resend: vi.fn().mockImplementation(() => ({
-    emails: {
-      send: vi.fn().mockResolvedValue({ error: null }),
-    },
+    emails: { send: mockResendSend },
   })),
 }));
 
@@ -439,6 +442,63 @@ describe('POST /api/ai/tips/:id/dismiss', () => {
       method: 'POST',
     });
     expect(res.status).toBe(401);
+  });
+});
+
+// ─── Zero-credit email notification ─────────────────────────────────────────
+// maybeSendLowCreditEmail is called after every AI credit deduction.
+// It sends once when credits hit exactly 0 and stays silent otherwise.
+
+describe('zero-credit email notification (parse-food)', () => {
+  beforeEach(async () => {
+    await seedUser(TEST_USER, 1); // 1 credit — will hit 0 after parse-food
+    mockGenerateAIResponse.mockResolvedValue({ text: VALID_NUTRIENTS_JSON });
+    process.env['RESEND_API_KEY'] = 'test-key';
+    process.env['RESEND_FROM_EMAIL'] = 'noreply@example.com';
+  });
+
+  afterEach(async () => {
+    await cleanupUser(TEST_USER.id);
+    vi.clearAllMocks();
+  });
+
+  it('sends email when credits reach 0 after deduction', async () => {
+    const app = createTestApp(TEST_USER.id);
+    await app.request('/api/ai/parse-food', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: 'Apple', date: THREE_DAYS[2], language: 'en' }),
+    });
+
+    // Allow the void-called email promise to settle
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockResendSend).toHaveBeenCalledOnce();
+    expect(mockResendSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'test@example.com',
+        subject: expect.stringMatching(/credits/i),
+      }),
+    );
+  });
+
+  it('does not send email when credits remain above 0', async () => {
+    // Give user 5 credits so deduction leaves 4 — no email expected
+    await db
+      .update(userCredits)
+      .set({ creditsRemaining: 5 })
+      .where(eq(userCredits.userId, TEST_USER.id));
+
+    const app = createTestApp(TEST_USER.id);
+    await app.request('/api/ai/parse-food', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: 'Banana', date: THREE_DAYS[2], language: 'en' }),
+    });
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockResendSend).not.toHaveBeenCalled();
   });
 });
 

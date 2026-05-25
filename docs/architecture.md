@@ -5,6 +5,7 @@
 ## Database — Neon + Drizzle
 
 ### Connection strategy
+
 - **Runtime:** Neon HTTP driver via pooled connection (`DATABASE_URL`)
 - **Migrations:** Neon direct connection (`DATABASE_URL_UNPOOLED`)
 - **Branches:** `main` (prod), `dev` (development), `staging` (pre-deploy)
@@ -14,18 +15,36 @@
 
 ```ts
 import {
-  pgTable, uuid, text, timestamp, integer,
-  real, jsonb, boolean, pgEnum
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  integer,
+  real,
+  jsonb,
+  boolean,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 
 export const languageEnum = pgEnum('language', ['en', 'nl']);
 export const themeEnum = pgEnum('theme', ['light', 'dark']);
-export const mealTypeEnum = pgEnum('meal_type', ['breakfast','lunch','dinner','snack','drink']);
-export const sourceEnum = pgEnum('source', ['manual','barcode','ai_parsed','imported']);
-export const productSourceEnum = pgEnum('product_source', ['open_food_facts','usda','user','ai_estimated']);
-export const subscriptionStatusEnum = pgEnum('subscription_status', ['trial','active','comped','expired','cancelled']);
-export const discountTypeEnum = pgEnum('discount_type', ['beta','influencer','timed']);
-export const severityEnum = pgEnum('severity', ['info','suggestion','important']);
+export const mealTypeEnum = pgEnum('meal_type', ['breakfast', 'lunch', 'dinner', 'snack', 'drink']);
+export const sourceEnum = pgEnum('source', ['manual', 'barcode', 'ai_parsed', 'imported']);
+export const productSourceEnum = pgEnum('product_source', [
+  'open_food_facts',
+  'usda',
+  'user',
+  'ai_estimated',
+]);
+export const subscriptionStatusEnum = pgEnum('subscription_status', [
+  'trial',
+  'active',
+  'comped',
+  'expired',
+  'cancelled',
+]);
+export const discountTypeEnum = pgEnum('discount_type', ['beta', 'influencer', 'timed']);
+export const severityEnum = pgEnum('severity', ['info', 'suggestion', 'important']);
 
 export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey(),
@@ -44,7 +63,7 @@ export const foodLogEntries = pgTable('food_log_entries', {
   userId: uuid('user_id').notNull(),
   description: text('description').notNull(),
   mealType: mealTypeEnum('meal_type'),
-  date: text('date').notNull(),          // ISO date string YYYY-MM-DD
+  date: text('date').notNull(), // ISO date string YYYY-MM-DD
   parsedNutrients: jsonb('parsed_nutrients'),
   confidence: real('confidence'),
   source: sourceEnum('source').notNull().default('manual'),
@@ -59,7 +78,7 @@ export const products = pgTable('products', {
   brand: text('brand'),
   nutritionalPer100g: jsonb('nutritional_per_100g').notNull(),
   servingSizeG: real('serving_size_g'),
-  processingLevel: integer('processing_level'),  // 1-4
+  processingLevel: integer('processing_level'), // 1-4
   source: productSourceEnum('source').notNull(),
   verified: boolean('verified').notNull().default(false),
   createdBy: uuid('created_by'),
@@ -77,8 +96,8 @@ export const userCredits = pgTable('user_credits', {
 export const creditTransactions = pgTable('credit_transactions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(),
-  amount: integer('amount').notNull(),    // negative = deduction
-  action: text('action').notNull(),       // 'signup_grant' | 'ai_parse' | 'ai_tip' | 'purchase'
+  amount: integer('amount').notNull(), // negative = deduction
+  action: text('action').notNull(), // 'signup_grant' | 'ai_parse' | 'ai_tip' | 'purchase'
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -95,8 +114,8 @@ export const subscriptions = pgTable('subscriptions', {
 export const discountCodes = pgTable('discount_codes', {
   code: text('code').primaryKey(),
   type: discountTypeEnum('type').notNull(),
-  usesRemaining: integer('uses_remaining'),   // NULL = unlimited
-  expiresAt: timestamp('expires_at'),         // NULL = no expiry
+  usesRemaining: integer('uses_remaining'), // NULL = unlimited
+  expiresAt: timestamp('expires_at'), // NULL = no expiry
   trialDays: integer('trial_days'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
@@ -116,9 +135,9 @@ export const aiTips = pgTable('ai_tips', {
 export const chatbotSessions = pgTable('chatbot_sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   ipHash: text('ip_hash').notNull(),
-  userId: uuid('user_id'),               // NULL if anonymous
+  userId: uuid('user_id'), // NULL if anonymous
   messagesToday: integer('messages_today').notNull().default(0),
-  date: text('date').notNull(),          // YYYY-MM-DD
+  date: text('date').notNull(), // YYYY-MM-DD
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -169,32 +188,32 @@ type NutrientProfile = {
 
 All routes under `src/api/`, served at `/api/` via Vercel Edge Functions.
 
-| Route | Method | Auth | Rate Limit | Credits | Description |
-|-------|--------|------|-----------|---------|-------------|
-| `/api/food-log` | GET | ✅ | 60/min | 0 | Get food log entries |
-| `/api/food-log` | POST | ✅ | 60/min | 0 | Add manual entry |
-| `/api/ai/parse-food` | POST | ✅ | 10/min | 1 | AI parse text entry |
-| `/api/ai/generate-tips` | POST | ✅ | 5/hour | 2 | Generate nutrition tips |
-| `/api/ai/chat` | POST | Optional | 5/day (anon) | 0 | FAQ-first chatbot |
-| `/api/barcode/lookup` | GET | ✅ | 30/min | 0 | Barcode product lookup |
-| `/api/products` | POST | ✅ | 10/min | 0 | Register product |
-| `/api/payments/checkout` | POST | ✅ | 10/hour | 0 | Create Stripe session |
-| `/api/payments/webhook` | POST | Stripe sig | — | 0 | Handle Stripe events |
-| `/api/payments/discount` | POST | ✅ | 10/hour | 0 | Validate + apply code |
-| `/api/contact` | POST | None | 3/hour/IP | 0 | Send contact email |
-| `/api/credits` | GET | ✅ | 60/min | 0 | Get credit balance |
+| Route                    | Method | Auth       | Rate Limit   | Credits | Description             |
+| ------------------------ | ------ | ---------- | ------------ | ------- | ----------------------- |
+| `/api/food-log`          | GET    | ✅         | 60/min       | 0       | Get food log entries    |
+| `/api/food-log`          | POST   | ✅         | 60/min       | 0       | Add manual entry        |
+| `/api/ai/parse-food`     | POST   | ✅         | 10/min       | 1       | AI parse text entry     |
+| `/api/ai/generate-tips`  | POST   | ✅         | 5/hour       | 2       | Generate nutrition tips |
+| `/api/ai/chat`           | POST   | Optional   | 5/day (anon) | 0       | FAQ-first chatbot       |
+| `/api/barcode/lookup`    | GET    | ✅         | 30/min       | 0       | Barcode product lookup  |
+| `/api/products`          | POST   | ✅         | 10/min       | 0       | Register product        |
+| `/api/payments/checkout` | POST   | ✅         | 10/hour      | 0       | Create Stripe session   |
+| `/api/payments/webhook`  | POST   | Stripe sig | —            | 0       | Handle Stripe events    |
+| `/api/payments/discount` | POST   | ✅         | 10/hour      | 0       | Validate + apply code   |
+| `/api/contact`           | POST   | None       | 3/hour/IP    | 0       | Send contact email      |
+| `/api/credits`           | GET    | ✅         | 60/min       | 0       | Get credit balance      |
 
 ---
 
 ## Credit Costs
 
-| Action | Cost |
-|--------|------|
-| Manual food entry | 0 |
-| AI food parse | 1 |
-| AI tip generation | 2 |
-| Barcode lookup | 0 |
-| Chatbot message | 0 |
+| Action            | Cost |
+| ----------------- | ---- |
+| Manual food entry | 0    |
+| AI food parse     | 1    |
+| AI tip generation | 2    |
+| Barcode lookup    | 0    |
+| Chatbot message   | 0    |
 
 **Initial free grant on signup:** 50 credits, expires 30 days after signup.
 
@@ -202,12 +221,12 @@ All routes under `src/api/`, served at `/api/` via Vercel Edge Functions.
 
 ## Caching Strategy (Upstash Redis)
 
-| Data | TTL | Key Pattern |
-|------|-----|-------------|
-| Open Food Facts product | 7 days | `off:barcode:{barcode}` |
-| USDA ingredient | 30 days | `usda:id:{fdcId}` |
-| AI food parse (same input hash) | 1 hour | `parse:{sha256(description)}` |
-| User credit balance | 30 sec | `credits:{userId}` |
+| Data                            | TTL     | Key Pattern                   |
+| ------------------------------- | ------- | ----------------------------- |
+| Open Food Facts product         | 7 days  | `off:barcode:{barcode}`       |
+| USDA ingredient                 | 30 days | `usda:id:{fdcId}`             |
+| AI food parse (same input hash) | 1 hour  | `parse:{sha256(description)}` |
+| User credit balance             | 30 sec  | `credits:{userId}`            |
 
 ---
 
@@ -219,10 +238,7 @@ Never accept userId from request body or query params.
 ```ts
 // ✅ userId from auth middleware — cannot be spoofed
 const userId = c.get('userId');
-const entries = await db
-  .select()
-  .from(foodLogEntries)
-  .where(eq(foodLogEntries.userId, userId));
+const entries = await db.select().from(foodLogEntries).where(eq(foodLogEntries.userId, userId));
 
 // ❌ userId from request — can be spoofed by client
 const { userId } = await c.req.json();

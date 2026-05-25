@@ -14,15 +14,13 @@
 import { vi } from 'vitest';
 
 const allowAll = {
-  limit: vi
-    .fn()
-    .mockResolvedValue({
-      success: true,
-      limit: 10,
-      remaining: 9,
-      reset: 0,
-      pending: Promise.resolve(),
-    }),
+  limit: vi.fn().mockResolvedValue({
+    success: true,
+    limit: 10,
+    remaining: 9,
+    reset: 0,
+    pending: Promise.resolve(),
+  }),
 };
 
 export const mockRedisModule = () => ({

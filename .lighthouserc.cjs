@@ -3,7 +3,11 @@
 module.exports = {
   ci: {
     collect: {
-      url: ['http://localhost:4173/', 'http://localhost:4173/pricing', 'http://localhost:4173/contact'],
+      url: [
+        'http://localhost:4173/',
+        'http://localhost:4173/pricing',
+        'http://localhost:4173/contact',
+      ],
       startServerCommand: 'npx vite preview --port 4173',
       startServerReadyPattern: 'Local',
       numberOfRuns: 1,

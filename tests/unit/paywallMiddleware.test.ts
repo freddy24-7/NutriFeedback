@@ -123,15 +123,13 @@ describe('paywallMiddleware', () => {
 
   it('allows access when no credits row exists (fresh user edge case)', async () => {
     // Only create the profile, not credits — simulates a race condition on first login
-    await db
-      .insert((await import('@/lib/db/schema')).userProfiles)
-      .values({
-        id: USER_ID,
-        language: 'en',
-        theme: 'light',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+    await db.insert((await import('@/lib/db/schema')).userProfiles).values({
+      id: USER_ID,
+      language: 'en',
+      theme: 'light',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     const res = await createPaywallApp(USER_ID).request('/api/guarded');
     // No credits row → credits is undefined → paywall passes through (on-signup will create it)

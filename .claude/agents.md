@@ -9,6 +9,7 @@
 ## Autonomy Levels
 
 ### Proceed without asking:
+
 - Writing new files that follow an established pattern already in the codebase
 - Running tests (`vitest run`, `playwright test`)
 - Running lint and type-check (`eslint --fix`, `tsc --noEmit`)
@@ -21,6 +22,7 @@
 - Adding or updating tests for code you just wrote
 
 ### Ask before proceeding:
+
 - Installing a package NOT in the approved stack
 - Deleting any file
 - Applying Drizzle migrations to staging or production Neon branches
@@ -33,6 +35,7 @@
   (unless explicitly public data — confirm before proceeding)
 
 ### Always stop and prompt the human:
+
 - A required environment variable is missing from `.env.local`:
   ```
   ⚠️  HUMAN INPUT NEEDED
@@ -112,6 +115,7 @@ Do not proceed until the human replies "ready".
 ## Testing Protocol
 
 After completing any set of tasks:
+
 1. `vitest run` — fix all failures before continuing
 2. `eslint .` — fix all errors (warnings acceptable, but note them)
 3. `tsc --noEmit` — fix all type errors
@@ -122,7 +126,9 @@ Never commit code with failing unit tests or TypeScript errors.
 ---
 
 ## ═══════════════════════════════════════════════
+
 ## CURSOR HANDOVER PROTOCOL
+
 ## ═══════════════════════════════════════════════
 
 Cursor runs Opus models and handles complex, visually rich UI components.
@@ -153,6 +159,7 @@ structurally simple UI. This division is strict.
 ### Cursor owns — complex UI only:
 
 Components that are:
+
 - Visually rich with multiple interactive states
 - Animation-heavy (scanner overlay, chatbot drawer, onboarding flow)
 - Layout-complex across mobile and desktop breakpoints
@@ -177,6 +184,7 @@ Claude Code must complete ALL of these before marking a task ready:
 
 ```markdown
 ### [ID] — ComponentName
+
 **Status:** ✅ READY
 **File to create:** `src/components/ComponentName/index.tsx`
 **Reference component:** `src/components/[ExistingComponent]/index.tsx`
@@ -184,7 +192,7 @@ Claude Code must complete ALL of these before marking a task ready:
 **Props** (already in `src/types/components.ts`):
 \`\`\`ts
 type ComponentNameProps = {
-  // exact type here — do not change it
+// exact type here — do not change it
 };
 \`\`\`
 
@@ -193,9 +201,10 @@ Returns: `{ data, isLoading, error, mutate }`
 
 **Design brief:**
 [Visual direction: aesthetic tone, motion style, colour token usage,
- which design system tokens to apply from tailwind.config.ts]
+which design system tokens to apply from tailwind.config.ts]
 
 **States to implement:**
+
 - Loading: [description — use skeleton from P6-01 if available]
 - Empty: [description]
 - Error: [description]
@@ -203,12 +212,15 @@ Returns: `{ data, isLoading, error, mutate }`
 - [any other interaction states]
 
 **Translation keys** (already added to both locale files by Claude Code):
+
 - `section.key` — "English value"
 
 **Accessibility requirements:**
+
 - [specific aria roles, keyboard behaviour, focus management]
 
 **Cursor must not:**
+
 - Use useEffect for data fetching — use the hook listed above
 - Hardcode any user-visible string — use useTranslation()
 - Add new npm dependencies without checking with Claude Code first

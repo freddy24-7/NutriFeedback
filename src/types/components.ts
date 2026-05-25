@@ -146,3 +146,13 @@ export type PWAInstallPromptProps = {
   onAccept: () => void;
   onDismiss: () => void;
 };
+
+export type MobileInstallModalProps = {
+  isOpen: boolean;
+  onDismiss: () => void;
+};
+
+export type DesktopInstallBannerProps = {
+  appUrl: string;
+  onDismiss: () => void;
+};

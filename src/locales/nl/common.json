@@ -519,6 +519,19 @@
   },
   "pwa": {
     "install": "Installeer",
-    "addToHomeScreen": "Voeg toe aan beginscherm"
+    "addToHomeScreen": "Voeg toe aan beginscherm",
+    "mobileModal": {
+      "title": "Haal alles uit de app",
+      "description": "Voeg NutriApp toe aan je beginscherm om producten te scannen en maaltijden onderweg te registreren.",
+      "addButton": "Voeg toe aan beginscherm",
+      "iosInstructions": "Tik op het <share>Deel</share>-icoon in Safari en kies <bold>Zet op beginscherm</bold>.",
+      "dismiss": "Misschien later"
+    },
+    "desktopBanner": {
+      "title": "Scan barcodes met je telefoon",
+      "description": "Open NutriApp in je mobiele browser en installeer de app voor snel scannen.",
+      "scanPrompt": "Scan deze QR-code met je telefoon",
+      "dismiss": "Sluiten"
+    }
   }
 }

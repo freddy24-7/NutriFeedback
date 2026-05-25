@@ -519,6 +519,19 @@
   },
   "pwa": {
     "install": "Install",
-    "addToHomeScreen": "Add to home screen"
+    "addToHomeScreen": "Add to home screen",
+    "mobileModal": {
+      "title": "Get the full experience",
+      "description": "Add NutriApp to your home screen to scan product barcodes and log meals on the go.",
+      "addButton": "Add to Home Screen",
+      "iosInstructions": "Tap the <share>Share</share> icon in Safari, then choose <bold>Add to Home Screen</bold>.",
+      "dismiss": "Maybe later"
+    },
+    "desktopBanner": {
+      "title": "Scan barcodes on your phone",
+      "description": "Open NutriApp on your mobile browser and install it for one-tap barcode scanning.",
+      "scanPrompt": "Scan this QR code with your phone",
+      "dismiss": "Dismiss"
+    }
   }
 }

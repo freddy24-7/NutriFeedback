@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useAuth, useClerk } from '@clerk/clerk-react';
 import { useUIStore } from '@/store/uiStore';
+import { usePWAStore } from '@/store/pwaStore';
 import { todayISO, formatDate } from '@/utils/date';
 import { DailyView } from '@/components/FoodLog/DailyView';
 import { FoodEntryForm } from '@/components/FoodLog/FoodEntryForm';
 import { AiTipCard } from '@/components/AI/AiTipCard';
 import { PaywallModal } from '@/components/Payments/PaywallModal';
 import { OnboardingTooltip } from '@/components/UI/OnboardingTooltip';
+import { MobileInstallModal } from '@/components/UI/MobileInstallModal';
+import { DesktopInstallBanner } from '@/components/UI/DesktopInstallBanner';
 import { DietPickerModal } from '@/components/AI/DietPickerModal';
 import {
   useAiTips,
@@ -21,6 +24,8 @@ import { cn } from '@/utils/cn';
 import diets from '@/data/diets.json';
 
 const ONBOARDING_DONE_KEY = 'nutriapp_hasCompletedOnboarding';
+const PWA_NUDGE_SEEN_KEY = 'nutriapp_pwaInstallSeen';
+const APP_URL = (import.meta.env['VITE_APP_URL'] as string) ?? 'https://nutriapp.vercel.app';
 
 function readOnboardingInitialStep(): 1 | 2 | 3 | 4 | null {
   if (typeof window === 'undefined') return null;
@@ -31,6 +36,18 @@ function readOnboardingInitialStep(): 1 | 2 | 3 | 4 | null {
   }
 }
 
+function isMobileDevice(): boolean {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
+function readPwaNudgeSeen(): boolean {
+  try {
+    return localStorage.getItem(PWA_NUDGE_SEEN_KEY) === 'true';
+  } catch {
+    return true;
+  }
+}
+
 export function DashboardPage() {
   const { t, i18n } = useTranslation();
   const { isSignedIn, isLoaded } = useAuth();
@@ -38,6 +55,7 @@ export function DashboardPage() {
   const language = useUIStore((s) => s.language);
   const selectedDiet = useUIStore((s) => s.selectedDiet);
   const setSelectedDiet = useUIStore((s) => s.setSelectedDiet);
+  const { isInstalled } = usePWAStore();
 
   // Lazy provisioning: if on-signup failed (e.g. token timing), ensure rows exist
   useEffect(() => {
@@ -63,6 +81,25 @@ export function DashboardPage() {
   const [onboardingStep, setOnboardingStep] = useState<1 | 2 | 3 | 4 | null>(
     readOnboardingInitialStep,
   );
+
+  const [showPwaNudge, setShowPwaNudge] = useState(false);
+  const mobile = typeof window !== 'undefined' ? isMobileDevice() : false;
+
+  useEffect(() => {
+    if (isInstalled || readPwaNudgeSeen()) return;
+    // Small delay so the dashboard renders before the modal/banner appears
+    const id = window.setTimeout(() => setShowPwaNudge(true), 800);
+    return () => window.clearTimeout(id);
+  }, [isInstalled]);
+
+  const dismissPwaNudge = () => {
+    setShowPwaNudge(false);
+    try {
+      localStorage.setItem(PWA_NUDGE_SEEN_KEY, 'true');
+    } catch {
+      /* ignore */
+    }
+  };
 
   const paywallReason = sub?.status === 'expired' ? 'expired' : 'no_credits';
 
@@ -151,6 +188,8 @@ export function DashboardPage() {
         reason={paywallReason}
       />
 
+      {mobile ? <MobileInstallModal isOpen={showPwaNudge} onDismiss={dismissPwaNudge} /> : null}
+
       <Helmet>
         <title>
           {t('dashboard.title')} — {t('app.name')}
@@ -159,6 +198,10 @@ export function DashboardPage() {
       </Helmet>
 
       <div className="space-y-6">
+        {!mobile && showPwaNudge && (
+          <DesktopInstallBanner appUrl={APP_URL} onDismiss={dismissPwaNudge} />
+        )}
+
         <div className="relative flex items-center justify-between">
           <div>
             <h1

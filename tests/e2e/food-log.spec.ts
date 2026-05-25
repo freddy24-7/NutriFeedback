@@ -30,6 +30,7 @@ async function setupDashboard(page: Page, entries: object[] = []) {
   );
   await page.addInitScript(() => {
     localStorage.setItem('nutriapp_hasCompletedOnboarding', 'true');
+    localStorage.setItem('nutriapp_pwaInstallSeen', 'true');
   });
   await page.goto('/dashboard');
   await page.waitForLoadState('networkidle');
@@ -70,6 +71,7 @@ test.describe('Food log — daily view', () => {
     );
     await page.addInitScript(() => {
       localStorage.setItem('nutriapp_hasCompletedOnboarding', 'true');
+      localStorage.setItem('nutriapp_pwaInstallSeen', 'true');
     });
     await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');

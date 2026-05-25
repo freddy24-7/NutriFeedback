@@ -58,6 +58,7 @@ export default defineConfig(({ mode }) => {
         ...(process.env['VITE_E2E_TEST_MODE'] === 'true'
           ? {
               '@clerk/clerk-react': path.resolve(__dirname, './src/lib/auth/e2e-clerk-mock.tsx'),
+              'html5-qrcode': path.resolve(__dirname, './src/lib/barcode/e2e-html5qrcode-mock.ts'),
             }
           : {}),
       },

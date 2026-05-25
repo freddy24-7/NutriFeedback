@@ -48,6 +48,7 @@ test.describe('Auth flows', () => {
     await mockDashboardApis(page);
     await page.addInitScript(() => {
       localStorage.setItem('nutriapp_hasCompletedOnboarding', 'true');
+      localStorage.setItem('nutriapp_pwaInstallSeen', 'true');
     });
 
     await page.goto('/signin');

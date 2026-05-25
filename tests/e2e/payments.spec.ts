@@ -185,6 +185,7 @@ async function gotoDashboardWithPaywall(
   // Suppress onboarding tooltip so it doesn't intercept pointer events
   await page.addInitScript(() => {
     localStorage.setItem('nutriapp_hasCompletedOnboarding', 'true');
+    localStorage.setItem('nutriapp_pwaInstallSeen', 'true');
   });
   await page.goto('/dashboard');
 }
